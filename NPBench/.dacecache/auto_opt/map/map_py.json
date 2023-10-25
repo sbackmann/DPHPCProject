@@ -1,0 +1,1723 @@
+{
+    "C:\\Users\\damia\\Desktop\\ETH Studium\\10. Sem\\DPHPC\\Project\\DPHPCProject\\NPBench\\npbench\\benchmarks\\weather_stencils\\vadv\\vadv_dace.py": {
+        "21": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 0
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 3
+            }
+        ],
+        "22": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 5
+            }
+        ],
+        "24": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 6
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 7
+            }
+        ],
+        "25": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 8
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 10
+            }
+        ],
+        "28": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 12
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 17
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 18
+            }
+        ],
+        "29": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 19
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 21
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 26
+            }
+        ],
+        "30": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 23
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 25
+            }
+        ],
+        "33": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 27
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 28
+            }
+        ],
+        "34": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 29
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 30
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 31
+            }
+        ],
+        "35": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 33
+            }
+        ],
+        "38": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 0
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 3
+            }
+        ],
+        "39": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 5
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 6
+            }
+        ],
+        "41": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 7
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 8
+            }
+        ],
+        "43": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 10
+            }
+        ],
+        "45": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 12
+            }
+        ],
+        "46": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 14
+            }
+        ],
+        "48": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 16
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 17
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 18
+            }
+        ],
+        "52": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 19
+            }
+        ],
+        "54": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 20
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 22
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 23
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 28
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 29
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 30
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 31
+            }
+        ],
+        "55": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 34
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 39
+            }
+        ],
+        "56": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 36
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 38
+            }
+        ],
+        "60": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 40
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 41
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 42
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 43
+            }
+        ],
+        "61": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 44
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 45
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 46
+            }
+        ],
+        "62": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 47
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 48
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 49
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 50
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 51
+            }
+        ],
+        "65": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 0
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 3
+            }
+        ],
+        "67": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 5
+            }
+        ],
+        "69": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 6
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 7
+            }
+        ],
+        "71": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 8
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 10
+            }
+        ],
+        "75": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 12
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 15
+            }
+        ],
+        "76": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 16
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 18
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 23
+            }
+        ],
+        "77": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 20
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 22
+            }
+        ],
+        "81": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 24
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 26
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 27
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 28
+            }
+        ],
+        "82": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 29
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 30
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 31
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 33
+            }
+        ],
+        "86": [
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 0
+            }
+        ],
+        "87": [
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 3
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 5
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 6
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 7
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 8
+            }
+        ],
+        "91": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 0
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 1
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 5
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 6
+            }
+        ],
+        "92": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 9
+            }
+        ],
+        "93": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "12": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "13": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "14": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "15": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "16": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "17": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "18": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "19": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "20": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 10
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 11
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 16
+            }
+        ],
+        "23": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 5
+            }
+        ],
+        "26": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 8
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 10
+            }
+        ],
+        "27": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 8
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 10
+            }
+        ],
+        "31": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 23
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 25
+            }
+        ],
+        "32": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 23
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 25
+            }
+        ],
+        "36": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 33
+            }
+        ],
+        "37": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 33
+            }
+        ],
+        "40": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 5
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 6
+            }
+        ],
+        "42": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 7
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 8
+            }
+        ],
+        "44": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 10
+            }
+        ],
+        "47": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 14
+            }
+        ],
+        "49": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 16
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 17
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 18
+            }
+        ],
+        "50": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 16
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 17
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 18
+            }
+        ],
+        "51": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 15
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 16
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 17
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 18
+            }
+        ],
+        "53": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 19
+            }
+        ],
+        "57": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 36
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 38
+            }
+        ],
+        "58": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 36
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 38
+            }
+        ],
+        "59": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 36
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 38
+            }
+        ],
+        "63": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 47
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 48
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 49
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 50
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 51
+            }
+        ],
+        "64": [
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 47
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 48
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 49
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 50
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 51
+            }
+        ],
+        "66": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 0
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 3
+            }
+        ],
+        "68": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 5
+            }
+        ],
+        "70": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 6
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 7
+            }
+        ],
+        "72": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 8
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 10
+            }
+        ],
+        "73": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 8
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 10
+            }
+        ],
+        "74": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 8
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 9
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 10
+            }
+        ],
+        "78": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 20
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 22
+            }
+        ],
+        "79": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 20
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 22
+            }
+        ],
+        "80": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 20
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 22
+            }
+        ],
+        "83": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 29
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 30
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 31
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 33
+            }
+        ],
+        "84": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 29
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 30
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 31
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 33
+            }
+        ],
+        "85": [
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 29
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 30
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 31
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 32
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 33
+            }
+        ],
+        "88": [
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 3
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 5
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 6
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 7
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 8
+            }
+        ],
+        "89": [
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 3
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 5
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 6
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 7
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 8
+            }
+        ],
+        "90": [
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 3
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 5
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 6
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 7
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 8
+            }
+        ]
+    },
+    "C:\\Users\\damia\\AppData\\Local\\Programs\\Python\\Python37\\lib\\site-packages\\dace\\frontend\\python\\newast.py": {
+        "1287": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 1
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 16
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 20
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 22
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 24
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 1
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 21
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 33
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 35
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 37
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 1
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 17
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 19
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 21
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 7,
+                "node_id": 25
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 1
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 10,
+                "node_id": 4
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 2
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 3
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 7
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 12
+            }
+        ],
+        "1293": [
+            {
+                "sdfg_id": 0,
+                "state_id": 13,
+                "node_id": 8
+            }
+        ]
+    },
+    "C:\\Users\\damia\\AppData\\Local\\Programs\\Python\\Python37\\lib\\site-packages\\dace\\transformation\\subgraph\\subgraph_fusion.py": {
+        "1275": [
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 13
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 14
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 36
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 1,
+                "node_id": 37
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 26
+            },
+            {
+                "sdfg_id": 0,
+                "state_id": 4,
+                "node_id": 27
+            }
+        ]
+    }
+}

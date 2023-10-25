@@ -1,0 +1,1 @@
+#define __HASH_fusion "4e586f12d910715da001cf679499cecb1cff59c361bced5e170a8261b95d3605"
