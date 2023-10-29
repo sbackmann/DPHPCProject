@@ -13,6 +13,6 @@ function fib(n)
     return sₙ
 end
 
-main() = @dphpc_time fib(35)
+main() = @dphpc_time fib(38)
 
 main()

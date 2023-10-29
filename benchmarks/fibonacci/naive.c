@@ -9,7 +9,9 @@ long fib(int n) {
 }
 
 int main() {
+
+    // use the dphpc_time macro to collect measurements
     dphpc_time(
-        fib(35);
+        fib(38);
     );
 }

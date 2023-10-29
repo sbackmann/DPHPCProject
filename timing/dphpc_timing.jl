@@ -5,8 +5,8 @@ c_header = open(io->read(io, String), joinpath(@__DIR__, "dphpc_timing.h"))
 
 
 # adjust the values in dphpc_timing.h!
-MIN_RUNS::Int =     parse(Int,     match(r"#define MIN_RUNS\s+(\p{N}+)", c_header).captures[1]) # do at least _ runs
-MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)", c_header).captures[1]) # do at most _ runs
+MIN_RUNS::Int =     parse(Int,     match(r"#define MIN_RUNS\s+(\p{N}+)",  c_header).captures[1]) # do at least _ runs
+MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)",  c_header).captures[1]) # do at most _ runs
 MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_header).captures[1]) # dont run for more than _ seconds if enough measurements where collected
 
 

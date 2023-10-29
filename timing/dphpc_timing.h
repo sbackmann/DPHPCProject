@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <math.h>
 
+
 #define MIN_RUNS 10  // do at least _ runs
 #define MAX_RUNS 200 // do at most _ runs
 #define MAX_TIME 2.0 // dont run for more than _ seconds if enough measurements where collected
@@ -15,7 +16,7 @@
 long time_ns() {
     struct timespec t;
     clock_gettime(CLOCK_MONOTONIC_RAW, &t);
-    return t.tv_nsec;
+    return t.tv_sec * 1000000000 + t.tv_nsec;
 }
 
 long time_since_ns(long t) {
@@ -90,7 +91,7 @@ void median_CI95(long* measurements, int n) {
 #define dphpc_time(expr) ({                                     \
     long measurements_ns[MAX_RUNS];                             \
     int nr_runs = 0;                                            \
-    long start_time = time_ns();                                \
+    time_t start_time = time_ns();                              \
     for (int i = 0; i < MIN_RUNS; i++) {                        \
         long t = time_ns();                                     \
         expr;                                                   \
@@ -104,7 +105,7 @@ void median_CI95(long* measurements, int n) {
         expr;                                                   \
         measurements_ns[nr_runs++] = time_since_ns(t);          \
     }                                                           \
-    printf("(nr_runs=%d, ", nr_runs);                           \
+    printf("dphpcresult(nr_runs=%d, ", nr_runs);                \
     median_CI95(measurements_ns, nr_runs); /* prints the rest */\
 })
 

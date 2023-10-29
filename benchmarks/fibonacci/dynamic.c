@@ -16,6 +16,6 @@ long fib(int n) {
 
 int main() {
     dphpc_time(
-        fib(35);
+        fib(38);
     );
 }

@@ -4,6 +4,9 @@ import CSV
 # for julia, the version of a benchmark is the name of the .jl file
 # for C, the version is the name of the corresponding rule in the Makefile
 
+# TODO
+# add automatic cuda/gpu detection, to determine which versions use gpu
+# also run the python versions somehow somewhere maybe ?
 
 
   
@@ -72,8 +75,7 @@ end
 function run_julia_bm(bm, ver)
     file = joinpath(@__DIR__, "benchmarks", bm, "$(ver).jl")
     t = include(file)
-    # return [bm, ver, "julia", false, t.median_ms, t.median_lb_ms, t.median_ub_ms]
-    return DataFrame(benchmark=bm, version=ver, language="julia", cuda=false, median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
+    return DataFrame(benchmark=bm, version=ver, language="julia", gpu=false, median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
 end
 
 function run_c_bm(bm, ver)
@@ -81,14 +83,14 @@ function run_c_bm(bm, ver)
     cd(path)
     makefile_path = joinpath(@__DIR__, "benchmarks", bm, "Makefile")
     out = read(`make --silent -f $(makefile_path) $(ver)`, String)
-    t = out |> Meta.parse |> eval
-    # return [bm, ver, "C", false, t.median_ms, t.median_lb_ms, t.median_ub_ms]
-    return DataFrame(benchmark=bm, version=ver, language="C", cuda=false, median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
+    result = match(r"dphpcresult(\(.+?\))", out).captures[1]
+    t = result |> Meta.parse |> eval
+    return DataFrame(benchmark=bm, version=ver, language="C", gpu=false, median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
 end
 
-empty_df() = DataFrame(
+empty_df() = DataFrame(                          # time measurements in ms
     [[],          [],        [],         [],     [],       [],          [],          []], 
-    ["benchmark", "version", "language", "cuda", "median", "median_lb", "median_ub", "nr_runs"]
+    ["benchmark", "version", "language", "gpu", "median", "median_lb", "median_ub", "nr_runs"]
 )
 
 
@@ -126,4 +128,8 @@ function main(args)
     CSV.write("./results.csv", results)
 end
 
+
+
 main(ARGS)
+
+
