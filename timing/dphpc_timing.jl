@@ -1,0 +1,78 @@
+
+# macro for timing benchmarks, returns median and 95% confidence interval for median
+
+c_header = open(io->read(io, String), joinpath(@__DIR__, "dphpc_timing.h"))
+
+
+# adjust the values in dphpc_timing.h!
+MIN_RUNS::Int =     parse(Int,     match(r"#define MIN_RUNS\s+(\p{N}+)", c_header).captures[1]) # do at least _ runs
+MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)", c_header).captures[1]) # do at most _ runs
+MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_header).captures[1]) # dont run for more than _ seconds if enough measurements where collected
+
+
+# generate indeces of lower and upper bounds for 95%-CI
+# from the table in file:///C:/Users/damia/Downloads/perfPublisherVersion_1.pdf, page 347
+lb_reps = [3, 3, 3, 2, 3, 3, 2, 3, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 2, 2, 3, 2, 3, 1]
+up_reps = [1, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 1, 2, 3, 2, 1, 1, 2]
+lb_ids = [i for i = 1:27 for j = 1:lb_reps[i]] 
+ub_ids = [i for i = 6:44 for j = 1:up_reps[i-5]]
+
+function lb95_idx(n)
+    if n ≤ 5 error("need at least 6 measurements to be able to give 95% confidence interval") end
+    if n ≤ 70
+        return lb_ids[n-5]
+    end
+    return 0.5n - 0.98√n |> floor |> Int
+end
+
+function ub95_idx(n)
+    if n ≤ 5 error("need at least 6 measurements to be able to give 95% confidence interval") end
+    if n ≤ 70
+        return ub_ids[n-5]
+    end
+    return 0.5n + 1 + 0.98√n |> ceil |> Int
+end
+    
+
+
+# returns the empirical median and a 95% confidence interval for the true median
+function median_CI95(measurements)
+    sorted = sort(measurements)
+    # display(sorted)
+    n = length(sorted)
+    median_ms = sorted[n ÷ 2]
+    median_lb_ms = sorted[lb95_idx(n)]
+    median_ub_ms = sorted[ub95_idx(n)]
+    return (median_lb_ms=median_lb_ms, median_ms=median_ms, median_ub_ms=median_ub_ms)
+end
+
+
+time_since(t::Float64) = time() - t
+time_since(t::Integer) = time_ns() - t
+
+macro dphpc_time(expr)
+    return quote
+        measurements_ns = []
+        nr_runs = 0
+        start_time = time() # in seconds
+        for i=1:MIN_RUNS
+            t = time_ns()
+            @noinline $expr # I thought the noinline might help prohibit dead code elimination
+            push!(measurements_ns, time_since(t))
+            nr_runs += 1
+        end
+        for i=MIN_RUNS+1:MAX_RUNS
+            if time_since(start_time) > MAX_TIME
+                break
+            end
+            t = time_ns()
+            @noinline $expr
+            push!(measurements_ns, time_since(t))
+            nr_runs += 1
+        end
+        measurements_ms = measurements_ns .* 1e-6
+        (nr_runs=nr_runs, median_CI95(measurements_ms)...)
+    end
+end
+
+
