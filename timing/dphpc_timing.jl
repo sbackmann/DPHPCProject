@@ -5,9 +5,9 @@ c_header = open(io->read(io, String), joinpath(@__DIR__, "dphpc_timing.h"))
 
 
 # adjust the values in dphpc_timing.h!
-MIN_RUNS::Int =     parse(Int,     match(r"#define MIN_RUNS\s+(\p{N}+)",  c_header).captures[1]) # do at least _ runs
-MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)",  c_header).captures[1]) # do at most _ runs
-MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_header).captures[1]) # dont run for more than _ seconds if enough measurements where collected
+MIN_RUNS::Int =     parse(Int,     match(r"#define MIN_RUNS\s+(\p{N}+)",  c_header).captures[1])
+MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)",  c_header).captures[1])
+MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_header).captures[1])
 
 
 # generate indeces of lower and upper bounds for 95%-CI
@@ -50,12 +50,32 @@ end
 time_since(t::Float64) = time() - t
 time_since(t::Integer) = time_ns() - t
 
+
+RESULTS = []
+
+
+# with reset you can reinitialize the inputs as needed
+# expr is the code that is timed
+
 macro dphpc_time(expr)
+    return quote
+        @dphpc_time(nothing, $expr)
+    end
+end
+
+macro dphpc_time(reset, expr)
+    return quote
+        @dphpc_time($reset, $expr, missing)
+    end
+end
+
+macro dphpc_time(reset, expr, preset)
     return quote
         measurements_ns = []
         nr_runs = 0
         start_time = time() # in seconds
         for i=1:MIN_RUNS
+            $reset
             t = time_ns()
             @noinline $expr # I thought the noinline might help prohibit dead code elimination
             push!(measurements_ns, time_since(t))
@@ -65,14 +85,19 @@ macro dphpc_time(expr)
             if time_since(start_time) > MAX_TIME
                 break
             end
+            $reset
             t = time_ns()
             @noinline $expr
             push!(measurements_ns, time_since(t))
             nr_runs += 1
         end
         measurements_ms = measurements_ns .* 1e-6
-        (nr_runs=nr_runs, median_CI95(measurements_ms)...)
+        push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$preset))
     end
 end
+
+
+
+
 
 

@@ -83,16 +83,26 @@ void median_CI95(long* measurements, int n) {
     long median_ns    = measurements[n / 2];
     long median_lb_ns = measurements[lb95_idx(n)];
     long median_ub_ns = measurements[ub95_idx(n)];
-    printf("median_lb_ms=%f, median_ms=%f, median_ub_ms=%f)\n", 
+    printf("median_lb_ms=%f, median_ms=%f, median_ub_ms=%f, ", 
         ns_to_ms(median_lb_ns), ns_to_ms(median_ns), ns_to_ms(median_ub_ns)
     );
 }
 
-#define dphpc_time(expr) ({                                     \
+
+
+// with reset you can reinitialize the inputs as needed
+// expr is the code that is timed
+// pass the preset as a string
+
+#define dphpc_time(expr)         dphpc_time2(,expr)
+#define dphpc_time2(reset, expr) dphpc_time3(reset, expr, "missing")
+
+#define dphpc_time3(reset, expr, preset) ({                     \
     long measurements_ns[MAX_RUNS];                             \
     int nr_runs = 0;                                            \
-    time_t start_time = time_ns();                              \
+    long start_time = time_ns();                                \
     for (int i = 0; i < MIN_RUNS; i++) {                        \
+        reset;                                                  \
         long t = time_ns();                                     \
         expr;                                                   \
         measurements_ns[nr_runs++] = time_since_ns(t);          \
@@ -101,12 +111,14 @@ void median_CI95(long* measurements, int n) {
         if (ns_to_sec(time_since_ns(start_time)) > MAX_TIME) {  \
             break;                                              \
         }                                                       \
+        reset;                                                  \
         long t = time_ns();                                     \
         expr;                                                   \
         measurements_ns[nr_runs++] = time_since_ns(t);          \
     }                                                           \
     printf("dphpcresult(nr_runs=%d, ", nr_runs);                \
     median_CI95(measurements_ns, nr_runs); /* prints the rest */\
+    printf("preset=\"%s\")\n", preset);                         \
 })
 
 

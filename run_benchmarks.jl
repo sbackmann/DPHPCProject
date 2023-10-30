@@ -7,6 +7,7 @@ import CSV
 # TODO
 # add automatic cuda/gpu detection, to determine which versions use gpu
 # also run the python versions somehow somewhere maybe ?
+# command line arguments to control which presets and which languages to run
 
 
   
@@ -72,25 +73,38 @@ function run(benchmark, version)
     return results
 end
 
+function result_dataframe(bm, ver, lang, gpu, t)
+    DataFrame(benchmark=bm, version=ver, language=lang, gpu=gpu, 
+              median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, 
+              nr_runs=t.nr_runs, preset=t.preset)
+end
+
 function run_julia_bm(bm, ver)
     file = joinpath(@__DIR__, "benchmarks", bm, "$(ver).jl")
-    t = include(file)
-    return DataFrame(benchmark=bm, version=ver, language="julia", gpu=false, median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
+    include(file) # timing results are stored in RESULTS
+    results = empty_df()
+    for t in RESULTS
+        append!(results, result_dataframe(bm, ver, "julia", false, t))
+    end
+    return results
 end
 
 function run_c_bm(bm, ver)
     path = joinpath(@__DIR__, "benchmarks", bm)
     cd(path)
-    makefile_path = joinpath(@__DIR__, "benchmarks", bm, "Makefile")
-    out = read(`make --silent -f $(makefile_path) $(ver)`, String)
-    result = match(r"dphpcresult(\(.+?\))", out).captures[1]
-    t = result |> Meta.parse |> eval
-    return DataFrame(benchmark=bm, version=ver, language="C", gpu=false, median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
+    out = read(`make --silent $(ver)`, String)
+    raw_results = [m.captures[1] for m in eachmatch(r"dphpcresult(\(.+?\))", out)]
+    results = empty_df()
+    for result in raw_results
+        t = result |> Meta.parse |> eval
+        append!(results, result_dataframe(bm, ver, "C", false, t))
+    end
+    return results
 end
 
 empty_df() = DataFrame(                          # time measurements in ms
-    [[],          [],        [],         [],     [],       [],          [],          []], 
-    ["benchmark", "version", "language", "gpu", "median", "median_lb", "median_ub", "nr_runs"]
+    [[],          [],        [],         [],     [],       [],          [],          [],       []], 
+    ["benchmark", "version", "language", "gpu", "median", "median_lb", "median_ub", "nr_runs", "preset"]
 )
 
 
@@ -100,26 +114,35 @@ empty_df() = DataFrame(                          # time measurements in ms
 function main(args)
     results = empty_df()
 
-    if length(args) >= 1
-        if args[1] ∈ get_benchmarks()
-            benchmarks = [args[1]]
-        else
-            println("benchmark does not exist?")
-            benchmarks = []
-        end
-        if length(args) == 2 # if both benchmark and version are specified
-            append!(results, run(args[1], args[2]))
-            
-            benchmarks = []
-        end
-    else
-        benchmarks = get_benchmarks()
-    end
+    try
 
-    for bm in benchmarks
-        println("benching ", bm, ": ")
-        append!(results, run(bm))
-        println()
+        if length(args) >= 1
+            if args[1] ∈ get_benchmarks()
+                benchmarks = [args[1]]
+            else
+                println("benchmark does not exist?")
+                benchmarks = []
+            end
+            if length(args) == 2 # if both benchmark and version are specified
+                append!(results, run(args[1], args[2]))
+                
+                benchmarks = []
+            end
+        else
+            benchmarks = get_benchmarks()
+        end
+
+        for bm in benchmarks
+            println("benching ", bm, ": ")
+            append!(results, run(bm))
+            println()
+        end
+
+    catch e
+        cd(@__DIR__)
+        display(results)
+        CSV.write("./results.csv", results)
+        rethrow()
     end
 
     display(results)
