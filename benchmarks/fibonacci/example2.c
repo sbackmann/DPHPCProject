@@ -27,26 +27,26 @@ int main() {
 
     memo = malloc(N*sizeof(long));
 
-    // // use the dphpc_time macro to collect measurements
     dphpc_time2(
         reset(), // "empty the cache" before timing
         fib(38)
     );
 
     dphpc_time3(
-        reset(), // "empty the cache" before timing
+        reset(), 
         fib(1000),
-        "S"
+        "S" // specify the preset, use the same sizes as in npbench 
+            // (see NPBench/bench_info/ for what sizes correspond to which preset)
     );
 
     dphpc_time3(
-        reset(), // "empty the cache" before timing
+        reset(),
         fib(10000),
         "M"
     );
 
     dphpc_time3(
-        reset(), // "empty the cache" before timing
+        reset(),
         fib(100000),
         "L"
     );

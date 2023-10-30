@@ -1,6 +1,8 @@
 #include "../../timing/dphpc_timing.h"
 
-long fib(int n, int foo) {
+
+
+long fib(int n) {
     if (n <= 2) {
         return 1;
     }
@@ -12,12 +14,10 @@ long fib(int n, int foo) {
         sn = sn + tmp;
     }
     return sn;
+
 }
 
 int main() {
-    dphpc_time(
-        fib(38)
-    );
 
     dphpc_time3(
         , // no reset/init code in this case

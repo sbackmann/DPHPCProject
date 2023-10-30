@@ -1,17 +1,23 @@
 
-naive:
-	gcc naive.c -O3 -o ./build/out.exe -lm 
-	./build/out.exe
+no_dead_code_elimination = -fno-dce -fno-dse -fno-tree-dce -fno-tree-dse
 
-dynamic:
-	gcc dynamic.c -O3 -o ./build/out.exe -lm 
+
+naive:
+	gcc example1.c -O3 -o ./build/out.exe -lm 
 	./build/out.exe
 
 memoization:
-	gcc memo.c -O3 -o ./build/out.exe -lm 
+	gcc example2.c -O3 -o ./build/out.exe -lm 
 	./build/out.exe
 
-# the timing business wont detect rules that have non word characters like _  
+
+# use flags to slow C down lol
+dynamic:
+	gcc dynamic.c -O3 $(no_dead_code_elimination) -fno-unroll-loops -o ./build/out.exe -lm 
+	./build/out.exe
+
+
+# the timing business wont detect rules that have _ in them 
 dbg_memo:
-	gcc memo.c -g -o ./build/out.exe -lm 
+	gcc example2.c -g -o ./build/out.exe -lm 
 	gdb ./build/out.exe

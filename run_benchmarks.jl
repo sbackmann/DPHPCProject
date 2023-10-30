@@ -37,7 +37,7 @@ function c_has_bm(bm, ver)
     return ver ∈ rules
 end
 
-get_rules(makefile) = [m.captures[1] for m in eachmatch(r"(\w+):", makefile)]
+get_rules(makefile) = [m.captures[1] for m in eachmatch(r"\n([^\W_]+):", makefile)]
 
 
 function run(benchmark)
