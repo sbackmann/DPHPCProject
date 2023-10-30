@@ -1,7 +1,7 @@
 
 no_dead_code_elimination = -fno-dce -fno-dse -fno-tree-dce -fno-tree-dse
 
-
+# every rule compiles and runs a version of the benchmark
 naive:
 	gcc example1.c -O3 -o ./build/out.exe -lm 
 	./build/out.exe

@@ -65,11 +65,14 @@ end
 
 macro dphpc_time(reset, expr)
     return quote
-        @dphpc_time($reset, $expr, missing)
+        @dphpc_time($reset, $expr, "missing")
     end
 end
 
 macro dphpc_time(reset, expr, preset)
+    if eval(preset) ∉ PRESETS_TO_RUN # defined in run_benchmarks.jl
+        return quote ; end # return no-op
+    end
     return quote
         measurements_ns = []
         nr_runs = 0
@@ -92,7 +95,7 @@ macro dphpc_time(reset, expr, preset)
             nr_runs += 1
         end
         measurements_ms = measurements_ns .* 1e-6
-        push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$preset))
+        push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$(preset=="missing" ? missing : preset)))
     end
 end
 

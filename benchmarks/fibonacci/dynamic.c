@@ -14,7 +14,6 @@ long fib(int n) {
         sn = sn + tmp;
     }
     return sn;
-
 }
 
 int main() {
@@ -36,4 +35,13 @@ int main() {
         fib(100000),
         "L"
     );
+
+    dphpc_time3(
+        ,
+        fib(100500),
+        "paper"
+    );
+
+    // preset, if given, has to be one of these 4: "S", "M", "L", "paper"
+    // versions where you use dphpc_time or dphpc_time2 (without specifying the preset) are always run
 }

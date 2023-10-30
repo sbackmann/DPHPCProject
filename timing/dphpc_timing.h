@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
 
 #define MIN_RUNS 10  // do at least _ runs
@@ -12,6 +13,16 @@
 #define MAX_TIME 2.0 // dont run for more than _ seconds if enough measurements where collected
 
 
+
+#include "presets.h"
+int should_run_preset(char* p) {
+    for (int i = 0; i < nr_presets_to_run; i++) {
+        if (strcmp(p, presets_to_run[i]) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 long time_ns() {
     struct timespec t;
@@ -92,33 +103,39 @@ void median_CI95(long* measurements, int n) {
 
 // with reset you can reinitialize the inputs as needed
 // expr is the code that is timed
-// pass the preset as a string
+// pass the preset as a string, use "S", "M", "L" or "paper"
 
 #define dphpc_time(expr)         dphpc_time2(,expr)
 #define dphpc_time2(reset, expr) dphpc_time3(reset, expr, "missing")
 
 #define dphpc_time3(reset, expr, preset) ({                     \
+    if (should_run_preset(preset)) {                            \
     long measurements_ns[MAX_RUNS];                             \
-    int nr_runs = 0;                                            \
+    int _nr_runs = 0;                                           \
     long start_time = time_ns();                                \
-    for (int i = 0; i < MIN_RUNS; i++) {                        \
+    for (int _i = 0; _i < MIN_RUNS; _i++) {                     \
         reset;                                                  \
-        long t = time_ns();                                     \
+        long _t = time_ns();                                    \
         expr;                                                   \
-        measurements_ns[nr_runs++] = time_since_ns(t);          \
+        measurements_ns[_nr_runs++] = time_since_ns(_t);        \
     }                                                           \
-    for (int i = MIN_RUNS; i < MAX_RUNS; i++) {                 \
+    for (int _i = MIN_RUNS; _i < MAX_RUNS; _i++) {              \
         if (ns_to_sec(time_since_ns(start_time)) > MAX_TIME) {  \
             break;                                              \
         }                                                       \
         reset;                                                  \
-        long t = time_ns();                                     \
+        long _t = time_ns();                                    \
         expr;                                                   \
-        measurements_ns[nr_runs++] = time_since_ns(t);          \
+        measurements_ns[_nr_runs++] = time_since_ns(_t);        \
     }                                                           \
-    printf("dphpcresult(nr_runs=%d, ", nr_runs);                \
-    median_CI95(measurements_ns, nr_runs); /* prints the rest */\
-    printf("preset=\"%s\")\n", preset);                         \
+    printf("dphpcresult(nr_runs=%d, ", _nr_runs);               \
+    median_CI95(measurements_ns, _nr_runs);/* prints the rest */\
+    if (strcmp(preset, "missing") == 0) {                       \
+        printf("preset=missing)\n");                            \
+    } else {                                                    \
+        printf("preset=\"%s\")\n", preset);                     \
+    }                                                           \
+    }                                                           \
 })
 
 
