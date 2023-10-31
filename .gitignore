@@ -1,1 +1,5 @@
 *.csv
+/*/*/*.exe
+/*/*/*/*.exe
+
+/timing/presets.h

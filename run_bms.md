@@ -26,14 +26,14 @@ julia run_benchmarks.jl -vdynamic
 
 other than that, you can mix and match all the arguments
 
-when specifying benchmark and version, you can also simply do
+when specifying benchmark and version, you can also simply do the following: 
 when you omit the -b and -v, the only thing to keep in mind is that the benchmark has to come before the version
 ```
 julia run_benchmarks.jl fibonacci
 julia run_benchmarks.jl fibonacci naive
 ```
 
-if you only want to run benchnarks in certain languages, use -l followed by the languages you want to run
+if you only want to run benchnarks in certain languages, use -l followed by the languages you want to run,
 the first letter will be enough thanks
 (default is julia and C)
 to run all benchmarks with julia and python, julia C and python, or only python respectively, do
@@ -49,6 +49,12 @@ the options here are "S", "M", "L" and "paper", e.g.:
 julia run_benchmarks.jl -pSMLpaper
 julia run_benchmarks.jl -pSM
 julia run_benchmarks.jl -pL
+```
+
+use the "empty preset", if you only want to run the instances where you used the 1- or 2-argument versions of the timing macros
+i.e. the versions where the preset is not specified
+```
+julia run_benchmarks.jl -p
 ```
 
 There are parameters in the /timing/dphpc_timing.h header that you can tune to influence how long the whole ordeal is gonna take. You can adjust

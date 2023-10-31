@@ -28,7 +28,7 @@ int main() {
     memo = malloc(N*sizeof(long));
 
     dphpc_time2(
-        reset(), // "empty the cache" before timing
+        reset(), // "empty the cache" every time before timing
         fib(38)
     );
 
