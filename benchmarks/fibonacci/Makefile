@@ -25,3 +25,8 @@ dynamic: _build
 dbg_memo: _build
 	gcc example2.c -g -o ./build/out.exe -lm 
 	gdb ./build/out.exe
+
+
+cuda: _build
+	nvcc -o ./build/out.exe gpu.cu
+	./build/out.exe
