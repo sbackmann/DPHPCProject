@@ -15,7 +15,7 @@
 
 
 #include "presets.h"
-int should_run_preset(char* p) {
+int should_run_preset(const char* p) {
     for (int i = 0; i < nr_presets_to_run; i++) {
         if (strcmp(p, presets_to_run[i]) == 0) {
             return 1;

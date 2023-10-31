@@ -119,7 +119,7 @@ function make_presets_header(presets)
     n = length(presets)
     s = """
     int nr_presets_to_run = $n;
-    char* presets_to_run[] = {$(string(presets)[2:end-1])};
+    const char* presets_to_run[] = {$(string(presets)[2:end-1])};
     """
     path = joinpath(@__DIR__, "timing", "presets.h")
     file = open(path, "w")
