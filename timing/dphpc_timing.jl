@@ -9,6 +9,10 @@ MIN_RUNS::Int =     parse(Int,     match(r"#define MIN_RUNS\s+(\p{N}+)",  c_head
 MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)",  c_header).captures[1])
 MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_header).captures[1])
 
+if !isdefined(@__MODULE__, :PRESETS_TO_RUN)
+    global PRESETS_TO_RUN = ["missing", "S", "M", "L", "paper"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
+end
+
 
 # generate indeces of lower and upper bounds for 95%-CI
 # from the table in file:///C:/Users/damia/Downloads/perfPublisherVersion_1.pdf, page 347
@@ -59,13 +63,13 @@ RESULTS = []
 
 macro dphpc_time(expr)
     return quote
-        @dphpc_time(nothing, $expr)
+        @dphpc_time(nothing, $(esc(expr)))
     end
 end
 
 macro dphpc_time(reset, expr)
     return quote
-        @dphpc_time($reset, $expr, "missing")
+        @dphpc_time($(esc(reset)), $(esc(expr)), "missing")
     end
 end
 
@@ -78,9 +82,9 @@ macro dphpc_time(reset, expr, preset)
         nr_runs = 0
         start_time = time() # in seconds
         for i=1:MIN_RUNS
-            $reset
+            $(esc(reset))
             t = time_ns()
-            @noinline $expr # I thought the noinline might help prohibit dead code elimination
+            @noinline $(esc(expr)) # I thought the noinline might help prohibit dead code elimination
             push!(measurements_ns, time_since(t))
             nr_runs += 1
         end
@@ -88,9 +92,9 @@ macro dphpc_time(reset, expr, preset)
             if time_since(start_time) > MAX_TIME
                 break
             end
-            $reset
+            $(esc(reset))
             t = time_ns()
-            @noinline $expr
+            @noinline $(esc(expr))
             push!(measurements_ns, time_since(t))
             nr_runs += 1
         end
