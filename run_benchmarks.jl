@@ -2,7 +2,7 @@ using DataFrames
 import CSV
 
 # for julia, the version of a benchmark is the name of the .jl file
-# for C, the version is the name of the corresponding rule in the Makefile
+# for C, the version is the name of the corresponding rule in the Makefile (no underscores!)
 
 # TODO
 # add automatic cuda/gpu detection, to determine which versions use gpu
@@ -50,7 +50,7 @@ function run(benchmark, languages)
         print("julia: ")
         for version in versions
             print(version, " ")
-            append!(results, run_julia_bm(benchmark, version))
+            run!(results, run_julia_bm, benchmark, version)
         end
         println()
     end
@@ -60,7 +60,7 @@ function run(benchmark, languages)
         print("C: ")
         for version in versions
             print(version, " ")
-            append!(results, run_c_bm(benchmark, version))
+            run!(results, run_c_bm, benchmark, version)
         end
         println()
     end
@@ -199,6 +199,13 @@ function get_version(args)
     return nothing
 end
 
+# restore the natural order of things
+function reset()
+    PRESETS_TO_RUN = ["missing", "S", "M", "L", "paper"] # for when running a julia file with Ctrl+Enter...
+    make_presets_header(PRESETS_TO_RUN)
+    cd(@__DIR__)
+end
+
 # can pass name of benchmark to run as first argument, and version as second argument :o
 # if only benchmark is specified, it will run all versions
 # if nothing is specified, it will run all benchmarks
@@ -225,13 +232,13 @@ function main(args)
         end
 
     catch e
-        cd(@__DIR__)
+        reset()
         rethrow()
     end
 
-    display(results)
+    reset()
 
-    cd(@__DIR__)
+    display(results)
     CSV.write("./results.csv", results)
 end
 

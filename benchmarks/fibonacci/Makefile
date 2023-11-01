@@ -1,32 +1,29 @@
 
 no_dead_code_elimination = -fno-dce -fno-dse -fno-tree-dce -fno-tree-dse
 
-# the timing business wont detect rules that have _ in them 
-_build:
-	mkdir -p build
-
 # every rule compiles and runs a version of the benchmark
-naive: _build
-	gcc example1.c -O3 -o ./build/out.exe -lm 
-	./build/out.exe
+naive:
+	gcc example1.c -O3 -o ./a.exe -lm 
+	./a.exe
 
-memoization: _build
-	gcc example2.c -O3 -o ./build/out.exe -lm 
-	./build/out.exe
+
+memoization:
+	gcc example2.c -O3 -o ./a.exe -lm 
+	./a.exe
 
 
 # use flags to slow C down lol
-dynamic: _build
-	gcc dynamic.c -O3 $(no_dead_code_elimination) -fno-unroll-loops -o ./build/out.exe -lm 
-	./build/out.exe
+dynamic:
+	gcc dynamic.c -O3 $(no_dead_code_elimination) -fno-unroll-loops -o ./a.exe -lm 
+	./a.exe
 
 
 # the timing business wont detect rules that have _ in them 
-dbg_memo: _build
-	gcc example2.c -g -o ./build/out.exe -lm 
-	gdb ./build/out.exe
+dbg_memo:
+	gcc example2.c -g -o ./a.exe -lm 
+	gdb ./a.exe
 
 
-cuda: _build
-	nvcc -o ./build/out.exe gpu.cu
-	./build/out.exe
+cuda:
+	nvcc -o ./a.exe gpu.cu
+	./a.exe

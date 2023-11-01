@@ -1,6 +1,6 @@
 *.csv
 *.exe
 
-./timing/presets.h
 
 build/
+timing/presets.h
