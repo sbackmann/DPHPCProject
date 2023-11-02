@@ -17,8 +17,8 @@ __global__ void gpufib(int n, int* out) {
 }
 
 void run_kernel(int n, int* out) {
-    gpufib<<<1, 1>>>(n, out); // measure performance of single gpu core >:
-    cudaDeviceSynchronize(); // wait until kernel is done, otherwise just measuring how long it takes to launch a kernel
+    gpufib<<<1, 1>>>(n, out); // measure performance of single gpu core
+    cudaDeviceSynchronize(); // wait until kernel is done, otherwise just measuring how long it takes to launch the kernel
 }
 
 int main() {
@@ -52,6 +52,12 @@ int main() {
         ,
         run_kernel(100000, out),
         "L"
+    );
+
+    dphpc_time3(
+        ,
+        run_kernel(100500, out),
+        "paper"
     );
 
     cudaFree(out);

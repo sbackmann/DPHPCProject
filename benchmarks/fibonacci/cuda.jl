@@ -15,6 +15,7 @@ function gpufib!(out, n)
     return nothing
 end
 
+# launch kernel with @cuda, wait for it to finish with CUDA.@sync
 run_kernel(n, out) = CUDA.@sync(@cuda threads=1 gpufib!(out, n))
 
 function main() 

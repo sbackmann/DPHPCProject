@@ -73,6 +73,7 @@ function run!(results, f, args...)
         append!(results, f(args...))
     catch e
         display(e)
+        Base.show_backtrace(stdout, backtrace())
     end
 end
  
@@ -201,7 +202,7 @@ end
 
 # restore the natural order of things
 function reset()
-    PRESETS_TO_RUN = ["missing", "S", "M", "L", "paper"] # for when running a julia file with Ctrl+Enter...
+    global PRESETS_TO_RUN = ["missing", "S", "M"] # for when running a julia file with Ctrl+Enter...
     make_presets_header(PRESETS_TO_RUN)
     cd(@__DIR__)
 end

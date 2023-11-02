@@ -10,7 +10,9 @@ MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)",  c_head
 MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_header).captures[1])
 
 if !isdefined(@__MODULE__, :PRESETS_TO_RUN)
-    global PRESETS_TO_RUN = ["missing", "S", "M", "L", "paper"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
+    global PRESETS_TO_RUN = ["missing", "S", "M"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
+    # when doing Alt+Enter just run small versions
+    # important not to define it for the case where it is defined in run_benchmarks.jl
 end
 
 
@@ -84,7 +86,7 @@ macro dphpc_time(reset, expr, preset)
         for i=1:MIN_RUNS
             $(esc(reset))
             t = time_ns()
-            @noinline $(esc(expr)) # I thought the noinline might help prohibit dead code elimination
+            $(esc(expr))
             push!(measurements_ns, time_since(t))
             nr_runs += 1
         end
@@ -94,7 +96,7 @@ macro dphpc_time(reset, expr, preset)
             end
             $(esc(reset))
             t = time_ns()
-            @noinline $(esc(expr))
+            $(esc(expr))
             push!(measurements_ns, time_since(t))
             nr_runs += 1
         end
