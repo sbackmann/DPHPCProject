@@ -1,24 +1,38 @@
 using DataFrames
 import CSV
 
+include("NPBenchManager.jl")
+
 # for julia, the version of a benchmark is the name of the .jl file
 # for C, the version is the name of the corresponding rule in the Makefile (no underscores!)
 
-# TODO
-# add automatic cuda/gpu detection, to determine which versions use gpu
-# also run the python versions -> clear the database, run all the versions needed, get results from the database
 
 function uses_gpu(bm, ver, lang) # determine somehow whether benchmarks use cuda or not
-    # TODO
-    # look for nvcc in the rule in the makefile
-    # look for import/using CUDA in the .jl file
+    if lang == "julia"
+        keywords = ["using CUDA", "import CUDA", "@cuda"]
+        path = joinpath(@__DIR__, "benchmarks", bm, "$(ver).jl")
+        file = read(open(path, "r"), String)
+        for k in keywords
+            if contains(file, k) return true end
+        end
+    elseif lang == "C"
+        keywords = ["nvcc", ".cu"]
+        path = joinpath(@__DIR__, "benchmarks", bm, "Makefile")
+        makefile = read(open(path, "r"), String)
+        m = match(Regex("$(ver):\\N*\\n((?:\\h+\\S\\N+\\n)+)"), makefile)
+        s = m.captures[1]
+        println(s)
+        for k in keywords
+            if contains(s, k) return true end
+        end
+    end
     return false
 end
-  
+
 get_benchmarks() = readdir(joinpath(@__DIR__, "benchmarks"))
 
 # assume bm is valid
-get_julia_versions(bm) = readdir(joinpath(@__DIR__, "benchmarks", bm)) |> filter(endswith(".jl")) .|> x->x[1:end-3]
+get_julia_versions(bm) = readdir(joinpath(@__DIR__, "benchmarks", bm)) |> filter(x -> endswith(x, ".jl") && !startswith(x, "_")) .|> x->x[1:end-3]
 get_c_versions(bm) = get_rules(open(io->read(io, String), joinpath(@__DIR__, "benchmarks", bm, "Makefile")))
 
 
@@ -136,7 +150,7 @@ empty_df() = DataFrame(                                   # time measurements in
 function get_presets(args)
     id = findfirst(startswith("-p"), args)
     if isnothing(id)
-        return ["missing", "S", "M", "L", "paper"]
+        return ["missing", "S", "M"] # by default only run S and M
     end
     ps = lowercase(args[id])[3:end]
     presets = ["missing"] # versions where no preset is specified are always run
@@ -220,6 +234,10 @@ function main(args)
     benchmarks = get_benchmarks(args)
     version = get_version(args)
 
+    if :python ∈ languages
+        NPBenchManager.init_db() # delete old python measurements
+    end
+
     try
 
         if !isnothing(version)
@@ -235,6 +253,11 @@ function main(args)
     catch e
         reset()
         rethrow()
+    end
+
+    if :python ∈ languages
+        NPBenchManager.run(benchmarks, PRESETS_TO_RUN) # run all python benchmarks
+        append!(results, NPBenchManager.get_results())
     end
 
     reset()

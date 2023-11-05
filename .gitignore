@@ -4,3 +4,6 @@
 
 build/
 timing/presets.h
+.dacecache/
+
+npbench.db
