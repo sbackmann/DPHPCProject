@@ -99,25 +99,6 @@ int main(int argc, char** argv)
   run_bm(400, "M");
   run_bm(850, "L");
   run_bm(2800, "paper");
-  /*
-  int N[4] = {200, 400, 850, 2800};
-  char sizes[4][10] = {"S", "M", "L", "paper"};
-  for (int i = 0; i < 2; i++) {
-    int n = N[i];
-    char size[10] = "";
-    strcpy(size, sizes[i]);
-
-    int (*path)[2800 + 0][2800 + 0]; path = (int(*)[2800 + 0][2800 + 0])malloc ((2800 + 0) * (2800 + 0)* sizeof(int));;
-    dphpc_time3(
-      ,
-      floyd_warshall(n, *path),
-      size
-    );
-
-    if (argc > 42 && ! strcmp(argv[0], ""))
-      print_array(n, *path);
-
-    free((void*)path);;
-  }*/
+  
   return 0;
 }
