@@ -21,7 +21,6 @@ function uses_gpu(bm, ver, lang) # determine somehow whether benchmarks use cuda
         makefile = read(open(path, "r"), String)
         m = match(Regex("$(ver):\\N*\\n((?:\\h+\\S\\N+\\n)+)"), makefile)
         s = m.captures[1]
-        println(s)
         for k in keywords
             if contains(s, k) return true end
         end
