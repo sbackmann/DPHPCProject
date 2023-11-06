@@ -24,7 +24,10 @@ lb_ids = [i for i = 1:27 for j = 1:lb_reps[i]]
 ub_ids = [i for i = 6:44 for j = 1:up_reps[i-5]]
 
 function lb95_idx(n)
-    if n ≤ 5 error("need at least 6 measurements to be able to give 95% confidence interval") end
+    if n ≤ 5 
+        @warn "need at least 6 measurements to be able to give 95% confidence interval" maxlog=1
+        return 1
+    end
     if n ≤ 70
         return lb_ids[n-5]
     end
@@ -32,7 +35,9 @@ function lb95_idx(n)
 end
 
 function ub95_idx(n)
-    if n ≤ 5 error("need at least 6 measurements to be able to give 95% confidence interval") end
+    if n ≤ 5
+        return n
+    end
     if n ≤ 70
         return ub_ids[n-5]
     end
@@ -46,7 +51,7 @@ function median_CI95(measurements)
     sorted = sort(measurements)
     # display(sorted)
     n = length(sorted)
-    median_ms = sorted[n ÷ 2]
+    median_ms = sorted[n ÷ 2 + 1]
     median_lb_ms = sorted[lb95_idx(n)]
     median_ub_ms = sorted[ub95_idx(n)]
     return (median_lb_ms=median_lb_ms, median_ms=median_ms, median_ub_ms=median_ub_ms)

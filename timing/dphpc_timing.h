@@ -62,8 +62,13 @@ int lb95_idx(int n) {
         19, 20, 20, 21, 21, 22, 22, 23, 23, 23, 24, 24, 25, 25, 25, 26
     };
     if (n < 6) {
-        printf("need at least 6 measurements to be able to give confidence intervals!\n");
-        exit(123);
+        static int warned = 0;
+        if (!warned) {
+            printf("need at least 6 measurements to be able to give confidence intervals!\n");
+            warned = 1;
+        }
+        
+        return 0;
     }
     if (n <= 70) {
         return lb_ids[n-6];
@@ -78,8 +83,7 @@ int ub95_idx(int n) {
         31, 32, 33, 34, 34, 35, 35, 36, 36, 37, 38, 38, 39, 39, 39, 40, 40, 41, 42, 43, 43
     };
     if (n < 6) {
-        printf("need at least 6 measurements to be able to give confidence intervals!\n");
-        exit(321);
+        return n-1;
     }
     if (n <= 70) {
         return ub_ids[n-6];
