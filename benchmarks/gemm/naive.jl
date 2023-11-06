@@ -37,19 +37,20 @@ end
 
 function main()
 
+
     N, M, K = 50, 60, 70
     A, B, C = init_matrices(N,M,K)
     @dphpc_time(nothing, gemm(N, M, K, A, B, C), "S")
 
-    N, M, K = 100, 110, 120
+    N, M, K = 600, 610, 620
     A, B, C = init_matrices(N,M,K)
     @dphpc_time(nothing, gemm(N, M, K, A, B, C), "M")
 
-    N, M, K = 600, 610, 620
+    N, M, K = 1000, 1100, 1200
     A, B, C = init_matrices(N,M,K)
     @dphpc_time(nothing, gemm(N, M, K, A, B, C), "L")
 
-    N, M, K = 1000, 1100, 1200
+    N, M, K = 2000, 2300, 2600
     A, B, C = init_matrices(N,M,K)
     @dphpc_time(nothing, gemm(N, M, K, A, B, C), "paper")
 
