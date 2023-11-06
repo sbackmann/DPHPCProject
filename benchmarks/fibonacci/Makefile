@@ -18,8 +18,8 @@ dynamic:
 	./a.exe
 
 
-# the timing business wont detect rules that have _ in them 
-dbg_memo:
+# the timing business wont detect rules (or julia versions) that start with '_' 
+_dbg_memo:
 	gcc example2.c -g -o ./a.exe -lm 
 	gdb ./a.exe
 

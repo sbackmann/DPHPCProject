@@ -9,7 +9,7 @@ include("NPBenchManager.jl")
 
 function uses_gpu(bm, ver, lang) # determine somehow whether benchmarks use cuda or not
     if lang == "julia"
-        keywords = ["using CUDA", "import CUDA", "@cuda"]
+        keywords = ["using CUDA", "import CUDA", "@cuda", "CuArray"]
         path = joinpath(@__DIR__, "benchmarks", bm, "$(ver).jl")
         file = read(open(path, "r"), String)
         for k in keywords
@@ -52,7 +52,7 @@ function c_has_bm(bm, ver)
     return ver ∈ rules
 end
 
-get_rules(makefile) = [m.captures[1] for m in eachmatch(r"\n([^\W_]+):", makefile)]
+get_rules(makefile) = [m.captures[1] for m in eachmatch(r"\n([^_\s]\w*):", makefile)]
 
 
 function run(benchmark, languages)
