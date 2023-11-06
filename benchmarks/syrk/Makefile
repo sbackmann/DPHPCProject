@@ -8,5 +8,5 @@ optimized:
 	./a.exe
 
 cuda:
-	nvcc -o ./a.exe gpu.cu
+	nvcc -o ./a.exe cuda.cu
 	./a.exe
