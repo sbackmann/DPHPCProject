@@ -26,8 +26,9 @@ function floyd_warshall(n, graph)
     for k in 1:n
         for i in 1:n
             for j in 1:n
-                #graph[i, j] = min(graph[i, j], graph[i, k] + graph[k, j])
-                graph[j, i] = min(graph[j, i], graph[j, k] + graph[k, i])
+                graph[i, j] = min(graph[i, j], graph[i, k] + graph[k, j])
+                # Optimization column major
+                #graph[j, i] = min(graph[j, i], graph[j, k] + graph[k, i])
             end
         end
     end
@@ -39,6 +40,7 @@ function main()
 
     n = 200
     graph = init_graph(n)
+    println(graph[1, :])
     @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"S")
 
     n = 400

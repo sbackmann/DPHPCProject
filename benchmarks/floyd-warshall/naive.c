@@ -44,10 +44,10 @@ void print_array(int n,
 
   fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
   fprintf(stderr, "begin dump: %s", "path");
-  for (i = 0; i < n; i++){
+  for (i = 0; i < 1; i++){
     for (j = 0; j < n; j++) {
       if ((i * n + j) % 20 == 0) fprintf (stderr, "\n");
-      fprintf (stderr, "%d ", path[i][j]);
+      fprintf (stderr, "%d ", path[1][j]);
     }}
   fprintf(stderr, "\nend   dump: %s\n", "path");
   fprintf(stderr, "==END   DUMP_ARRAYS==\n");
@@ -89,7 +89,7 @@ void run_bm(int n, const char* preset) {
         kernel_floyd_warshall(n, *path),
         preset
     );
-
+    print_array(n, *path);
     free((void*)path);
 }
 

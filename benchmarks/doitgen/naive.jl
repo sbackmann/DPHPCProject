@@ -1,6 +1,8 @@
 include("../../timing/dphpc_timing.jl")
 using Serialization
 
+ASSERT = false
+
 
 function init_array(nr, nq, np, A=nothing, C4=nothing)
     if A == nothing
@@ -58,19 +60,16 @@ function assert_correctness(A, prefix)
     A_test = open("benchmarks/doitgen/test_cases/$prefix.jls" ) do io
         Serialization.deserialize(io)
     end
-
-    println("A_test", A_test[1, 1, 2])
     @assert isequal(A, A_test)
-    println("Test passed!")
 end
 
 function main()
-    ASSERT = false
     nr = 60
     nq = 60
     np = 128
     A, C4, sum = init_array(nr, nq, np)
     res = @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "S")
+    println(A[1, 1, :])
     if ASSERT && res != nothing
         assert_correctness(A, "S")
     end
