@@ -5,7 +5,6 @@
 #include "../../timing/dphpc_timing.h"
 
 // similar to polybench implemenation 
-// Dynamic Arrays 
 
 
 // gemm: https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/  

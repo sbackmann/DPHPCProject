@@ -5,7 +5,6 @@
 #include "../../timing/dphpc_timing.h"
 
 // similar to polybench implemenation 
-// Static Arrays 
 // Note: only works with small size arrays 
 
 
@@ -71,12 +70,12 @@ void run_bm(int N, int M, int K, const char* preset) {
 
 
 int main(int argc, char** argv){
-    
-    run_bm(50, 60, 70, "S"); 
-    run_bm(100, 110, 120, "M"); 
-    run_bm(600, 610, 620, "L"); 
-    run_bm(900, 910, 920, "paper"); 
 
+    run_bm(50, 60, 70, "S"); 
+    run_bm(600, 610, 620, "M"); 
+    run_bm(1000, 1100, 1200, "L"); 
+    run_bm(2000, 2300, 2600, "paper"); 
+    
 return 0;
 
 
