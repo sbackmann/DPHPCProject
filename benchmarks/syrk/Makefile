@@ -6,3 +6,7 @@ straightforward:
 optimized:
 	gcc optimized.c -O3 -march=skylake -o ./a.exe -lm 
 	./a.exe
+
+cuda:
+	nvcc -o ./a.exe gpu.cu
+	./a.exe

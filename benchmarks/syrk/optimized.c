@@ -52,9 +52,9 @@ void run_bm(int n, int m, const char* preset) {
         kernel_syrk(n, m, alpha, beta, C, A),
         preset
     );
-    for(int i = 0; i < n; i++) {
-        printf("%f, ", get(C, n, n-1, i));
-    }
+    // for(int i = 0; i < n; i++) {
+    //     printf("%f, ", get(C, n, n-1, i));
+    // }
 
     free((void*)C);
     free((void*)A);

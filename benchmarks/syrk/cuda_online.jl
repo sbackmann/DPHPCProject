@@ -34,8 +34,7 @@ end
 
 
 function run_kernel(n, k, α, β, C, A)
-    b = n ÷ 16 + 1
-    CUDA.@sync(@cuda threads=(16, 16) blocks=(b, b) syrk(n, k, α, β, C, A))
+    C .= α .* A*A' .+ β .* C
 end
 
 function main()
@@ -46,7 +45,7 @@ function main()
     display(A)
     @dphpc_time(C = CuArray(hostC), run_kernel(n, k, α, β, C, A))
     display(C)
-    println(CUDA.registers(@cuda syrk(n, k, α, β, C, A)))
+
 
 
     n, k = 70, 50

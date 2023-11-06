@@ -20,22 +20,26 @@ end
 
 
 function syrk(n, k, α, β, C, A)
-    c = (blockIdx().x - 1) * blockDim().x + threadIdx().x
-    r = (blockIdx().y - 1) * blockDim().y + threadIdx().y
+    c = (blockIdx().x - Int32(1)) * blockDim().x + threadIdx().x
+    r = (blockIdx().y - Int32(1)) * blockDim().y + threadIdx().y
     if r <= n && c <= n && r >= c
         s = 0.0
-        for i=1:k
-            s += A[r, i] * A[c, i]
+        i::Int32 = 1
+        while i <= k
+            @inbounds s += A[r, i] * A[c, i]
+            i += 1
         end
-        C[r, c] = β * C[r, c] + α * s
+        @inbounds C[r, c] = β * C[r, c] + α * s
     end
     nothing
 end
 
 
 function run_kernel(n, k, α, β, C, A)
-    b = n ÷ 16 + 1
-    CUDA.@sync(@cuda threads=(16, 16) blocks=(b, b) syrk(n, k, α, β, C, A))
+    threads_per_block = 8
+    t = threads_per_block
+    b = n ÷ t + 1
+    CUDA.@sync(@cuda threads=(t, t) blocks=(b, b) always_inline=true syrk(Int32(n), Int32(k), α, β, C, A))
 end
 
 function main()
