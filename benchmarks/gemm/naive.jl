@@ -1,10 +1,5 @@
 include("../../timing/dphpc_timing.jl")
 
-using Pkg
-Pkg.add("Printf")
-using Printf
-
-
 const alpha = 1.5
 const beta = 1.2
 

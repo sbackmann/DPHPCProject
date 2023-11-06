@@ -5,7 +5,6 @@
 #include "../../timing/dphpc_timing.h"
 
 // similar to polybench implemenation 
-// Static Arrays 
 // Note: only works with small size arrays 
 
 
