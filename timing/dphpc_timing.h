@@ -11,6 +11,7 @@
 #define MIN_RUNS 10  // do at least _ runs
 #define MAX_RUNS 200 // do at most _ runs
 #define MAX_TIME 2.0 // dont run for more than _ seconds if enough measurements where collected
+#define TIMEOUT  15.0 // after _ many seconds, dont start a new run, even if not enough measurements were collected
 
 
 
@@ -62,11 +63,7 @@ int lb95_idx(int n) {
         19, 20, 20, 21, 21, 22, 22, 23, 23, 23, 24, 24, 25, 25, 25, 26
     };
     if (n < 6) {
-        static int warned = 0;
-        if (!warned) {
-            printf("need at least 6 measurements to be able to give confidence intervals!\n");
-            warned = 1;
-        }
+        
         
         return 0;
     }
@@ -122,6 +119,9 @@ void median_CI95(long* measurements, int n) {
         long _t = time_ns();                                    \
         expr;                                                   \
         measurements_ns[_nr_runs++] = time_since_ns(_t);        \
+        if (ns_to_sec(time_since_ns(start_time)) > TIMEOUT) {   \
+            break;                                              \
+        }                                                       \
     }                                                           \
     for (int _i = MIN_RUNS; _i < MAX_RUNS; _i++) {              \
         if (ns_to_sec(time_since_ns(start_time)) > MAX_TIME) {  \

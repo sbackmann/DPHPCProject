@@ -1,5 +1,6 @@
 
 # macro for timing benchmarks, returns median and 95% confidence interval for median
+# need at least 6 measurements to be able to give 95% confidence interval
 
 c_header = open(io->read(io, String), joinpath(@__DIR__, "dphpc_timing.h"))
 
@@ -8,9 +9,10 @@ c_header = open(io->read(io, String), joinpath(@__DIR__, "dphpc_timing.h"))
 MIN_RUNS::Int =     parse(Int,     match(r"#define MIN_RUNS\s+(\p{N}+)",  c_header).captures[1])
 MAX_RUNS::Int =     parse(Int,     match(r"#define MAX_RUNS\s+(\p{N}+)",  c_header).captures[1])
 MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_header).captures[1])
+TIMEOUT::Float64  = parse(Float64, match(r"#define TIMEOUT\s+(\p{Nd}+)", c_header).captures[1])
 
 if !isdefined(@__MODULE__, :PRESETS_TO_RUN)
-    global PRESETS_TO_RUN = ["missing", "S", "M", "L", "paper"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
+    global PRESETS_TO_RUN = ["missing", "S", "M"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
     # when doing Alt+Enter just run small versions
     # important not to define it for the case where it is defined in run_benchmarks.jl
 end
@@ -25,7 +27,6 @@ ub_ids = [i for i = 6:44 for j = 1:up_reps[i-5]]
 
 function lb95_idx(n)
     if n ≤ 5 
-        @warn "need at least 6 measurements to be able to give 95% confidence interval" maxlog=1
         return 1
     end
     if n ≤ 70
@@ -94,6 +95,9 @@ macro dphpc_time(reset, expr, preset)
             $(esc(expr))
             push!(measurements_ns, time_since(t))
             nr_runs += 1
+            if time_since(start_time) > TIMEOUT
+                break
+            end
         end
         for i=MIN_RUNS+1:MAX_RUNS
             if time_since(start_time) > MAX_TIME
