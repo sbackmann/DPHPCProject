@@ -1,46 +1,51 @@
 using LinearAlgebra
-# using Statistics
-# using PrettyTables
-# using DelimitedFiles
-
 include("../../timing/dphpc_timing.jl")
+
 DEV = true
-TIME = false
+TIME = true
+DEBUG = false
 
 eval_benchmarks = Dict(
-    "S" => (500, 600),
-    "M" => (1400, 1800),
-    "L" => (3200, 4000),
-    "paper" => (1200, 1400)
+    "S" => 2000,
+    "M" => 5000,
+    "L" => 14000,
+    "paper" => 16000
 )
 
 dev_benchmarks = Dict(
     "S" => 4,
-    # "N" => 2000,
-    # "M" => 5000,
-    # "L" => 14000,
-    # "paper" => 16000
+    "M" => 6
 )
 
 function main()
-    for (benchmark, N) in dev_benchmarks
-        println("Running on set N=$N")
+    if DEV benchmark_sizes = dev_benchmarks 
+    else benchmark_sizes = eval_benchmarks end
 
+    validate()
+
+    for (preset, N) in benchmark_sizes
         L, x, b = initialize(N, eltype(Float64))
-        println("Data")
-        println("L:")
-        display(L)
-        println("x:")
-        display(x)
-        println("b:")
-        display(b)
 
-        x = kernel(L, x, b)
-        println(x)
-        is_correct(L, x, b)
+        if DEBUG print_all(L, x, b) end
 
-        println("End")
+        if TIME
+            println("Benchmarking $preset")
+            res = @dphpc_time(kernel(L, x, b), preset=preset)
+            println(res)
+        else
+            x = kernel(L, x, b)
+            if DEBUG println(x) end
+        end
     end
+end
+
+
+function kernel(L, x, b)
+    N = length(x)
+    for i in 1:N
+        x[i] = (b[i] - dot(L[i, 1:i-1], x[1:i-1])) / L[i, i]
+    end
+    return x
 end
 
 function initialize(N, datatype=Float64)
@@ -52,16 +57,12 @@ function initialize(N, datatype=Float64)
     return L, x, b
 end
 
-function kernel(L, x, b)
-    N = length(x)
-    for i in 1:N
-        dp = dot(L[i, 1:i-1], x[1:i-1])
-        println("dp: ")
-        println(dp)
-
-        x[i] = (b[i] - dot(L[i, 1:i-1], x[1:i-1])) / L[i, i]
+function validate()
+    args = initialize(5)
+    kernel(args...)
+    if !is_correct(args...)
+        throw("Validation failed")
     end
-    return x
 end
 
 function is_correct(L, x, b)
@@ -84,5 +85,18 @@ function is_correct(L, x, b)
         return false
     end
 end
+
+function print_all(L, x, b)
+    println("Data")
+    println("Running on set N=$(size(L, 1))")
+    println("L:")
+    display(L)
+    println("x:")
+    display(x)
+    println("b:")
+    display(b)
+end
+
+function reset() end
 
 main()
