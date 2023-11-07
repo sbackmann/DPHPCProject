@@ -10,7 +10,9 @@ DB_path = joinpath(@__DIR__, "npbench.db")
 python_versions = ["cupy", "dace_cpu", "dace_gpu", "numba", "numpy", "pythran"]
 
 function init_db()
-    rm(DB_path)
+    try
+        rm(DB_path)
+    catch e end
     db = SQLite.DB(DB_path)
     SQLite.DBInterface.execute(db, 
     """CREATE TABLE results (
