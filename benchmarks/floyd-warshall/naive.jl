@@ -1,4 +1,7 @@
 include("../../timing/dphpc_timing.jl")
+using Serialization
+
+ASSERT = false
 
 function init_graph(n, graph=nothing)
     tmp = 0
@@ -36,12 +39,28 @@ function floyd_warshall(n, graph)
     return graph
 end
 
+function create_testfile(graph, prefix)
+    open("benchmarks/floyd-warshall/test_cases/$prefix.jls", "w") do io
+        Serialization.serialize(io, graph)
+    end
+end
+
+
+function assert_correctness(graph, prefix)
+    graph_test = open("benchmarks/floyd-warshall/test_cases/$prefix.jls" ) do io
+        Serialization.deserialize(io)
+    end
+    @assert isequal(graph, graph_test)
+end
+
 function main()
 
     n = 200
     graph = init_graph(n)
-    println(graph[1, :])
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"S")
+    res = @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"S")
+    if ASSERT && res != nothing
+        assert_correctness(graph, "S")
+    end
 
     n = 400
     graph = init_graph(n)

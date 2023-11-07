@@ -69,7 +69,6 @@ function main()
     np = 128
     A, C4, sum = init_array(nr, nq, np)
     res = @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "S")
-    println(A[1, 1, :])
     if ASSERT && res != nothing
         assert_correctness(A, "S")
     end

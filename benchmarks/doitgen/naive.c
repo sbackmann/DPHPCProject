@@ -18,6 +18,8 @@
 
 #include <stdlib.h>
 
+#define ASSERT 0
+
 static
 void init_array(int nr, int nq, int np,
   double A[nr][nq][np],
@@ -139,8 +141,6 @@ void assertCorrectness(int nr, int nq, int np,
 
 
 void run_bm(int nr, int nq, int np, const char* preset) {
-
-    int ASSERT = 0;
     
     double (*A)[nr][nq][np]; A = (double(*)[nr][nq][np])malloc ((nr) * (nq) * (np)* sizeof(double));;
     double (*sum)[np]; sum = (double(*)[np])malloc ((np)* sizeof(double));;
@@ -156,7 +156,6 @@ void run_bm(int nr, int nq, int np, const char* preset) {
         preset
     );
     if (ASSERT && strcmp(preset, "S") == 0) {
-        //serializeArray(nr, nq, np, *A, preset);
         assertCorrectness(nr, nq, np, *A, preset);
     }
     free((void*)A);;
