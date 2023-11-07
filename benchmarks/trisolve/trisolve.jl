@@ -79,6 +79,7 @@ function is_correct(L, x, b)
     # Compare the result with the expected solution
     if isapprox(x, expected_solution)
         println("Test passed: The solution matches the expected result.")
+        display(x)
         return true
     else
         println("Test failed: The solution does not match the expected result.")
