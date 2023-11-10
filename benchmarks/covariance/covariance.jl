@@ -24,15 +24,16 @@ function main()
     if DEV benchmark_sizes = dev_benchmarks 
     else benchmark_sizes = eval_benchmarks end
 
-    for dims in keys(benchmark_sizes)
-        println("Benchmarking $dims")
-        M, N = benchmark_sizes[dims]
+    for (preset, dims) in benchmark_sizes
+        println("Benchmarking $preset")
+        println("Dims are $dims")
+        M, N = dims
 
         data = initialize(M, N)
 
         if TIME
-            res = @dphpc_time data, kernel(M, N, data)
-            println(res)
+            # res = @dphpc_time(nothing, kernel(M, N, data), preset=preset)
+            res = @dphpc_time(nothing, kernel(M, N, data)) # TODO ask Damian about how to dynamically pass preset
         else
             res = kernel(M, N, data)
             pretty_table(res)
