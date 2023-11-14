@@ -35,7 +35,7 @@ void init_array(int nr, int nq, int np,
             C4[i][j] = (double) (i*j % np) / np;
 }
 
-
+/*
 static
 void print_array(int nr, int nq, int np,
    double A[nr][nq][np])
@@ -49,12 +49,29 @@ void print_array(int nr, int nq, int np,
         for (j = 0; j < nq; j++)
             for (k = 0; k < np; k++) {
                 if ((i*nq*np+j*np+k) % 20 == 0) fprintf (stderr, "\n");
-                fprintf (stderr, "%0.2lf ", A[i][j][k]);
+                fprintf (stderr, "%0.5lf ", A[i][j][k]);
         }
     fprintf(stderr, "\nend   dump: %s\n", "A");
     fprintf(stderr, "==END   DUMP_ARRAYS==\n");
 }
+static
+void print_array2(int np,
+   double A[np][np])
+{
+    
+    int i, j, k;
 
+    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
+    fprintf(stderr, "begin dump: %s", "A");
+    for (i = 0; i < np; i++)
+        for (j = 0; j < np; j++){
+                if ((i*np+j) % 20 == 0) fprintf (stderr, "\n");
+                fprintf (stderr, "%0.5lf ", A[i][j]);
+        }
+    fprintf(stderr, "\nend   dump: %s\n", "A");
+    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
+}
+*/
 
 void kernel_doitgen(int nr, int nq, int np,
       double A[nr][nq][np],
@@ -149,7 +166,8 @@ void run_bm(int nr, int nq, int np, const char* preset) {
     init_array (nr, nq, np,
         *A,
         *C4);
-    
+    //print_array(10, 10, 10, *A);
+    //print_array2(50, *C4);
     dphpc_time3(
         init_array(nr, nq, np, *A, *C4),
         kernel_doitgen(nr, nq, np, *A, *C4, *sum),
@@ -170,7 +188,7 @@ int main(int argc, char** argv)
     int nq = 60;
     int np = 128;
     run_bm(nr, nq, np, "S");
-    
+
     nr = 110;
     nq = 125;
     np = 256;
