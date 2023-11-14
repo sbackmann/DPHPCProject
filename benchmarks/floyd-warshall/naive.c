@@ -126,7 +126,7 @@ void assertCorrectness(int n,
     // Perform assertion
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (graph[i][j] != graph[i][j]) {
+            if (graph[i][j] != graph_test[i][j]) {
                 printf("graph[%d][%d] = %d\n", i, j, graph[i][j]);
                 printf("graph_test[%d][%d] = %d\n", i, j, graph_test[i][j]);
                 printf("Arrays are not equal.\n");

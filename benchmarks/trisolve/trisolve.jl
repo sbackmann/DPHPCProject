@@ -30,7 +30,7 @@ function main()
 
         if TIME
             println("Benchmarking $preset")
-            res = @dphpc_time(kernel(L, x, b), preset=preset)
+            res = @dphpc_time nothing kernel(L, x, b) 
             println(res)
         else
             x = kernel(L, x, b)
