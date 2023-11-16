@@ -3,14 +3,31 @@
 
 #include "../../timing/dphpc_timing.h"
 
-#define DEV_MODE 0 
+#define DEV_MODE 1
 #define TIME 1
+
+// CUDA kernel to calculate covariance matrix
+__global__ void covariance_kernel(int M, int N, double* data, double* cov) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (i < M && j < M) {
+        double partial_sum = 0.0;
+
+        for (int k = 0; k < N; k++) {
+            partial_sum += data[k * M + i] * data[k * M + j];
+        }
+
+        cov[i * M + j] = partial_sum / ((double)N - 1.0);
+        // cov[j * M + i] = cov[i * M + j];
+    }
+}
 
 void reset() {}
 
 void initialize(int M, int N, double* data) {
-    for (int i = 0; i < N; i++) {  
-        for (int j = 0; j < M; j++) {  
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < M; j++) {
             data[i * M + j] = (double)(i * j) / M;
         }
     }
@@ -26,8 +43,8 @@ void printMatrix(int n, int m, double *matrix) {
 }
 
 void kernel(int M, int N, double* data, double* cov) {
-    double* mean = calloc(M, sizeof(double));
-    
+    double* mean = (double*)malloc(M * sizeof(double));
+
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
             mean[j] += data[i * M + j];
@@ -43,24 +60,29 @@ void kernel(int M, int N, double* data, double* cov) {
             data[i * M + j] -= mean[j];
         }
     }
-    
-    for (int i = 0; i < M; i++) {
-        for (int j = i; j < M; j++) {
-            double partial_sum = 0.0;
-            for (int k = 0; k < N; k++) {
-                partial_sum += data[k * M + i] * data[k * M + j];
-            }
-            cov[i * M + j] =  partial_sum / ((double)N - 1.0);
-            cov[j * M + i] = cov[i * M + j]; 
-        }
-    }
+
+    double *d_data, *d_cov;
+    cudaMalloc((void**)&d_data, N * M * sizeof(double));
+    cudaMalloc((void**)&d_cov, M * M * sizeof(double));
+
+    cudaMemcpy(d_data, data, N * M * sizeof(double), cudaMemcpyHostToDevice);
+
+    dim3 blockDim(16, 16);
+    dim3 gridDim((M + blockDim.x - 1) / blockDim.x, (M + blockDim.y - 1) / blockDim.y);
+
+    covariance_kernel<<<gridDim, blockDim>>>(M, N, d_data, d_cov);
+
+    cudaMemcpy(cov, d_cov, M * M * sizeof(double), cudaMemcpyDeviceToHost);
+
+    cudaFree(d_data);
+    cudaFree(d_cov);
 
     free(mean);
 }
 
 void run_bm(int M, int N, const char* preset) {
-    double *data = malloc(sizeof(double) * N * M);
-    double *cov = malloc(sizeof(double) * M * M);
+    double *data = (double*)malloc(N * M * sizeof(double));
+    double *cov = (double*)malloc(M * M * sizeof(double));
     initialize(M, N, data);
 
     #if DEV_MODE
@@ -87,7 +109,6 @@ void run_bm(int M, int N, const char* preset) {
     free(data);
     free(cov);
 }
-
 
 int main() {
     #if DEV_MODE

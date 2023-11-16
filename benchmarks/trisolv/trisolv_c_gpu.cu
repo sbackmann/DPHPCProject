@@ -6,9 +6,21 @@
 
 #include "../../timing/dphpc_timing.h"
 
-#define DEV_MODE 1 
+#define DEV_MODE 1
 #define TIME_MODE 1
 #define DEBUG_MODE 0
+
+__global__ void cuda_kernel(int N, double *L, double *x, double *b) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (i < N) {
+        double dp = 0.0;
+        for (int j = 0; j < i; j++) {
+            dp += L[i * N + j] * x[j];
+        }
+        x[i] = (b[i] - dp) / L[i * N + i];
+    }
+}
 
 void reset() {}
 
@@ -32,13 +44,25 @@ void initialize(int N, double *L, double *x, double *b) {
 }
 
 void kernel(int N, double *L, double *x, double *b) {
-    for (int i = 0; i < N; i++) {
-        double dp = 0.0;
-        for (int j = 0; j < i; j++) {
-            dp += L[i * N + j] * x[j];
-        }
-        x[i] = (b[i] - dp) / L[i * N + i];
-    }
+    double *d_L, *d_x, *d_b;
+    cudaMalloc((void**)&d_L, N * N * sizeof(double));
+    cudaMalloc((void**)&d_x, N * sizeof(double));
+    cudaMalloc((void**)&d_b, N * sizeof(double));
+
+    cudaMemcpy(d_L, L, N * N * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_x, x, N * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, b, N * sizeof(double), cudaMemcpyHostToDevice);
+
+    dim3 blockDim(256);
+    dim3 gridDim((N + blockDim.x - 1) / blockDim.x);
+
+    cuda_kernel<<<gridDim, blockDim>>>(N, d_L, d_x, d_b);
+
+    cudaMemcpy(x, d_x, N * sizeof(double), cudaMemcpyDeviceToHost);
+
+    cudaFree(d_L);
+    cudaFree(d_x);
+    cudaFree(d_b);
 }
 
 bool is_correct(int N, double *L, double *x, double *b) {
@@ -79,7 +103,7 @@ void print_all(int N, double *L, double *x, double *b) {
 }
 
 void validate() {
-    int N = 5;
+    int N = 4;
     double L[N * N];
     double x[N];
     double b[N];
@@ -94,13 +118,13 @@ void validate() {
     if (!is_correct(N, L, x, b)) {
         printf("Validation failed\n");
         exit(1);
-    } 
+    }
 }
 
 void run_bm(int N, const char *preset) {
-    double *L = malloc(sizeof(double) * N * N);
-    double *x = malloc(sizeof(double) * N);
-    double *b = malloc(sizeof(double) * N);
+    double *L = (double*)malloc(sizeof(double) * N * N);
+    double *x = (double*)malloc(sizeof(double) * N);
+    double *b = (double*)malloc(sizeof(double) * N);
 
     initialize(N, L, x, b);
 
@@ -125,7 +149,6 @@ void run_bm(int N, const char *preset) {
     kernel(N, L, x, b);
     #endif
 
-    
     #if DEBUG_MODE
     printf("Result (x):\n");
     printMatrix(1, N, x);

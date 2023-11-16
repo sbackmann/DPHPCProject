@@ -4,3 +4,7 @@ no_dead_code_elimination = -fno-dce -fno-dse -fno-tree-dce -fno-tree-dse
 naive:
 	gcc naive.c -O3 -o ./a.exe -lm
 	./a.exe
+
+GPU_naive:
+	nvcc -o ./a.exe GPU_naive.cu
+	./a.exe

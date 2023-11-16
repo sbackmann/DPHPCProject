@@ -1,4 +1,5 @@
 include("../../timing/dphpc_timing.jl")
+import LinearAlgebra
 
 function init_array(N, A)
     for i in 1:N
@@ -14,8 +15,8 @@ function init_array(N, A)
     B = zeros(N, N)
 
     for t in 1:N
-        for r in 1:N
-            for s in 1:N
+        for s in 1:N
+            for r in 1:N
                 B[r, s] += A[t, r] * A[t, s]
             end
         end
@@ -24,22 +25,12 @@ function init_array(N, A)
     A .= B
 end
 
-function lu(N, A)
-    for i in 1:N
-        for j in 1:i
-            for k in 1:j
-                A[i, j] -= A[i, k] * A[k, j]
-            end
-            A[i, j] /= A[j, j]
-        end
-        for j in i:N
-            for k in 1:i
-                A[i, j] -= A[i, k] * A[k, j]
-            end
-        end
-    end
-end
+lu(N, A) = begin dcp=LinearAlgebra.lu(A); dcp.L + dcp.U - LinearAlgebra.I end # builtin LU, return same result as c implementation, still need to check that...
 
+# "S": { "N": 60 },
+# "M": { "N": 220 },
+# "L": { "N": 700 },
+# "paper": { "N": 2000 }
 
 function main()
 

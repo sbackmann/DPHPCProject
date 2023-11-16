@@ -41,12 +41,12 @@ end
 function main()
     n, k = 5, 3
     α, β, hostC, C, A = init(n, k)
-    display(hostC)
-    display(C)
-    display(A)
+    # display(hostC)
+    # display(C)
+    # display(A)
     @dphpc_time(C = CuArray(hostC), run_kernel(n, k, α, β, C, A))
-    display(C)
-    println(CUDA.registers(@cuda syrk(n, k, α, β, C, A)))
+    # display(C)
+    # println(CUDA.registers(@cuda syrk(n, k, α, β, C, A)))
 
 
     n, k = 70, 50

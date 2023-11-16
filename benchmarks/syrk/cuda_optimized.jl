@@ -22,12 +22,13 @@ end
 function syrk(n, k, α, β, C, A)
     c = (blockIdx().x - Int32(1)) * blockDim().x + threadIdx().x
     r = (blockIdx().y - Int32(1)) * blockDim().y + threadIdx().y
-    if r <= n && c <= n && r >= c
+    cond = (r <= n) * (c <= n) * (r >= c)
+    if cond
         s = 0.0
-        i::Int32 = 1
+        i::Int32 = Int32(1)
         while i <= k
             @inbounds s += A[r, i] * A[c, i]
-            i += 1
+            i += Int32(1)
         end
         @inbounds C[r, c] = β * C[r, c] + α * s
     end
@@ -36,21 +37,21 @@ end
 
 
 function run_kernel(n, k, α, β, C, A)
-    threads_per_block = 8
+    threads_per_block = 16
     t = threads_per_block
     b = n ÷ t + 1
-    CUDA.@sync(@cuda threads=(t, t) blocks=(b, b) always_inline=true syrk(Int32(n), Int32(k), α, β, C, A))
+    CUDA.@sync(@cuda threads=(t, t) blocks=(b, b) syrk(Int32(n), Int32(k), α, β, C, A))
 end
 
 function main()
     n, k = 5, 3
     α, β, hostC, C, A = init(n, k)
-    display(hostC)
-    display(C)
-    display(A)
+    # display(hostC)
+    # display(C)
+    # display(A)
     @dphpc_time(C = CuArray(hostC), run_kernel(n, k, α, β, C, A))
-    display(C)
-    println(CUDA.registers(@cuda syrk(n, k, α, β, C, A)))
+    # display(C)
+    # println(CUDA.registers(@cuda syrk(n, k, α, β, C, A)))
 
 
     n, k = 70, 50
