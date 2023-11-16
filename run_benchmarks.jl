@@ -149,7 +149,7 @@ empty_df() = DataFrame(                                   # time measurements in
 function get_presets(args)
     id = findfirst(startswith("-p"), args)
     if isnothing(id)
-        return ["missing", "S", "M"] # by default only run S and M
+        return ["missing", "S"] # by default only run S
     end
     ps = lowercase(args[id])[3:end]
     presets = ["missing"] # versions where no preset is specified are always run
@@ -215,7 +215,7 @@ end
 
 # restore the natural order of things
 function reset()
-    global PRESETS_TO_RUN = ["missing", "S", "M"] # for when running a julia file with Ctrl+Enter...
+    global PRESETS_TO_RUN = ["missing", "S"] # for when running a julia file with Ctrl+Enter...
     make_presets_header(PRESETS_TO_RUN)
     cd(@__DIR__)
 end

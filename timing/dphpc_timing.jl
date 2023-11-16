@@ -12,7 +12,7 @@ MAX_TIME::Float64 = parse(Float64, match(r"#define MAX_TIME\s+(\p{Nd}+)", c_head
 TIMEOUT::Float64  = parse(Float64, match(r"#define TIMEOUT\s+(\p{Nd}+)", c_header).captures[1])
 
 if !isdefined(@__MODULE__, :PRESETS_TO_RUN)
-    global PRESETS_TO_RUN = ["missing", "S", "M"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
+    global PRESETS_TO_RUN = ["missing", "S"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
     # when doing Alt+Enter just run small versions
     # important not to define it for the case where it is defined in run_benchmarks.jl
 end
@@ -82,35 +82,35 @@ macro dphpc_time(reset, expr)
 end
 
 macro dphpc_time(reset, expr, preset)
-    if eval(preset) ∉ PRESETS_TO_RUN # defined in run_benchmarks.jl
-        return quote ; end # return no-op
-    end
     return quote
-        measurements_ns = []
-        nr_runs = 0
-        start_time = time() # in seconds
-        for i=1:MIN_RUNS
-            $(esc(reset))
-            t = time_ns()
-            $(esc(expr))
-            push!(measurements_ns, time_since(t))
-            nr_runs += 1
-            if time_since(start_time) > TIMEOUT
-                break
+        preset = $(esc(preset))
+        if preset ∈ PRESETS_TO_RUN     
+            measurements_ns = []
+            nr_runs = 0
+            start_time = time() # in seconds
+            for i=1:MIN_RUNS
+                $(esc(reset))
+                t = time_ns()
+                $(esc(expr))
+                push!(measurements_ns, time_since(t))
+                nr_runs += 1
+                if time_since(start_time) > TIMEOUT
+                    break
+                end
             end
-        end
-        for i=MIN_RUNS+1:MAX_RUNS
-            if time_since(start_time) > MAX_TIME
-                break
+            for i=MIN_RUNS+1:MAX_RUNS
+                if time_since(start_time) > MAX_TIME
+                    break
+                end
+                $(esc(reset))
+                t = time_ns()
+                $(esc(expr))
+                push!(measurements_ns, time_since(t))
+                nr_runs += 1
             end
-            $(esc(reset))
-            t = time_ns()
-            $(esc(expr))
-            push!(measurements_ns, time_since(t))
-            nr_runs += 1
+            measurements_ms = measurements_ns .* 1e-6
+            push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$(preset=="missing" ? missing : preset)))
         end
-        measurements_ms = measurements_ns .* 1e-6
-        push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$(preset=="missing" ? missing : preset)))
     end
 end
 
