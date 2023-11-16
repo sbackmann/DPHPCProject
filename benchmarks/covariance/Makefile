@@ -1,5 +1,6 @@
 _ju:
-	julia covariance.jl
+	julia covariance_gpu.jl
+	# julia covariance.jl
 
 _py:
 	python covariance.py
@@ -9,4 +10,9 @@ c:
 	./covariance
 	rm ./covariance
 
-_run: _ju _py c 
+gc:
+	nvcc -o covariance covariance_c_gpu.cu -lm
+	./covariance
+	rm ./covariance
+
+run: ju py c 
