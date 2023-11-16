@@ -4,7 +4,7 @@ using PrettyTables
 using DelimitedFiles
 
 include("../../timing/dphpc_timing.jl")
-DEV = true
+DEV = false
 TIME = true
 
 eval_benchmarks = Dict(
@@ -33,7 +33,7 @@ function main()
 
         if TIME
             # res = @dphpc_time(nothing, kernel(M, N, data), preset=preset)
-            res = @dphpc_time(nothing, kernel(M, N, data)) # TODO ask Damian about how to dynamically pass preset
+            res = @dphpc_time(nothing, kernel(M, N, data), preset) # TODO ask Damian about how to dynamically pass preset
         else
             res = kernel(M, N, data)
             pretty_table(res)

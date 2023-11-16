@@ -43,25 +43,21 @@ end
 
 function main()
 
-    N = 50
+    N = 60
     A = zeros(N, N)
-    init_array(N, A)
-    @dphpc_time(nothing, lu(N, A), "S")
+    @dphpc_time(init_array(N, A), lu(N, A), "S")
 
-    N = 600
+    N = 220
     A = zeros(N, N)
-    init_array(N, A)
-    @dphpc_time(nothing, lu(N, A), "M")
+    @dphpc_time(init_array(N, A), lu(N, A), "M")
 
-    N = 1500
+    N = 700
     A = zeros(N, N)
-    init_array(N, A)
-    @dphpc_time(nothing, lu(N, A), "L")
+    @dphpc_time(init_array(N, A), lu(N, A), "L")
 
     N = 2000
     A = zeros(N, N)
-    init_array(N, A)
-    @dphpc_time(nothing, lu(N, A), "paper")
+    @dphpc_time(init_array(N, A), lu(N, A), "paper")
 
 
 end

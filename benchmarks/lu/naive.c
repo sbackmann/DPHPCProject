@@ -67,7 +67,7 @@ void run_bm(int N, const char* preset) {
     dphpc_time3(
        init_array(N, *A),
        lu(N, *A),
-        preset
+       preset
     );
 
     free((void*)A); 
@@ -77,9 +77,9 @@ void run_bm(int N, const char* preset) {
 
 int main(int argc, char** argv) {
 
-    run_bm(50, "S"); 
-    run_bm(600, "M"); 
-    run_bm(1500, "L"); 
+    run_bm(60, "S"); 
+    run_bm(220, "M"); 
+    run_bm(700, "L"); 
     run_bm(2000, "paper"); 
 
   return 0;

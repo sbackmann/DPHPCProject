@@ -3,7 +3,7 @@
 
 #include "../../timing/dphpc_timing.h"
 
-#define DEV_MODE 1 
+#define DEV_MODE 0 
 #define TIME 1
 
 void reset() {}

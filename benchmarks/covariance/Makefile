@@ -1,7 +1,7 @@
-ju:
+_ju:
 	julia covariance.jl
 
-py:
+_py:
 	python covariance.py
 
 c:
@@ -9,4 +9,4 @@ c:
 	./covariance
 	rm ./covariance
 
-run: ju py c 
+_run: _ju _py c 

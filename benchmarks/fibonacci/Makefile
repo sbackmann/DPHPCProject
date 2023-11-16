@@ -1,3 +1,4 @@
+# make sure there is at least 1 empty line before the first rule
 
 no_dead_code_elimination = -fno-dce -fno-dse -fno-tree-dce -fno-tree-dse
 
