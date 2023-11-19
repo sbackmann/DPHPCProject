@@ -19,23 +19,8 @@ function init(n, k)
 end
 
 
-function syrk(n, k, α, β, C, A)
-    c = (blockIdx().x - 1) * blockDim().x + threadIdx().x
-    r = (blockIdx().y - 1) * blockDim().y + threadIdx().y
-    if r <= n && c <= n && r >= c
-        s = 0.0
-        for i=1:k
-            s += A[r, i] * A[c, i]
-        end
-        C[r, c] = β * C[r, c] + α * s
-    end
-    nothing
-end
+run_kernel(n, k, α, β, C, A) = C .= α .* (A*A') .+ β .* C
 
-
-function run_kernel(n, k, α, β, C, A)
-    C .= α .* A*A' .+ β .* C
-end
 
 function main()
     n, k = 5, 3
