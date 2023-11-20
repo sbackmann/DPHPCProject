@@ -213,6 +213,11 @@ function get_version(args)
     return nothing
 end
 
+function merge(results, old_results)
+    keep_old = antijoin(old_results, results, on=[:benchmark, :language, :version, :preset, :gpu], matchmissing=:equal)
+    return vcat(keep_old, results)
+end
+
 # restore the natural order of things
 function reset()
     global PRESETS_TO_RUN = ["missing", "S"] # for when running a julia file with Ctrl+Enter...
@@ -262,6 +267,13 @@ function main(args)
     reset()
 
     display(results)
+
+    old_results = try 
+        CSV.read("./results.csv", DataFrame)
+    catch e
+        empty_df()
+    end
+    results = merge(results, old_results)
     CSV.write("./results.csv", results)
 end
 
