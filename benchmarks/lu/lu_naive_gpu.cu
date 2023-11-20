@@ -5,6 +5,29 @@
 
 #include "../../timing/dphpc_timing.h"
 
+
+
+__global__ void lu_kernal(int N, double* A){
+
+ int i = blockIdx.x * blockDim.x + threadIdx.x;
+ int j, k;
+
+    if (i < N) {
+        for (j = 0; j < i; j++) {
+            for (k = 0; k < j; k++) {
+                A[i * N + j] = A[i * N + j] - (A[i * N + k] * A[k * N + j]);
+            }
+            A[i * N + j] = A[i * N + j] / A[j * N + j];
+        }
+        for (j = i; j < N; j++) {
+            for (k = 0; k < i; k++) {
+                A[i * N + j] = A[i * N + j] - (A[i * N + k] * A[k * N + j]);
+            }
+        }
+    }
+}
+
+
 void init_array(int N, double A[N][N]) {
 
   // create lower triangle of matrix 
@@ -43,46 +66,36 @@ void init_array(int N, double A[N][N]) {
 
 }
 
-
-void lu(int N, double A[N][N]) {
-
-// first nested loop calculates the upper triangle
-// second nested loop calculates the lower trinagle 
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < i; j++) {
-      for (int k = 0; k < j; k++) {
-        A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
-      }
-      A[i][j] = A[i][j] / A[j][j];
-    }
-    for (int j = i; j < N; j++) {
-      for (int k = 0; k < i; k++) {
-        A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
-      }
-    }
-  }
-
+void run_lu_kernel(int N, double* A) {
+    dim3 block(16, 16);
+    dim3 grid((N+block.x -1)/block.x, (N+block.y-1)/block.y);
+    lu_kernal<<<grid,block>>>(N, A); 
+    cudaDeviceSynchronize();
 }
 
+void run_bm(int N, int M, int K, const char* preset) {
 
+    double* A = (double *)malloc(N*K*sizeof(double));
 
-void run_bm(int N, const char* preset) {
+    double *A_d, *B_d, *C_d;
+    cudaMalloc((void**) &A_d, N*K*sizeof(double));
+   
+    init_matrices(N, A);
 
     
-   double (*A)[N][N]; 
-    A = (double(*)[N][N]) malloc(N*N*sizeof(double));
-
-
+    cudaMemcpy((void*) A_d, (void*) A, N*K*sizeof(double), cudaMemcpyHostToDevice);
+    
     dphpc_time3(
-       init_array(N, *A),
-       lu(N, *A),
-       preset
+       cudaMemcpy((void*) A_d, (void*) A, N*K*sizeof(double), cudaMemcpyHostToDevice),
+       run_lu_kernel(N, A_d),
+        preset
     );
 
-    free((void*)A); 
+    cudaFree(A_d);
   
-}
+    free(A);
 
+}
 
 int main(int argc, char** argv) {
 
@@ -93,3 +106,6 @@ int main(int argc, char** argv) {
 
   return 0;
 }
+
+
+

@@ -5,6 +5,7 @@
 #include "../../timing/dphpc_timing.h"
 
 // similar to polybench implemenation 
+// Dynamic Arrays 
 
 
 // gemm: https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/  
@@ -61,9 +62,9 @@ void run_bm(int N, int M, int K, const char* preset) {
 
 int main(){
     
-    run_bm(50, 60, 70, "S"); 
-    run_bm(600, 610, 620, "M"); 
-    run_bm(1000, 1100, 1200, "L"); 
+    run_bm(1000, 1100, 1200, "S"); 
+    run_bm(2500, 2750, 3000, "M"); 
+    run_bm(7000, 7500, 8000, "L"); 
     run_bm(2000, 2300, 2600, "paper"); 
     
     return 0; 
