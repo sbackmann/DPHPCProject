@@ -109,7 +109,7 @@ macro dphpc_time(reset, expr, preset)
                 nr_runs += 1
             end
             measurements_ms = measurements_ns .* 1e-6
-            push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$(preset=="missing" ? missing : preset)))
+            push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$(preset)=="missing" ? missing : $(preset)))
         end
     end
 end
