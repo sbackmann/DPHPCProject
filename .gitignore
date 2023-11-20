@@ -6,6 +6,8 @@
 build/
 timing/presets.h
 .dacecache/
+_dacegraphs/
 **/test_cases/
 
 npbench.db
+
