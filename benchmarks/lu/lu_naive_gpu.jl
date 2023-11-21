@@ -1,4 +1,6 @@
 include("../../timing/dphpc_timing.jl")
+using CUDA 
+
 
 function init_array(N, A)
 
@@ -31,7 +33,6 @@ end
 
 function lu_kernel(N, A)
     i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
-    j, k
 
     if i <= N
         for j in 1:i
@@ -55,7 +56,7 @@ function run_lu_kernel(N, A)
     threadsPerBlock = (16, 16)
     numBlocks = ((N - 1) ÷ 16 + 1, (N - 1) ÷ 16 + 1)
 
-    @cuda threads=threadsPerBlock blocks=numBlocks gemm_kernel(N, A_d)
+    @cuda threads=threadsPerBlock blocks=numBlocks lu_kernel(N, A)
     CUDA.synchronize()
 
 end

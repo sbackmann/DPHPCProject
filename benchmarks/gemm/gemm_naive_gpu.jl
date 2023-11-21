@@ -1,4 +1,5 @@
 include("../../timing/dphpc_timing.jl")
+
 using CUDA 
 
 const alpha = 1.5
@@ -34,7 +35,7 @@ function run_gemm_kernel(N, M, K, A, B, C)
     threadsPerBlock = (16, 16)
     numBlocks = ((N - 1) ÷ 16 + 1, (M - 1) ÷ 16 + 1)
 
-    @cuda threads=threadsPerBlock blocks=numBlocks gemm_kernel(N, M, K, A_d, B_d, C_d)
+    @cuda threads=threadsPerBlock blocks=numBlocks gemm_kernel(N, M, K, A, B, C)
     CUDA.synchronize()
 
 end
