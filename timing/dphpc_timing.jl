@@ -1,6 +1,9 @@
 
-# macro for timing benchmarks, returns median and 95% confidence interval for median
+
+# macro for timing benchmarks, determines median and 95% confidence interval for median runtime in ms
 # need at least 6 measurements to be able to give 95% confidence interval
+
+
 
 c_header = open(io->read(io, String), joinpath(@__DIR__, "dphpc_timing.h"))
 
@@ -15,6 +18,12 @@ if !isdefined(@__MODULE__, :PRESETS_TO_RUN)
     global PRESETS_TO_RUN = ["missing", "S"] # defined here for convenience only, otherwise cannot run file with Ctrl+Enter...
     # when doing Alt+Enter just run small versions
     # important not to define it for the case where it is defined in run_benchmarks.jl
+end
+if !isdefined(@__MODULE__, :PROFILING)
+    global PROFILING = false
+end
+if !isdefined(@__MODULE__, :PROFILING_GPU)
+    global PROFILING_GPU = false
 end
 
 
@@ -82,6 +91,33 @@ macro dphpc_time(reset, expr)
 end
 
 macro dphpc_time(reset, expr, preset)
+    if PROFILING
+        return quote
+            preset = $(esc(preset))
+            if preset ∈ PRESETS_TO_RUN  
+                start_time = time() # in seconds
+                i = 0
+                ProfileView.@profview begin
+                    while time_since(start_time) < 5.0 || i < MIN_RUNS
+                        if time_since(start_time) > MAX_TIME
+                            break
+                        end
+                        $(esc(reset))
+                        $(esc(expr))
+                        i += 1
+                    end
+                end
+            end
+        end
+    elseif PROFILING_GPU
+        return quote
+            preset = $(esc(preset))
+            if preset ∈ PRESETS_TO_RUN  
+                $(esc(reset))
+                CUDA.@profile $(esc(expr))
+            end
+        end
+    end
     return quote
         preset = $(esc(preset))
         if preset ∈ PRESETS_TO_RUN     
@@ -111,6 +147,7 @@ macro dphpc_time(reset, expr, preset)
             measurements_ms = measurements_ns .* 1e-6
             push!(RESULTS, (nr_runs=nr_runs, median_CI95(measurements_ms)..., preset=$(preset)=="missing" ? missing : $(preset)))
         end
+        
     end
 end
 

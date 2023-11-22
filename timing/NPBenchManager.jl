@@ -5,7 +5,7 @@ import SQLite
 using DataFrames
 
 # Database, where NPBench stores its results
-DB_path = joinpath(@__DIR__, "npbench.db") 
+DB_path = joinpath(@__DIR__, "..", "npbench.db") 
 
 python_versions = ["cupy", "dace_cpu", "dace_gpu", "numba", "numpy", "pythran"]
 
@@ -61,7 +61,7 @@ function get_results()
 end
 
 function Base.run(bms::Vector{String}, presets::Vector{String})
-    cd(@__DIR__)
+    cd(@__DIR__); cd("..")
     for bm in bms, preset in presets, version in python_versions
         if preset == "missing" continue end
         try
