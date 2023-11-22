@@ -50,6 +50,7 @@ function make_plot(bm::String, preset::String; collect=false)
 
     versions = [julia_versions, c_versions, python_versions, julia_gpu_versions, c_gpu_versions, python_gpu_versions]
     c_naive = c_versions[[findfirst(v->v=="naive", c_versions.version)], :]
+    
     ref_time = c_naive[1, :median]
 
     for v in versions
@@ -66,7 +67,6 @@ function make_plot(bm::String, preset::String; collect=false)
     p = bar(
         title="Speedup $bm, preset '$preset', CPU", 
         ylabel="Speedup", 
-        xlabel="version", 
         xrotation=45,
         ylims=(0, 1.1*max(
             maximum(c_versions.speedup_ub),
