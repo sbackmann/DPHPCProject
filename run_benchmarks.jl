@@ -23,7 +23,7 @@ function get_languages(args)
         return [:julia, :C] # default no python
     end
     ls = lowercase(args[id])[3:end]
-    langs = []
+    langs = Symbol[]
     if contains(ls, "j") push!(langs, :julia)  end
     if contains(ls, "c") push!(langs, :C)      end
     if contains(ls, "p") push!(langs, :python) end
@@ -58,7 +58,7 @@ end
 
 function get_version(args)
     bm_id = findfirst(!startswith("-"), args)
-    v_id = findlast(!startswith("-"), args)
+    v_id =  findlast( !startswith("-"), args)
     if !isnothing(v_id) && bm_id != v_id
         return args[v_id]
     end
@@ -82,3 +82,4 @@ main(args) = collect_measurements(
 )
 
 main(ARGS)
+

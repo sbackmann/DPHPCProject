@@ -4,7 +4,7 @@ import CSV
 include("NPBenchManager.jl")
 
 # for julia, the version of a benchmark is the name of the .jl file
-# for C, the version is the name of the corresponding rule in the Makefile (no underscores!)
+# for C, the version is the name of the corresponding rule in the Makefile
 INITIAL_WD = pwd()
 ROOT = joinpath(@__DIR__, "..")
 
@@ -35,6 +35,7 @@ get_benchmarks() = readdir(joinpath(ROOT, "benchmarks"))
 get_julia_versions(bm) = readdir(joinpath(ROOT, "benchmarks", bm)) |> filter(x -> endswith(x, ".jl") && !startswith(x, "_")) .|> x->x[1:end-3]
 get_c_versions(bm) = get_rules(open(io->read(io, String), joinpath(ROOT, "benchmarks", bm, "Makefile")))
 
+get_rules(makefile) = [m.captures[1] for m in eachmatch(r"\n([^_\s]\w*):", makefile)]
 
 
 julia_has_bm(bm, ver) = bm ∈ get_benchmarks() && ver ∈ get_julia_versions(bm)
@@ -53,7 +54,7 @@ function c_has_bm(bm, ver)
     return ver ∈ rules
 end
 
-get_rules(makefile) = [m.captures[1] for m in eachmatch(r"\n([^_\s]\w*):", makefile)]
+
 
 
 function run(benchmark, languages)
@@ -161,7 +162,8 @@ function reset()
 end
 
 
-function collect_measurements(benchmarks, languages, presets, version)
+function collect_measurements(benchmarks::Vector{String}, languages::Vector{Symbol}, 
+                              presets::Vector{String},    version::Union{Nothing, String})
     results = empty_df()
 
     global PROFILING = false

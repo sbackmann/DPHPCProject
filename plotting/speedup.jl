@@ -15,6 +15,8 @@ catch e
     using Plots
 end
 
+include("../timing/collect_measurements.jl")
+
 # assumes there exists a C version called "naive", and a cuda C version called "naive_gpu"
 
 
@@ -56,11 +58,11 @@ function plot_arch(bm, preset, c_versions, julia_versions, python_versions, arch
     savefig(p, "plots/speedup_$(bm)_$(preset)_$(arch).pdf")
 end
 
-function make_plot(bm::String, preset::String; collect=false)
+function make_plot(bm::String, preset::String; collect=false, version=nothing, languages=[:julia, :C, :python])
     cd(@__DIR__)
     cd("..")
     if collect
-        run(`julia run_benchmarks.jl -b$(bm) -p$(preset) -lcjp`)
+        collect_measurements([bm], languages, [preset], version)
     end
     df = CSV.read("results.csv", DataFrame)
     grouped = groupby(df, [:benchmark, :language, :preset, :gpu])
@@ -103,5 +105,5 @@ function make_plot(bm::String, preset::String; collect=false)
     end
 
     plot_arch(bm, preset, c_gpu_versions, julia_gpu_versions, python_gpu_versions, "GPU")
-
+    ;
 end
