@@ -12,6 +12,7 @@ function kernel(M, float_n, data)
             cov[i, j] = cov[j, i] = dot(data[:, i], data[:, j]) / (float_n - 1.0)
         end
     end
+
     return cov
 end
 

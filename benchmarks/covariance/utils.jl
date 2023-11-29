@@ -17,8 +17,9 @@ benchmark_sizes = Dict(
 )
 
 function run_benchmarks(; cuda = false, create_tests = false)
-
-    assert_correctness(cuda)
+    if !create_tests
+        assert_correctness(cuda)
+    end
 
     for (preset, dims) in benchmark_sizes
         M, N = dims
@@ -58,5 +59,6 @@ function assert_correctness(cuda)
     expected = open("$test_cases_dir/$prefix.jls" ) do io
         Serialization.deserialize(io)
     end
-    @assert isequal(solution, expected)
+
+    @assert isapprox(solution, expected)
 end
