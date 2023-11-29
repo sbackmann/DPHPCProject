@@ -86,16 +86,20 @@ void assertCorrectness(int n,
 __global__ void kernel_floyd_warshall(int n, int *graph) {
 
   int tmp;
+  int tmp1;
+  int tmp2;
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
 
   if (i < n && j < n) {
     for (int k = 0; k < n; k++){
-      tmp = graph[i * n + j] < graph[i * n + k] + graph[k * n + j];
+      tmp1 = graph[i * n + j];
+      tmp2 = graph[i * n + k] + graph[k * n + j];
+      tmp = tmp1 < tmp2;
         if (tmp==1){
-          graph[i * n + j] = graph[i * n + j];}
+          graph[i * n + j] = tmp1;}
         else {
-          graph[i * n + j] = graph[i * n + k] + graph[k * n + j];
+          graph[i * n + j] = tmp2;
         }
     }
   }

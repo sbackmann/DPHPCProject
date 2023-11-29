@@ -97,10 +97,11 @@ __global__ void kernel_doitgen(int nr, int nq, int np,
 
     if (r < nr && q < nq) {
         for(int p = 0; p < np; p++) {
-            sum[r * nq * np + q * np + p] = 0.0;
+            double tempSum = 0.0;
             for (int s = 0; s < np; s++) {
-                sum[r * nq * np + q * np + p] = sum[r * nq * np + q * np + p] + A[r * nq * np + q * np + s] * C4[s * np + p];
+                tempSum += A[r * nq * np + q * np + s] * C4[s * np + p];
             }
+            sum[r * nq * np + q * np + p] = tempSum;
         }
         for (int p = 0; p < np; p++) {
             A[r * nq * np + q * np + p] = sum[r * nq * np + q * np + p];

@@ -91,13 +91,10 @@ __global__ void kernel_floyd_warshall(int n, int *graph) {
 
   if (i < n && j < n) {
     for (int k = 0; k < n; k++){
-      tmp = graph[i * n + j] < graph[i * n + k] + graph[k * n + j];
-        if (tmp==1){
-          graph[i * n + j] = graph[i * n + j];}
-        else {
-          graph[i * n + j] = graph[i * n + k] + graph[k * n + j];
-        }
-    }
+      tmp = graph[i * n + k] + graph[k * n + j];
+      if tmp < graph[i * n + j] {
+        graph[i * n + j] = tmp
+      }
   }
 }
 

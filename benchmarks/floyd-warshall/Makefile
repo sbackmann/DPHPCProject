@@ -8,3 +8,11 @@ naive:
 GPU_naive:
 	nvcc -o ./a.exe GPU_naive.cu
 	./a.exe
+
+GPU_tmp_var:
+	nvcc -o ./a.exe GPU_tmp_var.cu
+	./a.exe
+
+GPU_no_bd:
+	nvcc -o ./a.exe GPU_no_bd.cu
+	./a.exe

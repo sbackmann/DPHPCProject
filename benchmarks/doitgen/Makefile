@@ -9,3 +9,11 @@ naive:
 GPU_naive:
 	nvcc -o ./a.exe GPU_naive.cu
 	./a.exe
+
+GPU_optimized:
+	nvcc -o ./a.exe GPU_optimized.cu
+	./a.exe
+
+GPU_test:
+	nvcc -o ./a.exe GPU_test.cu
+	./a.exe

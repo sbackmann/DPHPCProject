@@ -97,10 +97,12 @@ __global__ void kernel_doitgen(int nr, int nq, int np,
 
     if (r < nr && q < nq) {
         for(int p = 0; p < np; p++) {
-            sum[r * nq * np + q * np + p] = 0.0;
+            extern __shared__ double C[];
+            double tempSum = 0.0;
             for (int s = 0; s < np; s++) {
-                sum[r * nq * np + q * np + p] = sum[r * nq * np + q * np + p] + A[r * nq * np + q * np + s] * C4[s * np + p];
+                tempSum += A[r * nq * np + q * np + s] * C4[s * np + p];
             }
+            sum[r * nq * np + q * np + p] = tempSum;
         }
         for (int p = 0; p < np; p++) {
             A[r * nq * np + q * np + p] = sum[r * nq * np + q * np + p];
@@ -116,6 +118,7 @@ void run_doitgen_gpu(int nr, int nq, int np,
     dim3 threadsPerBlock(16, 16);
     int n = max(nr, nq);
     dim3 numBlocks(n / 16 + 1, n / 16 + 1);
+    sharedMemorySize
     kernel_doitgen<<<numBlocks,threadsPerBlock>>>(nr, nq, np, A, C4, sum);
     cudaDeviceSynchronize();
 }

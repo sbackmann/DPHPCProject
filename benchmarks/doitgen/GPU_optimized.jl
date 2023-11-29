@@ -53,10 +53,11 @@ function doitgen_kernel(nr, nq, np, A, C4, sum)
 
     if r <= nr && q <= nq
         for pp in p
-            sum[r, q, pp] = 0.0
+            temp_sum = 0.0
             for ss in s
-                sum[r, q, pp] += A[r, q, ss] * C4[ss, pp]
+                temp_sum += A[r, q, ss] * C4[ss, pp]
             end
+            sum[r, q, pp] = temp_sum
         end
 
         for pp in p
