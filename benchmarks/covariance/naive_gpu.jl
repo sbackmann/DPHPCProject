@@ -4,50 +4,13 @@ using PrettyTables
 using DelimitedFiles
 using CUDA
 
+include("utils.jl")
 include("../../timing/dphpc_timing.jl")
-DEV = true
-TIME = false
-ALLOW_SCALAR = false
 
-eval_benchmarks = Dict(
-    "S" => (500, 600),
-    "M" => (1400, 1800),
-    "L" => (3200, 4000),
-    "paper" => (1200, 1400)
-)
-
-dev_benchmarks = Dict(
-    # "S" => (2, 2),
-    "M" => (5, 7),
-    # "L" => (10, 20),
-)
-
-function main() 
-    if DEV
-        benchmark_sizes = dev_benchmarks
-    else
-        benchmark_sizes = eval_benchmarks
-    end
-
-    for (preset, dims) in benchmark_sizes
-        println("Benchmarking $preset")
-        println("Dims are $dims")
-        M, N = dims
-
-        data = initialize(M, N) 
-
-        if TIME
-            res = @dphpc_time(nothing, kernel(M, N, data), "missing")
-        else
-            res = CUDA.@sync kernel(M, N, data)
-            CUDA.@allowscalar pretty_table(res)
-        end
-    end
-end
 
 function dot_prod_store_kernel(M, data, cov)
-    i = threadIdx().x  # Get the thread index in the x direction
-    j = threadIdx().y  # Get the thread index in the y direction
+    i = threadIdx().x 
+    j = threadIdx().y 
 
     N = size(data, 1)
     if i <= M && j <= M
@@ -87,11 +50,10 @@ function alt_kernel(M, float_n, data)
     # end
 end
 
-function initialize(M, N, datatype=Float64)
-    return CuArray([
-        datatype((i-1) * (j-1)) / M for i in 1:N, j in 1:M
-        ])
+function main()
+    run_benchmarks(cuda = true)
 end
+
 
 
 main()
