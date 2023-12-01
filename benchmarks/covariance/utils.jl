@@ -13,7 +13,8 @@ benchmark_sizes = Dict(
     "S"     => (500, 600),
     "M"     => (1400, 1800),
     "L"     => (3200, 4000),
-    "paper" => (1200, 1400)
+    "paper" => (1200, 1400),
+    "dev"   => (3, 4)
 )
 
 function run_benchmarks(; cuda = false, create_tests = false)
@@ -47,7 +48,7 @@ function create_testfile(solution, prefix)
 end
 
 function assert_correctness(cuda)
-    prefix = "S"
+    prefix = "dev"
     data = initialize(benchmark_sizes[prefix]..., cuda=cuda)
     solution = kernel(benchmark_sizes[prefix]..., data)
 
@@ -58,6 +59,12 @@ function assert_correctness(cuda)
 
     expected = open("$test_cases_dir/$prefix.jls" ) do io
         Serialization.deserialize(io)
+    end
+
+    if cuda
+        cpu_data = CUDA.copyto!(Matrix{Float64}(undef, size(solution)...), solution)
+        copyto!(cpu_data, solution)
+        solution = cpu_data
     end
 
     @assert isapprox(solution, expected)

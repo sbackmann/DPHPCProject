@@ -51,6 +51,13 @@ function alt_kernel(M, float_n, data)
 end
 
 function main()
+    data = initialize(3,4, cuda=true)
+    covar = kernel(3, 4, data)
+    println("Got")
+    CUDA.@allowscalar pretty_table(covar)
+    println("Expected")
+    pretty_table(cov(initialize(3,4)))
+
     run_benchmarks(cuda = true)
 end
 

@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 import os
 
@@ -21,8 +20,7 @@ def main():
         print("Data")
         print(data)
         print("Cov")
-        cov = torch.cov(data)
-        # cov = kernel(M, np.float64(N), data)
+        cov = kernel(M, np.float64(N), data)
         print(cov)
         print("End")
 
