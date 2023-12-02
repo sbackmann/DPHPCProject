@@ -14,18 +14,16 @@ function dot_prod_store_kernel(M, data, cov)
     N = size(data, 1)
 
     if i <= M && j <= M
-
         local_dot = 0.0
 
-        # Unrolled loop
         @simd for k in 1:4:N-3
-            local_dot += data[k, i] * data[k, j]
-            local_dot += data[k+1, i] * data[k+1, j]
-            local_dot += data[k+2, i] * data[k+2, j]
-            local_dot += data[k+3, i] * data[k+3, j]
+            local_dot1 = data[k, i] * data[k, j]
+            local_dot2 = data[k+1, i] * data[k+1, j]
+            local_dot3 = data[k+2, i] * data[k+2, j]
+            local_dot4 = data[k+3, i] * data[k+3, j]
+            local_dot += local_dot1 + local_dot2 + local_dot3 + local_dot4
         end
 
-        # Handle the remaining elements
         for k in (N - rem(N, 4) + 1):N
             local_dot += data[k, i] * data[k, j]
         end
@@ -36,14 +34,32 @@ function dot_prod_store_kernel(M, data, cov)
     return
 end
 
+function mean_kernel(data, mean_data, N, M)
+    col_idx = (blockIdx().x - 1) * blockDim().x + threadIdx().x
+    stride = blockDim().x * gridDim().x
 
-function kernel(M, float_n, data)
+    for i = col_idx:stride:M
+        local_sum = 0.0
+        for j = 1:N
+            local_sum += data[j, i]
+        end
+        mean_data[i] = local_sum / N
+    end
+    return
+end
+
+function kernel(M, N, data)
+
+    threads_per_block = 256
+    blocks = div(M + threads_per_block - 1, threads_per_block)
+
+    mean_data = CUDA.zeros(M)
+    @cuda threads=threads_per_block blocks=blocks mean_kernel(data, mean_data, N, M)
+    mean_data = reshape(mean_data, (1, M)) # TODO could be expensive
+
     threads = 16
     threads_per_block = (threads, threads)
     blocks = (ceil(Int, M / threads), ceil(Int, M / threads))
-
-    # TODO maybe faster if use custom kernel
-    mean_data = CUDA.sum(data, dims=1) / float_n
 
     data .-= mean_data
     cov = CUDA.zeros(eltype(data), M, M)
@@ -52,7 +68,7 @@ function kernel(M, float_n, data)
     return cov 
 end
 
-function alt_kernel(M, float_n, data)
+function alt_kernel(M, N, data)
     # for i in 1:M
     #     for j in 1:M
     #         CUDA.@allowscalar cov[j, i] = CUDA.dot(data[:, i], data[:, j]) 

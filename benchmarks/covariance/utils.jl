@@ -17,9 +17,20 @@ benchmark_sizes = Dict(
     "dev"   => (3, 4)
 )
 
+function correctness_check(cuda, prefix=["S", "M", "L", "paper"])
+    for preset in prefix
+        println("Checking correctness for $preset")
+        assert_correctness(cuda, preset)
+    end
+end
+
 function run_benchmarks(; cuda = false, create_tests = false)
+    # correctness_check(true)
+    # return
+
     if !create_tests
         assert_correctness(cuda)
+        assert_correctness(cuda, "S")
     end
 
     for (preset, dims) in benchmark_sizes
@@ -32,7 +43,7 @@ function run_benchmarks(; cuda = false, create_tests = false)
             create_testfile(solution, preset)
         end
 
-        @dphpc_time(nothing, kernel(M, N, data), preset)
+        print(@dphpc_time(nothing, kernel(M, N, data), preset))
     end
 end
 
@@ -45,10 +56,15 @@ function create_testfile(solution, prefix)
     open("$test_cases_dir/$prefix.jls", "w") do io
         Serialization.serialize(io, solution)
     end
+    
+    open("$test_cases_dir/$prefix.tsv", "w") do io
+        for row in eachrow(solution)
+            println(io, join(row, "\t"))
+        end
+    end
 end
 
-function assert_correctness(cuda)
-    prefix = "dev"
+function assert_correctness(cuda, prefix="dev")
     data = initialize(benchmark_sizes[prefix]..., cuda=cuda)
     solution = kernel(benchmark_sizes[prefix]..., data)
 
@@ -67,5 +83,12 @@ function assert_correctness(cuda)
         solution = cpu_data
     end
 
+    if !isapprox(solution, expected)
+        open("$test_cases_dir/$(prefix)_wrong.tsv", "w") do io
+            for row in eachrow(solution)
+                println(io, join(row, "\t"))
+            end
+        end
+    end
     @assert isapprox(solution, expected)
 end
