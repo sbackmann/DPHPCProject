@@ -8,15 +8,14 @@ include("utils.jl")
 include("../../timing/dphpc_timing.jl")
 
 
-function dot_prod_store_kernel(M, data, cov)
+function dot_prod_store_kernel(N, M, data, cov)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
-    N = size(data, 1)
 
     if i <= M && j <= M
         local_dot = 0.0
 
-        @simd for k in 1:4:N-3
+        @inbounds @simd for k in 1:4:N-3
             local_dot1 = data[k, i] * data[k, j]
             local_dot2 = data[k+1, i] * data[k+1, j]
             local_dot3 = data[k+2, i] * data[k+2, j]
@@ -24,7 +23,7 @@ function dot_prod_store_kernel(M, data, cov)
             local_dot += local_dot1 + local_dot2 + local_dot3 + local_dot4
         end
 
-        for k in (N - rem(N, 4) + 1):N
+        @inbounds for k in (N - rem(N, 4) + 1):N
             local_dot += data[k, i] * data[k, j]
         end
 
@@ -34,36 +33,40 @@ function dot_prod_store_kernel(M, data, cov)
     return
 end
 
-function mean_kernel(data, mean_data, N, M)
+function mean_adjust_kernel(data, N, M)
     col_idx = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     stride = blockDim().x * gridDim().x
 
-    for i = col_idx:stride:M
+    # TODO optimize this stride
+    @inbounds for j = col_idx:stride:M
         local_sum = 0.0
-        for j = 1:N
-            local_sum += data[j, i]
+        @inbounds for row_idx = 1:N
+            local_sum += data[row_idx, j]
         end
-        mean_data[i] = local_sum / N
+        mean_j = local_sum / N
+
+        @inbounds for row_idx = 1:N
+            data[row_idx, j] -= mean_j
+        end
     end
     return
 end
 
 function kernel(M, N, data)
-
     threads_per_block = 256
     blocks = div(M + threads_per_block - 1, threads_per_block)
 
-    mean_data = CUDA.zeros(M)
-    @cuda threads=threads_per_block blocks=blocks mean_kernel(data, mean_data, N, M)
-    mean_data = reshape(mean_data, (1, M)) # TODO could be expensive
+    # mean_data = CUDA.zeros(M)
+    @cuda threads=threads_per_block blocks=blocks mean_adjust_kernel(data, N, M)
+    # mean_data = reshape(mean_data, (1, M)) # TODO could be expensive
 
     threads = 16
     threads_per_block = (threads, threads)
     blocks = (ceil(Int, M / threads), ceil(Int, M / threads))
 
-    data .-= mean_data
+    # data .-= mean_data
     cov = CUDA.zeros(eltype(data), M, M)
-    @cuda threads=threads_per_block blocks=blocks dot_prod_store_kernel(M, data, cov)
+    @cuda threads=threads_per_block blocks=blocks dot_prod_store_kernel(N, M, data, cov)
 
     return cov 
 end
