@@ -9,8 +9,8 @@ include("../../timing/dphpc_timing.jl")
 
 
 function dot_prod_store_kernel(M, data, cov)
-    i = threadIdx().x
-    j = threadIdx().y
+    i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
+    j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
     N = size(data, 1)
 
     if i <= M && j <= M
@@ -52,7 +52,7 @@ function kernel(M, float_n, data)
 
     data .-= mean_data
     cov = CUDA.zeros(eltype(data), M, M)
-    @cuda threads=threads_per_block blocks=blocks dot_prod_store_kernel(M, data, cov)
+    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks dot_prod_store_kernel(M, data, cov))
 
     return cov 
 end

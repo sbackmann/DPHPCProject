@@ -33,8 +33,8 @@ function dotprod(a, b)
 end
 
 function main()
-    # assert_correctness(false)
-    run_benchmarks()
+    correctness_check(false)
+    # run_benchmarks()
 end
 
 main()
