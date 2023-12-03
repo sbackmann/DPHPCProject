@@ -52,7 +52,7 @@ function kernel(M, float_n, data)
 
     data .-= mean_data
     cov = CUDA.zeros(eltype(data), M, M)
-    @cuda threads=threads_per_block blocks=blocks dot_prod_store_kernel(M, data, cov)
+    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks dot_prod_store_kernel(M, data, cov))
 
     return cov 
 end
