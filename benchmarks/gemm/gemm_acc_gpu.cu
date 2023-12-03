@@ -11,17 +11,25 @@
 cudaError_t cudaStatus;
 //#define VALIDATION  // comment or uncomment to toggle 
 
+// using accumulator (local register) 
 __global__ void gemm_kernel(int N, int M, int K, double *A, double *B, double *C){
 
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
-    int k; 
+    int k;
+
+    double acc1 = 0.0; // C value 
+    double acc2 = 0.0; // A*B*alpha 
 
     if (i < N && j < M) {
-        C[i * M + j] *= beta;
+        acc1 = C[i * M + j];
+        acc1 = acc1 * beta; 
+
         for (k = 0; k < K; k++) {
-            C[i * M + j] += alpha * A[i * K + k] * B[k * M + j];
+            acc2 += alpha * A[i * K + k] * B[k * M + j];
         }
+
+        C[i * M + j] = acc1 + acc2; 
     }
 }
 
@@ -43,18 +51,20 @@ void init_matrices(int N, int M, int K, double* A, double* B, double* C){
 
 
 void run_gemm_kernel(int N, int M, int K, double *A, double *B, double *C) {
+    // Thread block dim
     dim3 block(16, 16);
+    // grid dimension
     dim3 grid((M+block.x -1)/block.x, (N+block.y-1)/block.y);
     gemm_kernel<<<grid,block>>>(N, M, K, A, B, C); 
     cudaDeviceSynchronize();
 
-     #ifdef VALIDATION
+    #ifdef VALIDATION
     cudaStatus = cudaGetLastError();
     
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "Kernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
         exit(EXIT_FAILURE);
-    }
+}
     #endif
 
 }
@@ -138,7 +148,7 @@ void validation(int N, int M, int K) {
     
     // write C to file called gemm_unrolledx4_acc_gpu
     FILE *outputFile;
-    char fileName[] = "gemm_naive_gpu.txt";
+    char fileName[] = "gemm_acc_gpu.txt";
 
     // Open the file for writing
     outputFile = fopen(fileName, "w");

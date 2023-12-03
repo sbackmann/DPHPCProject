@@ -7,21 +7,33 @@
 
 #define alpha 1.5 
 #define beta 1.2
+#define BLOCKSIZE 32
 
 cudaError_t cudaStatus;
-//#define VALIDATION  // comment or uncomment to toggle 
+#define VALIDATION  // comment or uncomment to toggle 
 
+// using accumulator (local register) 
+// Global memory coalescing (src: https://siboehm.com/articles/22/CUDA-MMM)
+// changed the blocksize here from 16 to 32
+// thread block is now a 1D block 
 __global__ void gemm_kernel(int N, int M, int K, double *A, double *B, double *C){
 
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int j = blockIdx.y * blockDim.y + threadIdx.y;
-    int k; 
+    int i = blockIdx.x * BLOCKSIZE  + (threadIdx.x/ BLOCKSIZE);
+    int j = blockIdx.y * BLOCKSIZE + (threadIdx.x % BLOCKSIZE);
+    int k;
+
+    double acc1 = 0.0; // C value 
+    double acc2 = 0.0; // A*B*alpha 
 
     if (i < N && j < M) {
-        C[i * M + j] *= beta;
+        acc1 = C[i * M + j];
+        acc1 = acc1 * beta; 
+
         for (k = 0; k < K; k++) {
-            C[i * M + j] += alpha * A[i * K + k] * B[k * M + j];
+            acc2 += alpha * A[i * K + k] * B[k * M + j];
         }
+
+        C[i * M + j] = acc1 + acc2; 
     }
 }
 
@@ -43,18 +55,21 @@ void init_matrices(int N, int M, int K, double* A, double* B, double* C){
 
 
 void run_gemm_kernel(int N, int M, int K, double *A, double *B, double *C) {
-    dim3 block(16, 16);
+    // Thread block dim
+    // block is now 1-Dim
+    dim3 block(BLOCKSIZE*BLOCKSIZE);
+    // grid dimension
     dim3 grid((M+block.x -1)/block.x, (N+block.y-1)/block.y);
     gemm_kernel<<<grid,block>>>(N, M, K, A, B, C); 
     cudaDeviceSynchronize();
 
-     #ifdef VALIDATION
+    #ifdef VALIDATION
     cudaStatus = cudaGetLastError();
     
     if (cudaStatus != cudaSuccess) {
         fprintf(stderr, "Kernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
         exit(EXIT_FAILURE);
-    }
+}
     #endif
 
 }
@@ -138,7 +153,7 @@ void validation(int N, int M, int K) {
     
     // write C to file called gemm_unrolledx4_acc_gpu
     FILE *outputFile;
-    char fileName[] = "gemm_naive_gpu.txt";
+    char fileName[] = "gemm_coalescing_gpu.txt";
 
     // Open the file for writing
     outputFile = fopen(fileName, "w");

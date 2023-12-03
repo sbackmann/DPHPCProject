@@ -2,8 +2,8 @@ include("../../timing/dphpc_timing.jl")
 
 using CUDA 
 
-const alpha = 1.5
-const beta = 1.2
+# eliminate global variables + accumulators 
+# global memory coalescing 
 
 function init_matrices(N, M, K)
 
@@ -20,28 +20,37 @@ function init_matrices(N, M, K)
 end
 
 function gemm_kernel(N, M, K, A, B, C)
-    i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
-    j = threadIdx().y + (blockIdx().y - 1) * blockDim().y
+    i = (threadIdx().x/32) + blockIdx().x * 32
+    j = (threadIdx().x % 32) + blockIdx().y * 32
+
+    alpha = 1.5
+    beta = 1.2
 
     if i <= N && j <= M
-        C[i, j] *= beta
+        acc1 = C[i, j] * beta
+        acc2 = 0.0
         for k = 1:K
-            C[i, j] += alpha * A[i, k] * B[k, j]
+            acc2 += alpha * A[i, k] * B[k, j]
         end
+        C[i, j] = acc1 + acc2
     end
 end
 
 function run_gemm_kernel(N, M, K, A, B, C)
-    threadsPerBlock = (16, 16)
-    numBlocks = ((N - 1) ÷ 16 + 1, (M - 1) ÷ 16 + 1)
+    threadsPerBlock = (32*32)
+    # The following line could be wrong 
+    # block.x = 32*32 
+    # block.y = 1
+    # I changed the blocksize here, the prev one could be wrong
+    numBlocks = ((M+ 32*32 -1 ) ÷ 32*32, N)
 
     @cuda threads=threadsPerBlock blocks=numBlocks gemm_kernel(N, M, K, A, B, C)
     CUDA.synchronize()
 
-
 end
 
 function main()
+
 
         N, M, K = 1000, 1100, 1200
         @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "S")
@@ -55,7 +64,9 @@ function main()
         N, M, K = 2000, 2300, 2600
         @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "paper")
 
-end 
+
+
+end
 
 main()
 
