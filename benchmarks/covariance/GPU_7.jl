@@ -81,7 +81,7 @@ function normalize_kernel(cov, M, divider)
     return
 end
 
-function transpose_kernel(A, B, m, n)
+function transpose_kernel(A, B, n, m)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
     if i <= m && j <= n
@@ -95,13 +95,23 @@ function kernel(M, N, data)
 
     data_t = CUDA.zeros(eltype(data), M, M)
     cov = CUDA.zeros(eltype(data), M, M)
-    x = CUDA.@profile begin
+    x = CUDA.@profile external = true begin
+        threads = 16
+        threads_per_block = (threads, threads)
+        blocks = (ceil(Int, N / threads), ceil(Int, M / threads))
+        CUDA.@sync(@cuda threads=threads_per_block blocks=blocks transpose_kernel(data, data_t, N, M))
+        CUDA.@sync(@cuda threads=threads_per_block blocks=blocks transpose_kernel(data_t, data, N, M))
+
+
         threads_per_block = 256
         blocks = div(M + threads_per_block - 1, threads_per_block)
         CUDA.@sync(@cuda threads=threads_per_block blocks=blocks mean_adjust_kernel(data, N, M))
 
         # mean_data = CUDA.zeros(M)
         # mean_data = reshape(mean_data, (1, M)) # TODO could be expensive
+
+        # threads_per_block = 256
+        # blocks = div(M + threads_per_block - 1, threads_per_block)
 
         threads = 16
         threads_per_block = (threads, threads)
