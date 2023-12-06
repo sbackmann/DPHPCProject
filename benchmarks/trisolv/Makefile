@@ -1,16 +1,16 @@
 ju:
-	julia trisolve_gpu.jl
-	#julia trisolve.jl
+	julia trisolv_gpu.jl
+	#julia trisolv.jl
 
 juserial:
-	julia trisolve.jl
+	julia trisolv.jl
 
 py:
-	python trisolve.py
+	python trisolv.py
 
 c:
-	gcc -o trisolve trisolve.c -lm -llapacke -lblas 
-	./trisolve
-	rm ./trisolve
+	gcc -o trisolv trisolv.c -lm -llapacke -lblas 
+	./trisolv
+	rm ./trisolv
 
 run: ju py c 
