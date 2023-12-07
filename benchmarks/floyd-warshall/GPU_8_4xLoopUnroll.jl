@@ -20,22 +20,15 @@ function floyd_kernel(graph, n)
 
     if i <= n && j <= n
         # Unroll loop by factor 4
-        for kk in 1:4:n-3
-            @inbounds tmp = graph[i, kk] + graph[kk, j]
-            @inbounds if tmp < graph[i, j]
-                graph[i, j] = tmp
-            end
-            @inbounds tmp = graph[i, kk + 1] + graph[kk + 1, j]
-            @inbounds if tmp < graph[i, j]
-                graph[i, j] = tmp
-            end
-            @inbounds tmp = graph[i, kk + 2] + graph[kk + 2, j]
-            @inbounds if tmp < graph[i, j]
-                graph[i, j] = tmp
-            end
-            @inbounds tmp = graph[i, kk + 3] + graph[kk + 3, j]
-            @inbounds if tmp < graph[i, j]
-                graph[i, j] = tmp
+        @inbounds for kk in 1:4:n-3
+            tmp = graph[i, kk] + graph[kk, j]
+            tmp2 = graph[i, kk + 1] + graph[kk + 1, j]
+            tmp3 = graph[i, kk + 2] + graph[kk + 2, j]
+            tmp4 = graph[i, kk + 3] + graph[kk + 3, j]
+            
+            tmp_min = min(tmp, tmp2, tmp3, tmp4)
+            if tmp_min < graph[i, j]
+                graph[i, j] = tmp_min
             end
         end
         @inbounds tmp = graph[i, n-2] + graph[n-2, j]

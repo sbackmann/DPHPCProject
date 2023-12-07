@@ -5,14 +5,30 @@ naive:
 	gcc naive.c -O3 -o ./a.exe -lm
 	./a.exe
 
-GPU_naive:
-	nvcc -o ./a.exe GPU_naive.cu
+GPU_1_naive:
+	nvcc -o ./a.exe GPU_1_naive.cu utils.cu
 	./a.exe
 
-GPU_tmp_var:
-	nvcc -o ./a.exe GPU_tmp_var.cu
+GPU_2_tmp_var:
+	nvcc -o ./a.exe GPU_2_tmpVar.cu utils.cu
 	./a.exe
 
-GPU_no_bd:
-	nvcc -o ./a.exe GPU_no_bd.cu
+GPU_4_noBranch:
+	nvcc -o ./a.exe GPU_4_noBranch.cu utils.cu
+	./a.exe
+
+GPU_5_noElse:
+	nvcc -o ./a.exe GPU_5_noElse.cu utils.cu
+	./a.exe
+
+GPU_8_2xLoopUnroll:
+	nvcc -o ./a.exe GPU_8_2xLoopUnroll.cu utils.cu
+	./a.exe
+
+GPU_8_3xLoopUnroll:
+	nvcc -o ./a.exe GPU_8_3xLoopUnroll.cu utils.cu
+	./a.exe
+
+GPU_8_4xLoopUnroll:
+	nvcc -o ./a.exe GPU_8_4xLoopUnroll.cu utils.cu
 	./a.exe

@@ -32,7 +32,8 @@ function main2()
     # Dummy Run so that first run is ignored
     n = 200
     graph = init_graph(n)
-    @dphpc_time(graph = init_graph(n),floyd_warshall_gpu!(n, graph),"missing")
+    graph_gpu = reset_graph(graph)
+    @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), "missing")
 
 end
 

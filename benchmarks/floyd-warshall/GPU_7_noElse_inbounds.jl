@@ -18,10 +18,10 @@ function floyd_kernel(graph, n)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
     if i <= n && j <= n
-        for kk in 1:n
+        @inbounds for kk in 1:n
             # Remove bounds checking
-            @inbounds tmp = graph[i, kk] + graph[kk, j]
-            @inbounds if tmp < graph[i, j]
+            tmp = graph[i, kk] + graph[kk, j]
+            if tmp < graph[i, j]
                 graph[i, j] = tmp
             end
         end
