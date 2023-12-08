@@ -37,25 +37,12 @@ function correctness_check(cuda, prefix=["S", "M", "L", "paper"])
 end
 
 function run_benchmarks(; cuda = false, create_tests = false)
-    correctness_check(cuda)
-    return
-
-    if !create_tests
-        assert_correctness(cuda)
-        assert_correctness(cuda, "S")
-    end
-
     for (preset, dims) in benchmark_sizes
         N = dims
 
         data = initialize(N, cuda=cuda)
-        
-        if create_tests
-            solution = kernel(data...)
-            create_testfile(solution, preset)
-        end
 
-        # print(@dphpc_time(nothing, kernel(data...), preset))
+        print(@dphpc_time(nothing, kernel(data...), preset))
     end
 end
 

@@ -18,6 +18,7 @@ function kernel(L, x, b)
 end
 
 function main()
+    correctness_check(false, ["S", "M"])
     run_benchmarks()
 end
 
