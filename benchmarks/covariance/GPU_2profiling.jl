@@ -39,12 +39,14 @@ function normalise_kernel(M, cov, normalising_factor)
 end
 
 function kernel(M, N, data)
+    cov = CUDA.zeros(eltype(data), M, M)
+
+    r = CUDA.@profile begin 
     threads_per_block = 256
     blocks = div(M + threads_per_block - 1, threads_per_block)
 
-    @cuda threads=threads_per_block blocks=blocks mean_adjust_kernel(data, N, M)
+    @cuda threads=threads_per_block blocks=block(data, N, M)
 
-    cov = CUDA.zeros(eltype(data), M, M)
     cov = transpose(data) * data
 
     threads = 16
@@ -53,6 +55,8 @@ function kernel(M, N, data)
 
     normalising_factor = 1 / (N - 1.0)    
     CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks normalise_kernel(M, cov, normalising_factor))
+    end
+    print(r)
 
     return cov 
 end
@@ -67,7 +71,10 @@ function main()
     println("Expected")
     pretty_table(cov(initialize(3,4)))
 
-    run_benchmarks(cuda = true)
+
+    data = initialize(1400,1800, cuda=true)
+    covar = kernel(1400,1800, data)
+    # run_benchmarks(cuda = true)
 end
 
 
