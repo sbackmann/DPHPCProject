@@ -9,6 +9,6 @@ cc:
 	rm ./covariance
 
 ccc:
-	nvcc -o covariance cGPU_6_inbounds.cu -O1
+	nvcc -o covariance cGPU_6_inbounds.cu -O0
 	./covariance
 	rm ./covariance

@@ -72,8 +72,9 @@ void kernel(int M, int N, double* d_data, double* d_cov) {
     cudaDeviceSynchronize();
 
 
-    dim3 blockDim(16, 16);
-    dim3 gridDim((M + blockDim.x - 1) / blockDim.x, (M + blockDim.y - 1) / blockDim.y);
+    int t = 16;
+    dim3 blockDim(t, t);
+    dim3 gridDim((M + t - 1) / t, (M + t - 1) / t);
 
     covariance_kernel<<<gridDim, blockDim>>>(M, N, d_data, d_cov);
     cudaDeviceSynchronize();
@@ -129,6 +130,7 @@ int main() {
     #if DEV_MODE
         run_bm(3, 4, "M");
         run_bm(5, 7, "M");
+        // run_bm(500, 600, "M");
         // run_bm(3, 4, "S");
         // run_bm(5, 5, "S");
         // run_bm(5, 7, "M");
