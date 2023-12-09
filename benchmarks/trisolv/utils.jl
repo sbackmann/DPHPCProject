@@ -18,6 +18,11 @@ function initialize(N, datatype=Float64; cuda=false)
         pretty_table(b)
     end
 
+    if cuda
+        L = CUDA.CuArray(L)
+        x = CUDA.CuArray(x)
+        b = CUDA.CuArray(b)
+    end
     return L, x, b
 end
 
@@ -77,7 +82,7 @@ function assert_correctness(cuda, prefix="dev")
     end
 
     if cuda
-        cpu_data = CUDA.copyto!(Matrix{Float64}(undef, size(solution)...), solution)
+        cpu_data = CUDA.copyto!(Vector{Float64}(undef, size(solution)...), solution)
         copyto!(cpu_data, solution)
         solution = cpu_data
     end
