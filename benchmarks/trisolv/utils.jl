@@ -9,7 +9,7 @@ DEBUG = false
 function initialize(N, datatype=Float64; cuda=false)
     L = [((i + N - j + 1) * 2 / N) for i in 1:N, j in 1:N]
 
-    x = fill(-999.0, N)
+    x = zeros(N)
     b = [i - 1 for i in 1:N]
 
     if DEBUG

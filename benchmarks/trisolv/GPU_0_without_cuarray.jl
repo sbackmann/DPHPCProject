@@ -26,33 +26,5 @@ function kernel(L, x, b)
     return x
 end
 
-function cuda_kernel(L, x, b)
-    CUDA.@allowscalar pretty_table(L)
-    CUDA.@allowscalar pretty_table(x)
-    CUDA.@allowscalar pretty_table(b)
-
-    N = length(x)
-    dp = CUDA.zeros(N)
-    @cuda threads=N cuda_kernel_helper(L, x, b, dp)
-    println(dp)
-    return x
-end
-
-function cuda_kernel_helper(L, x, b, dp)
-    i = threadIdx().x
-
-    if i <= length(x)
-        local_dot = 0.0
-        for k in 1:i-1
-            local_dot += L[i, k] * x[k]
-        end
-
-        dp[i] = local_dot
-
-        x[i] = (b[i] - local_dot) / L[i, i]
-        # x[i] = (b[i] - dot(L[i, 1:i-1], x[1:i-1])) / L[i, i]
-    end
-    return
-end
 
 main()
