@@ -41,12 +41,12 @@ void run_floyd_warshall_gpu(int n, int *graph) {
 }
 
 
-int main(int argc, char** argv)
-{
-  run_bm(200, "S", run_floyd_warshall_gpu, ASSERT);
-  run_bm(400, "M", run_floyd_warshall_gpu, ASSERT);
-  run_bm(850, "L", run_floyd_warshall_gpu, ASSERT);
-  run_bm(2800, "paper", run_floyd_warshall_gpu, ASSERT);
+int main(int argc, char** argv) {
+  
+  run_bm(N_S, "S", run_floyd_warshall_gpu, ASSERT);
+  run_bm(N_M, "M", run_floyd_warshall_gpu, ASSERT);
+  run_bm(N_L, "L", run_floyd_warshall_gpu, ASSERT);
+  run_bm(N_PAPER, "paper", run_floyd_warshall_gpu, ASSERT);
   
   return 0;
 }

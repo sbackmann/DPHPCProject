@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 
+
 void init_array (int n,
    int *graph)
 {
