@@ -98,10 +98,7 @@ void run_bm(int n, const char* preset, void (*kernel)(int, int*), int ASSERT) {
   graph = (int*) malloc(n * n * sizeof(int));                                       
   init_array(n, graph);                                                             
   int *graph_gpu;                                                                   
-  cudaMalloc((void**) &graph_gpu, n * n * sizeof(int));                             
-                                                                                    
-  init_array(n, graph);                                                             
-  cudaMemcpy(graph_gpu, graph, n * n * sizeof(int), cudaMemcpyHostToDevice);        
+  cudaMalloc((void**) &graph_gpu, n * n * sizeof(int));                      
   cudaDeviceSynchronize();                                                          
                                                                                     
   dphpc_time3(                                                                      

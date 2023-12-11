@@ -128,9 +128,7 @@ void run_bm(int nr, int nq, int np, const char* preset, void (*kernel)(int, int,
     init_array (nr, nq, np,
         A,
         C4);
-    cudaMemcpy(A_gpu, A, nr * nq * np * sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpy(C4_gpu, C4, np * np * sizeof(double), cudaMemcpyHostToDevice);
-    cudaMemset(sum_gpu, 0, nr * nq * np * sizeof(double));
     cudaDeviceSynchronize();
 
     dphpc_time3(
