@@ -35,7 +35,7 @@ function floyd_warshall_gpu_assert!(n, graph)
     threads_per_block = (threads, threads)
     blocks = (ceil(Int, n / threads), ceil(Int, n / threads))
 
-    CUDA.@sync(@cuda threads=threads_per_block blocks=blocks floyd_kernel_assert(graph, n))
+    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks floyd_kernel_assert(graph, n))
     return graph
 end
 

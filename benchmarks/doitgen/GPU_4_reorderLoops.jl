@@ -9,7 +9,7 @@ function doitgen_gpu!(nr, nq, np, A, C4, sum)
     n = max(nr, nq)
     blocks = (ceil(Int, n / threads), ceil(Int, n / threads))
 
-    CUDA.@sync(@cuda threads=threads_per_block blocks=blocks doitgen_kernel(nr, nq, np, A, C4, sum))    
+    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks doitgen_kernel(nr, nq, np, A, C4, sum))    
 
 end
 

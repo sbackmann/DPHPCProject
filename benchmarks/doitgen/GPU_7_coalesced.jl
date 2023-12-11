@@ -10,7 +10,7 @@ function doitgen_gpu!(nr, nq, np, A, C4, sum)
     threads_per_block = (THREADS * THREADS)
     blocks = (ceil(Int, np / THREADS), ceil(Int, nr / THREADS))
 
-    CUDA.@sync(@cuda threads=threads_per_block blocks=blocks doitgen_kernel(nr, nq, np, A, C4, sum))    
+    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks doitgen_kernel(nr, nq, np, A, C4, sum))    
     copyto!(A, sum)
     CUDA.synchronize()
 end

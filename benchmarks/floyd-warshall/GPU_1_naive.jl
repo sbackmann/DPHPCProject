@@ -9,7 +9,7 @@ function floyd_warshall_gpu!(n, graph)
     threads_per_block = (threads, threads)
     blocks = (ceil(Int, n / threads), ceil(Int, n / threads))
 
-    CUDA.@sync(@cuda threads=threads_per_block blocks=blocks floyd_kernel(graph, n))
+    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks floyd_kernel(graph, n))
     return graph
 end
 

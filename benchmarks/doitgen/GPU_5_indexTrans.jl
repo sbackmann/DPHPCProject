@@ -11,7 +11,7 @@ function doitgen_gpu!(nr, nq, np, A, C4, sum)
 
     #sum = CUDA.fill(0.0, np, nr, nq)
 
-    CUDA.@sync(@cuda threads=threads_per_block blocks=blocks doitgen_kernel(nr, nq, np, A, C4, sum))    
+    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks doitgen_kernel(nr, nq, np, A, C4, sum))    
 
 end
 
