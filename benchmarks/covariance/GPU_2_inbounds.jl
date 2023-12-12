@@ -12,14 +12,13 @@ function dot_prod_store_kernel(M, data, cov)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
 
-    N = size(data, 1)
+    N = size(data, 2)
     if i <= M && j <= M
 
         local_dot = 0.0
 
-        # local_dot = dot(data[:, i], data[:, j])
-        for k in 1:N
-            local_dot += data[k, i] * data[k, j]
+        @inbounds for k in 1:N
+            local_dot += data[i, k] * data[j, k]
         end
         cov[j,i] = local_dot / (N - 1.0)
     end
@@ -27,14 +26,34 @@ function dot_prod_store_kernel(M, data, cov)
     return
 end
 
+function transpose_kernel(transposed, orig)
+    i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
+    j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
 
-function kernel(M, float_n, data)
+    N = size(orig, 1)
+    M = size(orig, 2)
+    @inbounds if i <= N && j <= M
+        transposed[j,i] = orig[i,j]
+    end
+
+    return
+end
+
+function kernel(M, N, orig_data)
+    threads = 16
+    threads_per_block = (threads, threads)
+    blocks = (ceil(Int, N / threads), ceil(Int, M / threads))
+    data = CUDA.zeros(eltype(orig_data), M, N)
+    @cuda threads=threads_per_block blocks=blocks transpose_kernel(data, orig_data)
+
     threads = 16
     threads_per_block = (threads, threads)
     blocks = (ceil(Int, M / threads), ceil(Int, M / threads))
+    
 
     # TODO maybe faster if use custom kernel
-    mean_data = CUDA.sum(data, dims=1) / float_n
+
+    mean_data = CUDA.sum(data, dims=2) / N
 
     data .-= mean_data
     cov = CUDA.zeros(eltype(data), M, M)

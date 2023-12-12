@@ -17,6 +17,14 @@ benchmark_sizes = Dict(
     "dev"   => (3, 4)
 )
 
+function reset(M, N, datatype=Float64; cuda=false)
+   data = initialize(M, N, datatype, cuda=cuda) 
+   if cuda
+       CUDA.@sync blocking=true data
+   end
+   return data
+end
+
 function correctness_check(cuda, prefix=["S", "M", "L", "paper"])
     for preset in prefix
         println("Checking correctness for $preset")
@@ -36,14 +44,14 @@ function run_benchmarks(; cuda = false, create_tests = false)
     for (preset, dims) in benchmark_sizes
         M, N = dims
 
-        data = initialize(M, N, cuda=cuda)
         
         if create_tests
-            solution = kernel(M, N, data)
+            test_data = initialize(M, N, cuda=cuda)
+            solution = kernel(M, N, test_data)
             create_testfile(solution, preset)
         end
 
-        print(@dphpc_time(nothing, kernel(M, N, data), preset))
+        print(@dphpc_time(data = reset(M, N, cuda=cuda), kernel(M, N, data), preset))
     end
 end
 
