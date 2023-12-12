@@ -22,11 +22,6 @@ function pre_comp_kernel(L, Lx, x, j, N)
 
     i = (blockIdx().x - 1) * blockDim().x + (threadIdx().x - 1 ) + start_row
     if i <= N
-        # if i == j-1
-        #     Lx[i, j] = L[i, j] * x[j] + Lx[i, j - 1]
-        # else
-        #     Lx[i, j] = L[i, j] * x[j] + Lx[i, j - 1]
-        # end
         Lx[i, j] = L[i, j] * x[j] + Lx[i, j - 1]
     end
 
