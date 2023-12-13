@@ -105,8 +105,6 @@ int main() {
     run_bm(16000, "paper");
 
     return 0;
-
-    return 0;
 }
 
 

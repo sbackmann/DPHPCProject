@@ -10,7 +10,6 @@
 #define TIME false
 #define DEBUG false
 
-// Function to perform the inversion of the diagonal elements
 __global__ void inv_diag_kernel(double *matrix, double *diag, int N) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < N) {
@@ -18,15 +17,13 @@ __global__ void inv_diag_kernel(double *matrix, double *diag, int N) {
     }
 }
 
-// Function to perform scalar multiplication
-__global__ void scalar_mult_kernel(double *L, double *Lx, double scalar, int j, int N) {
+__global__ void scalar_mult_kernel(double *L, double *Lx, double *scalar, int j, int N) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < N) {
-        Lx[i * N + j] = L[i * N + j] * scalar;
+        Lx[i * N + j] = L[i * N + j] * scalar[0];
     }
 }
 
-// Function to perform the main computation kernel
 __global__ void pre_comp_kernel(double *L, double *Lx, double *x, int j, int N) {
     int start_row = j;
     int i = blockIdx.x * blockDim.x + threadIdx.x + start_row;
@@ -35,7 +32,6 @@ __global__ void pre_comp_kernel(double *L, double *Lx, double *x, int j, int N) 
     }
 }
 
-// Function to update the solution vector
 __global__ void scalar_update_kernel(int N, double *x, int i, double *Lx, double *inv_diag) {
     x[i] -= (Lx[i * N + (i - 1)] * inv_diag[i]);
 }
@@ -65,7 +61,7 @@ void kernel(double *d_L, double *d_x, double *d_b, int N) {
     // now wrong
     // d_x = d_b_prod_inv_diag;
 
-    scalar_mult_kernel<<<blocks, t>>>(d_L, d_Lx, d_b_prod_inv_diag[0], 0, N);
+    scalar_mult_kernel<<<blocks, t>>>(d_L, d_Lx, d_b_prod_inv_diag, 0, N);
     cudaDeviceSynchronize();
 
     // Main computation loop
@@ -83,6 +79,7 @@ void kernel(double *d_L, double *d_x, double *d_b, int N) {
     cudaFree(d_inv_diag);
     cudaFree(d_b_prod_inv_diag);
     cudaFree(d_Lx);
+    cudaDeviceSynchronize();
 }
 
 void reset(double *L, double *x, double *b, double *d_L, double *d_x, double *d_b, int N) {
@@ -97,7 +94,7 @@ void initialize(int N, double *L, double *x, double *b) {
         for (int j = 0; j < N; j++) {
             L[i * N + j] = (i + N - j + 1) * 2.0 / N;
         }
-        x[i] = -999.0;
+        x[i] = -999;
         b[i] = (double)i;
     }
 }
@@ -113,13 +110,20 @@ void run_bm(int N, const char *preset) {
     cudaMalloc((void **)&d_L, N * N * sizeof(double));
     cudaMalloc((void **)&d_x, N * sizeof(double));
     cudaMalloc((void **)&d_b, N * sizeof(double));
-    // kernel(N, L, x, b);
-    // if (!is_correct(N, x, preset)) {
-    //     printf("Validation failed for preset: %s \n", preset);
-    //     exit(1);
-    // } else {
-    //     printf("Validation passed for preset: %s \n", preset);
-    // }
+
+    reset(L, x, b, d_L, d_x, d_b, N);
+    kernel(d_L, d_x, d_b, N);
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(x, d_x, N * sizeof(double), cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();
+    
+    printf("Done \n");
+    for (int i = 0; i < 5; i++) {
+        printf("%f ", x[i]);
+    }
+    
+    printf("%f ", x[N-1]);
 
     dphpc_time3(
         reset(L, x, b, d_L, d_x, d_b, N),
@@ -127,7 +131,6 @@ void run_bm(int N, const char *preset) {
         preset
     );
 
-    cudaMemcpy(x, d_x, N * sizeof(double), cudaMemcpyDeviceToHost);
 
     cudaFree(d_L);
     cudaFree(d_x);
