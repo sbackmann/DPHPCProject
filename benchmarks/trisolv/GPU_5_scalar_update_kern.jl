@@ -5,10 +5,6 @@ using PrettyTables
 include("utils.jl")
 include("../../timing/dphpc_timing.jl")
 
-DEV = true
-TIME = false
-DEBUG = false
-
 
 function main()
     # correctness_check(true, ["S", "M"])
@@ -52,33 +48,33 @@ function scalar_update_kernel(x, i, Lx, inv_diag)
 end
 
 function kernel(L, x, b)
-    x
-    res = CUDA.@profile begin
+    # x
+    # res = CUDA.@profile begin
 
-        N = length(x)
-        t = 256
-        blocks = ceil(Int, N / t)
+    N = length(x)
+    t = 256
+    blocks = ceil(Int, N / t)
+    
+    inv_diag = CUDA.zeros(eltype(L), N)
+    @cuda threads=t blocks=blocks inv_diag_kernel(L, inv_diag, N)
+
+    b_prod_inv_diag = CUDA.zeros(eltype(L), N)
+    b_prod_inv_diag = b .* inv_diag
+
+    Lx = CUDA.zeros(eltype(L), N, N)
+
+    x = CuArray(b_prod_inv_diag)
+    CUDA.@allowscalar Lx[:, 1] = L[:, 1] * b_prod_inv_diag[1]
+    
+    for i in 2:N
+        @cuda threads=1 blocks=1 scalar_update_kernel(x, i, Lx, inv_diag)
         
-        inv_diag = CUDA.zeros(eltype(L), N)
-        @cuda threads=t blocks=blocks inv_diag_kernel(L, inv_diag, N)
-
-        b_prod_inv_diag = CUDA.zeros(eltype(L), N)
-        b_prod_inv_diag = b .* inv_diag
-
-        Lx = CUDA.zeros(eltype(L), N, N)
-
-        x = CuArray(b_prod_inv_diag)
-        CUDA.@allowscalar Lx[:, 1] = L[:, 1] * b_prod_inv_diag[1]
-        
-        for i in 2:N
-            @cuda threads=1 blocks=1 scalar_update_kernel(x, i, Lx, inv_diag)
-            
-            blocks = ceil(Int, (N - i + 1) / t)
-            @cuda threads=t blocks=blocks pre_comp_kernel(L, Lx, x, i, N)
-        end
-
+        blocks = ceil(Int, (N - i + 1) / t)
+        @cuda threads=t blocks=blocks pre_comp_kernel(L, Lx, x, i, N)
     end
-    print(res)
+
+    # end
+    # print(res)
 
     return x
 end

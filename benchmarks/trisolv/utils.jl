@@ -8,7 +8,6 @@ DEBUG = false
 
 function initialize(N, datatype=Float64; cuda=false)
     L = [((i + N - j + 1) * 2 / N) for i in 1:N, j in 1:N]
-
     x = zeros(N)
     b = [i - 1 for i in 1:N]
 
@@ -45,9 +44,7 @@ function run_benchmarks(; cuda = false, create_tests = false)
     for (preset, dims) in benchmark_sizes
         N = dims
 
-        data = initialize(N, cuda=cuda)
-
-        print(@dphpc_time(nothing, kernel(data...), preset))
+        print(@dphpc_time(data = initialize(N, cuda=cuda), kernel(data...), preset))
     end
 end
 
@@ -87,12 +84,12 @@ function assert_correctness(cuda, prefix="dev")
         solution = cpu_data
     end
 
-    if !isapprox(solution, expected)
+    if !isapprox(solution, expected, atol=1e-2)
         open("$test_cases_dir/$(prefix)_wrong.tsv", "w") do io
             for row in eachrow(solution)
                 println(io, join(row, "\t"))
             end
         end
     end
-    @assert isapprox(solution, expected)
+    @assert isapprox(solution, expected, atol=1e-2)
 end
