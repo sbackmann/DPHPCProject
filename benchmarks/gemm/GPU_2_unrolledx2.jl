@@ -1,9 +1,19 @@
 include("../../timing/dphpc_timing.jl")
+include("./validation.jl")
 
 using CUDA 
 
-const alpha = 1.5
-const beta = 1.2
+# eliminate global variables + accumulators + unroll by x4 
+
+validation = false
+
+# for validation 
+function initialize_matrices_val(N, M, K)
+    A = fill(0.5, N, K)
+    B = fill(0.7, K, M)
+    C = fill(0.3, N, M)
+    return CuArray(A), CuArray(B), CuArray(C)
+end
 
 function init_matrices(N, M, K)
 
@@ -23,11 +33,29 @@ function gemm_kernel(N, M, K, A, B, C)
     i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
     j = threadIdx().y + (blockIdx().y - 1) * blockDim().y
 
+    alpha = 1.5
+    beta = 1.2
+
     if i <= N && j <= M
-        C[i, j] *= beta
-        for k = 1:K
-            C[i, j] += alpha * A[i, k] * B[k, j]
+        acc1 = C[i, j] * beta
+        acc2 = 0.0
+
+        acc3 = 0.0
+        acc4 = 0.0
+
+        # Unroll the loop by 2
+        for k = 1:2:K-1
+            acc3 += alpha * A[i, k] * B[k, j]
+            acc4 += alpha * A[i, k+1] * B[k+1, j]
+           
         end
+
+        # Handle the remaining values
+        for k = (K - rem(K, 2)) + 1:K
+            acc2 += alpha * A[i, k] * B[k, j]
+        end
+
+        C[i, j] = acc1 + acc2 + acc3 + acc4
     end
     nothing
 end
@@ -35,12 +63,25 @@ end
 function run_gemm_kernel(N, M, K, A, B, C)
     threadsPerBlock = (16, 16)
     numBlocks = ((N - 1) ÷ 16 + 1, (M - 1) ÷ 16 + 1)
-
     @cuda threads=threadsPerBlock blocks=numBlocks gemm_kernel(N, M, K, A, B, C)
     CUDA.synchronize()
 end
 
+
 function main()
+
+    if validation 
+
+        N, M, K = 30, 40, 50
+        A, B, C = initialize_matrices_val(N, M, K)
+        run_gemm_kernel(N,M,K,A,B,C)
+        C_empty = zeros(Float64, N, M)
+        C_cpu = CUDA.copyto!(C_empty, C)  
+        is_valid = validate(C_cpu)
+
+        print(is_valid)
+
+        else 
 
         N, M, K = 1000, 1100, 1200
         @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "S")
@@ -54,7 +95,9 @@ function main()
         N, M, K = 2000, 2300, 2600
         @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "paper")
 
-end 
+        end 
+
+end
 
 main()
 
