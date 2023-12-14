@@ -10,7 +10,7 @@
 
 #define MIN_RUNS 10  // do at least _ runs
 #define MAX_RUNS 200 // do at most _ runs
-#define MAX_TIME 2.0 // dont run for more than _ seconds if enough measurements where collected
+#define MAX_TIME 5.0 // dont run for more than _ seconds if enough measurements where collected
 #define TIMEOUT  15.0 // after _ many seconds, dont start a new run, even if not enough measurements were collected
 
 
