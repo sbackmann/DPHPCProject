@@ -1,5 +1,5 @@
 c0:
-	gcc -o covariance CPU_0.c -lm
+	gcc -o covariance CPU_0.c utils.c -lm
 	./covariance
 	rm ./covariance
 
