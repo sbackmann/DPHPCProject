@@ -4,10 +4,6 @@
 
 #include "../../timing/dphpc_timing.h"
 
-#define DEV_MODE 0
-#define TIME 1
-
-// CUDA kernel to calculate covariance matrix
 __global__ void dot_prod_store_kernel(int M, int N, double* data, double* cov) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -62,10 +58,8 @@ void kernel(int M, int N, double* d_data, double* d_cov) {
     int blocks = (M + threads_per_block - 1) / threads_per_block;
 
     mean_kernel<<<blocks, threads_per_block>>>(d_data, d_mean, N, M);
-    cudaDeviceSynchronize();
 
     subtract_kernel<<<blocks, threads_per_block>>>(d_data, d_mean, N, M);
-    cudaDeviceSynchronize();
 
     int t = 16;
     dim3 blockDim(t, t);
@@ -74,10 +68,7 @@ void kernel(int M, int N, double* d_data, double* d_cov) {
     dot_prod_store_kernel<<<gridDim, blockDim>>>(M, N, d_data, d_cov);
     cudaDeviceSynchronize();
 
-    // cudaMemcpy(cov, d_cov, M * M * sizeof(double), cudaMemcpyDeviceToHost);
-    // cudaFree(d_data);
-    // cudaFree(d_cov);
-    // free(mean);
+    cudaFree(d_mean);
 }
 
 void run_bm(int M, int N, const char* preset) {

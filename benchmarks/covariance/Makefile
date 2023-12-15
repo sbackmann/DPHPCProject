@@ -9,7 +9,7 @@ cc0:
 	rm ./covariance
 
 cc4:
-	nvcc -o covariance GPU_4_triangular.cu
+	nvcc -o covariance GPU_4_triangular.cu utils.cu
 	./covariance
 	rm ./covariance
 
