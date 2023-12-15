@@ -1,9 +1,19 @@
-c:
-	gcc -o covariance covariance.c -lm
+c0:
+	gcc -o covariance CPU_0.c -lm
 	./covariance
 	rm ./covariance
 
-cc:
+cc0:
+	nvcc -o covariance GPU_0_naive.cu
+	./covariance
+	rm ./covariance
+
+cc4:
+	nvcc -o covariance GPU_4_triangular.cu
+	./covariance
+	rm ./covariance
+
+cc6:
 	nvcc -o covariance cGPU_6_inbounds.cu
 	./covariance
 	rm ./covariance
