@@ -24,7 +24,7 @@ bool is_correct(int M, double *cov, const char *preset) {
     snprintf(filename, sizeof(filename), "./test_cases/%s.tsv", preset);
 
 
-    double *result = malloc(sizeof(double) * M * M);
+    double *result = (double*)malloc(sizeof(double) * M * M);
     read_values_from_tsv(filename, M * M, result);
 
     for (int i = 0; i < M * M; i++) {

@@ -4,7 +4,7 @@ c0:
 	rm ./covariance
 
 cc0:
-	nvcc -o covariance GPU_0_naive.cu
+	nvcc -o covariance GPU_0_naive.cu utils.cu
 	./covariance
 	rm ./covariance
 
