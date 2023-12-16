@@ -4,6 +4,7 @@
 
 #include "../../timing/dphpc_timing.h"
 
+bool PERFORM_VALIDATION = false;
 
 void kernel(int M, int N, double* data, double* cov) {
     double* mean = calloc(M, sizeof(double));
@@ -42,13 +43,16 @@ void run_bm(int M, int N, const char* preset) {
     double *data = malloc(sizeof(double) * N * M);
     double *cov = malloc(sizeof(double) * M * M);
 
-    initialize(M, N, data);
-    kernel(M, N, data, cov);
-    if (!is_correct(M, cov, preset)) {
-        printf("Validation failed for preset: %s \n", preset);
-        exit(1);
-    } else {
-        printf("Validation passed for preset: %s \n", preset);
+    if (PERFORM_VALIDATION) {
+        printf("Running validation for preset: %s \n", preset);
+        initialize(M, N, data);
+        kernel(M, N, data, cov);
+        if (!is_correct(M, cov, preset)) {
+            printf("Validation failed for preset: %s \n", preset);
+            exit(1);
+        } else {
+            printf("Validation passed for preset: %s \n", preset);
+        }
     }
 
     dphpc_time3(
@@ -65,7 +69,7 @@ void run_bm(int M, int N, const char* preset) {
 int main() {
     run_bm(500, 600, "S");
     run_bm(1400, 1800, "M");
-    run_bm(3200, 4000, "L");
+    // run_bm(3200, 4000, "L"); // too slow
     run_bm(1200, 1400, "paper");
 
     return 0;

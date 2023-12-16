@@ -7,7 +7,6 @@ using CUDA
 include("utils.jl")
 include("../../timing/dphpc_timing.jl")
 
-VALIDATE = false
 
 function dot_prod_store_kernel(M, data, cov)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
@@ -22,10 +21,14 @@ function dot_prod_store_kernel(M, data, cov)
         dot4 = 0.0
 
         @inbounds @simd for k in 1:4:N-3
-            dot1 += data[i, k  ] * data[j, k  ]
-            dot2 += data[i, k+1] * data[j, k+1]
-            dot3 += data[i, k+2] * data[j, k+2]
-            dot4 += data[i, k+3] * data[j, k+3]
+            dot1 = fma(data[i, k  ], data[j, k  ], dot1)
+            dot2 = fma(data[i, k+1  ], data[j, k+1  ], dot2)
+            dot3 = fma(data[i, k+2  ], data[j, k+2  ], dot3)
+            dot4 = fma(data[i, k+3  ], data[j, k+3  ], dot4)
+            # dot1 += data[i, k  ] * data[j, k  ]
+            # dot2 += data[i, k+1] * data[j, k+1]
+            # dot3 += data[i, k+2] * data[j, k+2]
+            # dot4 += data[i, k+3] * data[j, k+3]
         end
 
         cov[i, j] = (dot1 + dot2 + dot3 + dot4) / (N - 1.0)
@@ -34,6 +37,7 @@ function dot_prod_store_kernel(M, data, cov)
 
     return
 end
+
 
 function transpose_kernel(transposed, orig)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
@@ -49,6 +53,9 @@ function transpose_kernel(transposed, orig)
 end
 
 function kernel(M, N, orig_data)
+    cov = CUDA.zeros(eltype(orig_data), M, M)
+
+    # res = @CUDA.profile begin
     threads = 16
     threads_per_block = (threads, threads)
     blocks = (ceil(Int, N / threads), ceil(Int, M / threads))
@@ -59,28 +66,28 @@ function kernel(M, N, orig_data)
     threads_per_block = (threads, threads)
     blocks = (ceil(Int, M / threads), ceil(Int, M / threads))
     
+
     mean_data = CUDA.sum(data, dims=2) / N
 
     data .-= mean_data
-
-    cov = CUDA.zeros(eltype(orig_data), M, M)
     CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks dot_prod_store_kernel(M, data, cov))
+
+
+    # end
+
+    # print(res)
 
     return cov 
 end
 
 
 function main()
-    if VALIDATE
-        data = initialize(3,4, cuda=true)
-        covar = kernel(3, 4, data)
-        println("Got")
-        CUDA.@allowscalar pretty_table(covar)
-        println("Expected")
-        pretty_table(cov(initialize(3,4)))
-
-        correctness_check(true, ["S", "M"])
-    end
+    data = initialize(3,4, cuda=true)
+    covar = kernel(3, 4, data)
+    println("Got")
+    CUDA.@allowscalar pretty_table(covar)
+    println("Expected")
+    pretty_table(cov(initialize(3,4)))
 
     run_benchmarks(cuda = true)
 end

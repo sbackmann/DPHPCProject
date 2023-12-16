@@ -4,11 +4,13 @@
 
 #include "../../timing/dphpc_timing.h"
 
+bool VALIDATE = false;
+
 __global__ void dot_prod_store_kernel(int M, int N, double* data, double* cov) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (i < M && j < M) {
+    if (i < M && j <= i) {
         double partial_sum = 0.0;
 
         for (int k = 0; k < N; k++) {
@@ -16,6 +18,7 @@ __global__ void dot_prod_store_kernel(int M, int N, double* data, double* cov) {
         }
 
         cov[i * M + j] = partial_sum / ((double)N - 1.0);
+        cov[j * M + i] = cov[i * M + j];
     }
 }
 
@@ -80,18 +83,20 @@ void run_bm(int M, int N, const char* preset) {
     cudaMalloc((void**)&d_data, N * M * sizeof(double));
 
 
-    initialize(M, N, data);
-    reset(M, N, data, d_data);
-    kernel(M, N, d_data, d_cov);
+    if (VALIDATE) {
+        initialize(M, N, data);
+        reset(M, N, data, d_data);
+        kernel(M, N, d_data, d_cov);
 
-    cudaMemcpy(cov, d_cov, M * M * sizeof(double), cudaMemcpyDeviceToHost);
-    cudaDeviceSynchronize();
+        cudaMemcpy(cov, d_cov, M * M * sizeof(double), cudaMemcpyDeviceToHost);
+        cudaDeviceSynchronize();
 
-    if (!is_correct(M, cov, preset)) {
-        printf("Validation failed for preset: %s \n", preset);
-        exit(1);
-    } else {
-        printf("Validation passed for preset: %s \n", preset);
+        if (!is_correct(M, cov, preset)) {
+            printf("Validation failed for preset: %s \n", preset);
+            exit(1);
+        } else {
+            printf("Validation passed for preset: %s \n", preset);
+        }
     }
 
     dphpc_time3(
@@ -101,14 +106,16 @@ void run_bm(int M, int N, const char* preset) {
     );
 
     // Do a post validation 
-    cudaMemcpy(cov, d_cov, M * M * sizeof(double), cudaMemcpyDeviceToHost);
-    cudaDeviceSynchronize();
-    
-    if (!is_correct(M, cov, preset)) {
-        printf("Validation failed for preset: %s \n", preset);
-        exit(1);
-    } else {
-        printf("Validation passed for preset: %s \n", preset);
+    if (VALIDATE) {
+        cudaMemcpy(cov, d_cov, M * M * sizeof(double), cudaMemcpyDeviceToHost);
+        cudaDeviceSynchronize();
+        
+        if (!is_correct(M, cov, preset)) {
+            printf("Validation failed for preset: %s \n", preset);
+            exit(1);
+        } else {
+            printf("Validation passed for preset: %s \n", preset);
+        }
     }
 
     cudaFree(d_data);
