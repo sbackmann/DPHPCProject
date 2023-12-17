@@ -4,18 +4,10 @@ using CUDA
 
 include("../../timing/dphpc_timing.jl")
 
-DEBUG = false
-
 function initialize(N, datatype=Float64; cuda=false)
     L = [((i + N - j + 1) * 2 / N) for i in 1:N, j in 1:N]
     x = zeros(N)
     b = [i - 1 for i in 1:N]
-
-    if DEBUG
-        pretty_table(L)
-        pretty_table(x)
-        pretty_table(b)
-    end
 
     if cuda
         L = CUDA.CuArray(L)
@@ -40,11 +32,19 @@ function correctness_check(cuda, prefix=["S", "M", "L", "paper"])
     end
 end
 
+function reset(N, datatype=Float64; cuda=false)
+   data = initialize(N, datatype, cuda=cuda) 
+   if cuda
+        CUDA.synchronize()
+   end
+   return data
+end
+
 function run_benchmarks(; cuda = false, create_tests = false)
     for (preset, dims) in benchmark_sizes
         N = dims
 
-        print(@dphpc_time(data = initialize(N, cuda=cuda), kernel(data...), preset))
+        print(@dphpc_time(data = reset(N, cuda=cuda), kernel(data...), preset))
     end
 end
 

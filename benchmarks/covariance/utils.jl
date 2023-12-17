@@ -19,7 +19,9 @@ benchmark_sizes = Dict(
 
 function reset(M, N, datatype=Float64; cuda=false)
    data = initialize(M, N, datatype, cuda=cuda) 
-   CUDA.synchronize()
+   if cuda
+        CUDA.synchronize()
+   end
    return data
 end
 
