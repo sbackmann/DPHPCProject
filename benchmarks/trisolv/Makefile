@@ -14,7 +14,7 @@ c0:
 	rm ./trisolv
 
 cc0:
-	nvcc -o trisolv GPU_0.cu utils.c -lm
+	nvcc -o trisolv GPU_0.cu utils.cu -lm 
 	./trisolv
 	rm ./trisolv
 

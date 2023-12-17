@@ -1,30 +1,29 @@
 using LinearAlgebra
-using PrettyTables
 
 include("utils.jl")
 include("../../timing/dphpc_timing.jl")
 
-DEV = true
-TIME = true
-DEBUG = false
+VALIDATE = false
 
 function kernel(L, x, b)
-    println("Running kernel...")
     N = length(x)
     for i in 1:N
-        # println(dot(L[i, 1:i-1], x[1:i-1]))
-        x[i] = (b[i] - dot(L[i, 1:i-1], x[1:i-1])) / L[i, i]
+        dp = dot(L[i, 1:i-1], x[1:i-1])
+        x[i] = (b[i] - dp) / L[i, i]
     end
-    return x
+    return X
 end
 
 function main()
-    correctness_check(false, ["S", "M", "paper"])
-    println("Running benchmarks...")
+    if VALIDATE
+        correctness_check(false, ["S", "M", "paper"])
+    end
 
-    # N = 16000
-    # print(@dphpc_time(data = initialize(N), kernel(data...), "paper"))
+    println("Running benchmarks...")
     run_benchmarks()
+
+    # L, x, b = initialize(5)
+    # println("L: ", L)
 end
 
 main()

@@ -20,7 +20,7 @@ void initialize(int N, double *L, double *x, double *b) {
         for (int j = 0; j < N; j++) {
             L[i * N + j] = (i + N - j + 1) * 2.0 / N;
         }
-        x[i] = -999.0;
+        x[i] = 0.0;
         b[i] = (double)i;
     }
 }
@@ -42,7 +42,7 @@ bool is_correct(int N, double *x, const char *preset) {
     snprintf(filename, sizeof(filename), "./test_cases/%s.tsv", preset);
 
 
-    double *result = malloc(sizeof(double) * N);
+    double *result = (double*)malloc(sizeof(double) * N);
     read_values_from_tsv(filename, N, result);
 
     for (int i = 0; i < N; i++) {

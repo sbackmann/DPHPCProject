@@ -4,7 +4,7 @@
 
 #include "../../timing/dphpc_timing.h"
 
-bool PERFORM_VALIDATION = false;
+bool VALIDATE = false;
 
 void kernel(int M, int N, double* data, double* cov) {
     double* mean = calloc(M, sizeof(double));
@@ -43,7 +43,7 @@ void run_bm(int M, int N, const char* preset) {
     double *data = malloc(sizeof(double) * N * M);
     double *cov = malloc(sizeof(double) * M * M);
 
-    if (PERFORM_VALIDATION) {
+    if (VALIDATE) {
         printf("Running validation for preset: %s \n", preset);
         initialize(M, N, data);
         kernel(M, N, data, cov);
