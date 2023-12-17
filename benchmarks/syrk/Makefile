@@ -8,5 +8,5 @@ optimized:
 	./a.exe
 
 naive_gpu:
-	nvcc -o ./a.exe cuda.cu
+	nvcc -o ./a.exe naive.cu
 	./a.exe
