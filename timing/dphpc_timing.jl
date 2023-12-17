@@ -114,7 +114,7 @@ macro dphpc_time(reset, expr, preset)
             preset = $(esc(preset))
             if preset ∈ PRESETS_TO_RUN  
                 $(esc(reset))
-                CUDA.@profile $(esc(expr))
+                CUDA.@profile $(esc(expr)) # couldnt set it up with external profiler :/
             end
         end
     end

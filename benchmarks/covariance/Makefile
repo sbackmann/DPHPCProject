@@ -1,18 +1,24 @@
-_ju:
-	julia covariance_gpu.jl
-	# julia covariance.jl
-
-_py:
-	python covariance.py
-
-c:
-	gcc -o covariance covariance.c -lm
+c0:
+	gcc -o covariance CPU_0.c utils.c -lm
 	./covariance
 	rm ./covariance
 
-gc:
-	nvcc -o covariance covariance_c_gpu.cu -lm
+cc0:
+	nvcc -o covariance GPU_0_naive.cu utils.cu
 	./covariance
 	rm ./covariance
 
-run: ju py c 
+cc4:
+	nvcc -o covariance GPU_4_triangular.cu utils.cu
+	./covariance
+	rm ./covariance
+
+cc6:
+	nvcc -o covariance cGPU_6_inbounds.cu
+	./covariance
+	rm ./covariance
+
+ccc:
+	nvcc -o covariance cGPU_6_inbounds.cu -O0
+	./covariance
+	rm ./covariance
