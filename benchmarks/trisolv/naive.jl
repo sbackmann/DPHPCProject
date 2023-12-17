@@ -11,7 +11,7 @@ function kernel(L, x, b)
         dp = dot(L[i, 1:i-1], x[1:i-1])
         x[i] = (b[i] - dp) / L[i, i]
     end
-    return X
+    return x
 end
 
 function main()
@@ -22,8 +22,6 @@ function main()
     println("Running benchmarks...")
     run_benchmarks()
 
-    # L, x, b = initialize(5)
-    # println("L: ", L)
 end
 
 main()

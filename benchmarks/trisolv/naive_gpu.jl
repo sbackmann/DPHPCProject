@@ -5,13 +5,12 @@ using PrettyTables
 include("utils.jl")
 include("../../timing/dphpc_timing.jl")
 
-DEV = true
-TIME = false
-DEBUG = false
-
+VALIDATE = false
 
 function main()
-    correctness_check(true, ["S"])
+    if VALIDATE
+        correctness_check(true, ["S", "M"])
+    end
     run_benchmarks(cuda=true)
 end
 
@@ -48,7 +47,6 @@ function kernel(L, x, b)
     thr = 256
 
     for i in 1:N
-        # dp = CUDA.dot(L[i, 1:i-1], x[1:i-1])
         blo = Int(ceil( i / thr))
         @cuda threads=thr blocks=blo dot_product_kernel(L, x, dp, i, N)
         @cuda threads=1 blocks=1 scalar_update_kernel(x, i, b, dp, L)

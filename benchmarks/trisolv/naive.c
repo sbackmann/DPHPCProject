@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "../../timing/dphpc_timing.h"
 
-bool VALIDATE = true;
+bool VALIDATE = false;
 
 void kernel(int N, double *L, double *x, double *b) {
     for (int i = 0; i < N; i++) {
@@ -25,8 +25,6 @@ void run_bm(int N, const char *preset) {
 
     if (VALIDATE) {
         initialize(N, L, x, b);
-
-        printMatrix(N, N, L);
 
         kernel(N, L, x, b);
         if (!is_correct(N, x, preset)) {
@@ -62,11 +60,10 @@ void simple_validate() {
 }
 
 int main() {
-    run_bm(5, "paper");
-    // run_bm(2000, "S");
-    // run_bm(5000, "M");
-    // run_bm(14000, "L");
-    // run_bm(16000, "paper");
+    run_bm(2000, "S");
+    run_bm(5000, "M");
+    run_bm(14000, "L");
+    run_bm(16000, "paper");
 
     return 0;
 }
