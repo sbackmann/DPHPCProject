@@ -2,6 +2,21 @@ using CSV, DataFrames, Plots
 
 include("../timing/collect_measurements.jl")
 
+# percentage speedup: (c - julia) / c
+# 50%   speedup: julia twice as fast as c
+# 10%   speedup: julia = 0.9*c runtime  10% faster
+# -10%  speedup: julia = 1.1*c runtime, 10% slower
+# -100% speedup: julia twice as slow as c
+
+
+function make_plots(preset)
+    make_plot(preset, "naive", false)
+    make_plot(preset, "naive_gpu", true)
+    make_plot(preset, false)
+    make_plot(preset, true)
+end
+
+
 function collect_version(presets::Vector{String}, version::String)
     bms = get_benchmarks()
     for bm in bms
@@ -29,14 +44,16 @@ function plot_julia_vs_c(bms, c_times, julia_times, name, preset)
     bms = bms[s]
 
     mn, mx = (x->(minimum(x),maximum(x)))(percentage_speedup)
-    mn = min(0, mn)
-    mx = max(0, mx)
+    L = 600 # limit for plot
+    mn = clamp(mn, -L, 0)
+    mx = clamp(mx, 0, L)
+    
 
     faster = percentage_speedup .>= 0
     slower = percentage_speedup .<  0
 
     total_ticks = 7
-    faster_ticks = mx / (mx - mn) * total_ticks |> round |> Int
+    faster_ticks = (mx / (mx - mn) * (total_ticks-1) |> round |> Int) + 1
     slower_ticks = total_ticks - faster_ticks + 1
 
     yticks = [ticks(0, mn, slower_ticks); ticks(0, mx, faster_ticks)]
@@ -52,10 +69,11 @@ function plot_julia_vs_c(bms, c_times, julia_times, name, preset)
         yticks=(yticks, string.(yticks).*"%"),
 
         title="Speedup: Julia over C, $name versions, preset $preset",
+        titlefontsize=12,
         ylabel="Speedup vs C",
         color=colors,
         legend=false,
-        ylims=[1.1*min(mn, -9), 1.1*max(mx, 9)],
+        ylims=[1.1*clamp(mn, -L, -9), 1.1*clamp(mx, 9, L)],
     )
 
     display(P)
@@ -82,7 +100,7 @@ function make_plot(preset::String, version::String, gpu::Bool)
     both = innerjoin(c_versions, julia_versions, on="benchmark", renamecols="_c"=>"_julia")
     both = both[both[!, "benchmark"] .!= "example", :]
 
-    plot_julia_vs_c(both[:, "benchmark"], both[:, "median_c"], both[:, "median_julia"], version, preset)
+    plot_julia_vs_c(both[:, "benchmark"], both[:, "median_c"], both[:, "median_julia"], version * (gpu ? " gpu" : " cpu"), preset)
 end
 
 
@@ -99,18 +117,20 @@ function make_plot(preset::String, gpu::Bool)
 
     c_grouped = groupby(c_versions, :benchmark)
     best_c = combine(c_grouped, :median => minimum => :best)
-    c_versions = innerjoin(c_versions, best_c, on=["benchmark", "median" => "best"])
+    c_versions = innerjoin(c_versions, best_c, on=["benchmark", "median" => "best"]) # a bit hacky...
 
     julia_grouped = groupby(julia_versions, :benchmark)
     best_julia = combine(julia_grouped, :median => minimum => :best)
     julia_versions = innerjoin(julia_versions, best_julia, on=["benchmark", "median" => "best"])
 
-    c_versions = c_versions[:, ["benchmark", "median"]]
-    julia_versions = julia_versions[:, ["benchmark", "median"]]
+    c_versions = c_versions[:, ["benchmark", "median",  "version"]]
+    julia_versions = julia_versions[:, ["benchmark", "median", "version"]]
 
     both = innerjoin(c_versions, julia_versions, on="benchmark", renamecols="_c"=>"_julia")
     both = both[both[!, "benchmark"] .!= "example", :]
 
-    plot_julia_vs_c(both[:, "benchmark"], both[:, "median_c"], both[:, "median_julia"], "best$(gpu ? " gpu" : "")", preset)
+    # to include also the version: both[:, "benchmark"] .* "\n(" .* both[:, "version_julia"] .* ")"
+
+    plot_julia_vs_c(both[:, "benchmark"], both[:, "median_c"], both[:, "median_julia"], "best" * (gpu ? " gpu" : " cpu"), preset)
 
 end

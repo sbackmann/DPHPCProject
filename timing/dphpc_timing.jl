@@ -28,7 +28,7 @@ end
 
 
 # generate indeces of lower and upper bounds for 95%-CI
-# from the table in file:///C:/Users/damia/Downloads/perfPublisherVersion_1.pdf, page 347
+# from the table in https://leboudec.github.io/perfeval/, page 347
 lb_reps = [3, 3, 3, 2, 3, 3, 2, 3, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 3, 2, 2, 2, 2, 3, 2, 3, 1]
 up_reps = [1, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 1, 2, 3, 2, 1, 1, 2]
 lb_ids = [i for i = 1:27 for j = 1:lb_reps[i]] 

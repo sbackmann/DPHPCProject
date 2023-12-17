@@ -1,9 +1,9 @@
-c0:
+naive:
 	gcc -o trisolv naive.c utils.c -lm
 	./trisolv
 	rm ./trisolv
 
-cc0:
+naive_gpu:
 	nvcc -o trisolv naive_gpu.cu utils.cu -lm 
 	./trisolv
 	rm ./trisolv

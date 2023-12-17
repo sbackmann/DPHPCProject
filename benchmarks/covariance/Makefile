@@ -1,9 +1,9 @@
-c0:
+naive:
 	gcc -o covariance naive.c utils.c -lm #nvcc
 	./covariance
 	rm ./covariance
 
-cc0:
+naive_gpu:
 	nvcc -o covariance naive_gpu.cu utils.cu
 	./covariance
 	rm ./covariance
