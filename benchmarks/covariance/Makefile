@@ -1,10 +1,10 @@
 c0:
-	gcc -o covariance CPU_0.c utils.c -lm
+	gcc -o covariance naive.c utils.c -lm #nvcc
 	./covariance
 	rm ./covariance
 
 cc0:
-	nvcc -o covariance GPU_0_naive.cu utils.cu
+	nvcc -o covariance naive_gpu.cu utils.cu
 	./covariance
 	rm ./covariance
 
@@ -13,12 +13,3 @@ cc4:
 	./covariance
 	rm ./covariance
 
-cc6:
-	nvcc -o covariance cGPU_6_inbounds.cu
-	./covariance
-	rm ./covariance
-
-ccc:
-	nvcc -o covariance cGPU_6_inbounds.cu -O0
-	./covariance
-	rm ./covariance

@@ -1,14 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
 
 #include "utils.h"
 #include "../../timing/dphpc_timing.h"
 
-#define DEV true
-#define TIME false
-#define DEBUG false
+bool VALIDATE = false;
 
 __global__ void inv_diag_kernel(double *matrix, double *diag, int N) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -58,19 +54,15 @@ void kernel(double *d_L, double *d_x, double *d_b, int N) {
     element_wise_mult_kernel<<<blocks, t>>>(d_b, d_inv_diag, d_b_prod_inv_diag, N);
     cudaDeviceSynchronize();
 
-    // now wrong
-    // d_x = d_b_prod_inv_diag;
+    // d_x = d_b_prod_inv_diag; // now wrong
 
     scalar_mult_kernel<<<blocks, t>>>(d_L, d_Lx, d_b_prod_inv_diag, 0, N);
     cudaDeviceSynchronize();
 
-    // Main computation loop
     for (int i = 1; i < N; i++) {
-        // Update x
         scalar_update_kernel<<<1, 1>>>(N, d_x, i, d_Lx, d_inv_diag);
         cudaDeviceSynchronize();
 
-        // Pre-compute kernel
         blocks = (N - i + t - 1) / t;
         pre_comp_kernel<<<blocks, t>>>(d_L, d_Lx, d_x, i, N);
         cudaDeviceSynchronize();
@@ -89,48 +81,44 @@ void reset(double *L, double *x, double *b, double *d_L, double *d_x, double *d_
     cudaDeviceSynchronize();
 }
 
-void initialize(int N, double *L, double *x, double *b) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            L[i * N + j] = (i + N - j + 1) * 2.0 / N;
-        }
-        x[i] = -999;
-        b[i] = (double)i;
-    }
-}
-
 void run_bm(int N, const char *preset) {
     double *L = (double*)malloc(sizeof(double) * N * N);
     double *x = (double*)malloc(sizeof(double) * N);
     double *b = (double*)malloc(sizeof(double) * N);
-
-    initialize(N, L, x, b);
 
     double *d_L, *d_x, *d_b;
     cudaMalloc((void **)&d_L, N * N * sizeof(double));
     cudaMalloc((void **)&d_x, N * sizeof(double));
     cudaMalloc((void **)&d_b, N * sizeof(double));
 
-    reset(L, x, b, d_L, d_x, d_b, N);
-    kernel(d_L, d_x, d_b, N);
-    cudaDeviceSynchronize();
+    if (VALIDATE) {
+        reset(L, x, b, d_L, d_x, d_b, N);
 
-    cudaMemcpy(x, d_x, N * sizeof(double), cudaMemcpyDeviceToHost);
-    cudaDeviceSynchronize();
-    
-    printf("Done \n");
-    for (int i = 0; i < 5; i++) {
-        printf("%f ", x[i]);
+        cudaMemcpy(d_x, x, N * sizeof(double), cudaMemcpyHostToDevice);
+        cudaDeviceSynchronize();
+        kernel(d_L, d_x, d_b, N);
+
+        cudaMemcpy(x, d_x, N * sizeof(double), cudaMemcpyDeviceToHost);
+        cudaDeviceSynchronize();
+
+        cudaError_t cudaErr = cudaGetLastError();
+        if (cudaErr != cudaSuccess) {
+            fprintf(stderr, "CUDA error: %s\n", cudaGetErrorString(cudaErr));
+        }
+
+        if (!is_correct(N, x, preset)) {
+            printf("Validation failed for preset: %s \n", preset);
+            exit(1);
+        } else {
+            printf("Validation passed for preset: %s \n", preset);
+        }
     }
-    
-    printf("%f ", x[N-1]);
 
     dphpc_time3(
         reset(L, x, b, d_L, d_x, d_b, N),
         kernel(d_L, d_x, d_b, N),
         preset
     );
-
 
     cudaFree(d_L);
     cudaFree(d_x);

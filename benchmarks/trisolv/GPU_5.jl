@@ -5,7 +5,6 @@ using PrettyTables
 include("utils.jl")
 include("../../timing/dphpc_timing.jl")
 
-
 function main()
     # correctness_check(true, ["S", "M"])
     correctness_check(true, ["S"])
@@ -48,9 +47,6 @@ function scalar_update_kernel(x, i, Lx, inv_diag)
 end
 
 function kernel(L, x, b)
-    # x
-    # res = CUDA.@profile begin
-
     N = length(x)
     t = 256
     blocks = ceil(Int, N / t)
@@ -73,9 +69,7 @@ function kernel(L, x, b)
         @cuda threads=t blocks=blocks pre_comp_kernel(L, Lx, x, i, N)
     end
 
-    # end
-    # print(res)
-
+    CUDA.synchronize()
     return x
 end
 
