@@ -189,6 +189,7 @@ int main(int argc, char** argv)
     int nq = 60;
     int np = 128;
     run_bm(nr, nq, np, "S");
+    run_bm(nr, nq, np, "missing");
 
     nr = 110;
     nq = 125;

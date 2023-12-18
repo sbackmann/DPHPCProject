@@ -17,14 +17,14 @@ end
 
 
 function doitgen_kernel(nr, nq, np, A, C4, sum)
-    s = 1:np
+
     p = (blockIdx().x - 1) * THREADS + ((threadIdx().x - 1) ÷ THREADS) + 1
     r = (blockIdx().y - 1) * THREADS + ((threadIdx().x - 1) % THREADS) + 1
 
     if p <= np && r <= nr
         @inbounds for q in 1:nq
             temp_sum = 0.0
-            @inbounds for ss in s
+            @inbounds for ss in 1:np
                 temp_sum += A[r, q, ss] * C4[ss, p]
             end
             sum[r, q, p] = temp_sum
