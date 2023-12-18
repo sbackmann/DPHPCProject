@@ -1,4 +1,5 @@
 
+include("_validate.jl")
 
 function init(n, k)
     A = zeros(Float64, n, k)
@@ -11,6 +12,23 @@ function init(n, k)
     
     return 1.5, 1.2, C, A
 end
+
+
+function init_gpu(n, k)
+    hostA = zeros(Float64, n, k)
+    hostC = zeros(Float64, n, n)
+
+    for j=1:k, i=1:n
+        hostA[i, j] = ((i*j+1)%n) / n;
+    end
+    for j=1:n, i=1:n
+        hostC[i, j] = ((i*j+2)%k) / k;
+    end
+    
+    return 1.5, 1.2, hostC, CuArray(hostC), CuArray(hostA)
+end
+
+
 
 function reset!(C, k)
     n = size(C, 1)
@@ -27,28 +45,71 @@ end
 
 function main()
 
-    n, k = 5, 3
+    n, k = 200, 70
     α, β, C, A = init(n, k)
-    # display(C)
-    # display(A)
-    # @dphpc_time(reset!(C, k), syrk(n, k, α, β, C, A))
-    # display(C)
 
-    
-    n, k = 70, 50
-    α, β, C, A = init(n, k)
-    @dphpc_time(reset!(C, k), syrk(n, k, α, β, C, A), "S")
+    if is_valid(n, k, C, A)
 
-    n, k = 200, 150
-    α, β, C, A = init(n, k)
-    @dphpc_time(reset!(C, k), syrk(n, k, α, β, C, A), "M")
+        n, k = 10, 5
+        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A)) # warmup
 
-    n, k = 600, 500
-    α, β, C, A = init(n, k)
-    @dphpc_time(reset!(C, k), syrk(n, k, α, β, C, A), "L")
+        n, k = 70, 50
+        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "S")
 
-    n, k = 1200, 1000
-    α, β, C, A = init(n, k)
-    @dphpc_time(reset!(C, k), syrk(n, k, α, β, C, A), "paper")
+        n, k = 200, 150
+        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "M")
+
+        n, k = 600, 500
+        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "L")
+
+        n, k = 1200, 1000
+        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "paper")
+
+    end
+
+end
+
+function main_gpu()
+
+    n, k = 200, 70
+    α, β, hostC, C, A = init_gpu(n, k)
+
+    if is_valid_gpu(n, k, C, A)
+
+        n, k = 70, 40
+        @dphpc_time(
+            (α, β, hostC, C, A) = init_gpu(n, k),   # warmup
+            run_kernel(n, k, α, β, C, A)
+        )
+
+        n, k = 70, 50
+        @dphpc_time(
+            (α, β, hostC, C, A) = init_gpu(n, k), 
+            run_kernel(n, k, α, β, C, A), 
+            "S"
+        )
+
+        n, k = 200, 150
+        @dphpc_time(
+            (α, β, hostC, C, A) = init_gpu(n, k), 
+            run_kernel(n, k, α, β, C, A), 
+            "M"
+        )
+
+        n, k = 600, 500
+        @dphpc_time(
+            (α, β, hostC, C, A) = init_gpu(n, k), 
+            run_kernel(n, k, α, β, C, A), 
+            "L"
+        )
+
+        n, k = 1200, 1000
+        @dphpc_time(
+            (α, β, hostC, C, A) = init_gpu(n, k), 
+            run_kernel(n, k, α, β, C, A), 
+            "paper"
+        )
+
+    end
 
 end

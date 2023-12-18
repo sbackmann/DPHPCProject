@@ -1,6 +1,6 @@
 
 naive:
-	gcc straight.c -O3 -march=skylake -o ./a.exe -lm 
+	gcc naive.c -O3 -march=skylake -o ./a.exe -lm 
 	./a.exe
 
 optimized:
@@ -9,4 +9,8 @@ optimized:
 
 naive_gpu:
 	nvcc -o ./a.exe naive.cu
+	./a.exe
+
+colmajor_gpu:
+	nvcc -o ./a.exe colmajor.cu
 	./a.exe
