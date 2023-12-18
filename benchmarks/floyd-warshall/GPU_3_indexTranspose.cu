@@ -6,35 +6,20 @@
 
 __global__ void kernel_floyd_warshall(int n, int *graph) {
 
-  int tmp, tmp1, tmp2, tmp3;
+  int tmp;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
   int i = blockIdx.y * blockDim.y + threadIdx.y;
 
   if (i < n && j < n) {
-    for (int k = 0; k < n-3; k+=4){
-      tmp = graph[i * n + k] + graph[k * n + j];
-
-      tmp1 = graph[i * n + k + 1] + graph[(k + 1) * n + j];
-      
-      tmp2 = graph[i * n + k + 2] + graph[(k + 2) * n + j];
-      
-      tmp3 = graph[i * n + k + 3] + graph[(k + 3) * n + j];
-      if (tmp > tmp1) tmp = tmp1;
-      if (tmp > tmp2) tmp = tmp2;
-      if (tmp > tmp3) tmp = tmp3;
-      
-      if (tmp < graph[i * n + j]) {
-        graph[i * n + j] = tmp;
-      }
+    for (int k = 0; k < n; k++){
+      tmp = graph[i * n + j] < graph[i * n + k] + graph[k * n + j];
+        if (tmp==1){
+          graph[i * n + j] = graph[i * n + j];
+        }
+        else {
+          graph[i * n + j] = graph[i * n + k] + graph[k * n + j];
+        }
     }
-
-    for (int k = n - 3; k < n; k++) {
-      tmp = graph[i * n + k] + graph[k * n + j];
-      if (tmp < graph[i * n + j]) {
-        graph[i * n + j] = tmp;
-      }
-    }
-
   }
 }
 
@@ -47,7 +32,6 @@ void run_floyd_warshall_gpu(int n, int *graph) {
   kernel_floyd_warshall<<<numBlocks,threadsPerBlock>>>(n, graph);
   cudaDeviceSynchronize();
 }
-
 
 int main(int argc, char** argv) {
   

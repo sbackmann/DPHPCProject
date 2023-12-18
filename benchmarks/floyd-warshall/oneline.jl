@@ -69,7 +69,7 @@ function main()
     graph = init_graph(n)
     @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"M")
 
-    n = 800
+    n = 850
     graph = init_graph(n)
     @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"L")
 

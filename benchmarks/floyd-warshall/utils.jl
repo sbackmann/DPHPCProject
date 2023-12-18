@@ -102,7 +102,7 @@ function main()
         assert_naive(result_graph, n)
     end
 
-    n = 800
+    n = 850
     graph = init_graph(n)
     graph_gpu = reset_graph(graph)
     res = @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), "L")

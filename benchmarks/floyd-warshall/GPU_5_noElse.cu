@@ -7,8 +7,8 @@
 __global__ void kernel_floyd_warshall(int n, int *graph) {
 
   int tmp;
-  int i = blockIdx.x * blockDim.x + threadIdx.x;
-  int j = blockIdx.y * blockDim.y + threadIdx.y;
+  int j = blockIdx.x * blockDim.x + threadIdx.x;
+  int i = blockIdx.y * blockDim.y + threadIdx.y;
 
   if (i < n && j < n) {
     for (int k = 0; k < n; k++){
