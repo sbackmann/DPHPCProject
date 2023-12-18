@@ -26,7 +26,7 @@ end
 
 
 
-plot_versions(plot, df, version_apdx, color; label=df[1, :language]) = bar!(plot, 
+plot_versions(plot, df, version_apdx, color, label) = bar!(plot, 
     df.version .* version_apdx, df.speedup, 
     yerror=(df.speedup-df.speedup_lb, df.speedup_ub-df.speedup), 
     color=color, 
@@ -52,14 +52,14 @@ function plot_arch(bm, preset, c_versions, julia_versions, python_versions, arch
         xlabel=" ", # it will give more space at the bottom this way
         xrotation=45,
         ylims=(0, 1.1*max(
-            maximum(c_versions.speedup_ub),
-            maximum(julia_versions.speedup_ub),
-            maximum(python_versions.speedup_ub),
+            maximum(c_versions.speedup_ub, init=0.0),
+            maximum(julia_versions.speedup_ub, init=0.0),
+            maximum(python_versions.speedup_ub, init=0.0),
         ))
     )
-    plot_versions(p, c_versions, " (C)", :gray)
-    plot_versions(p, julia_versions, " (J)", julia_green)
-    plot_versions(p, python_versions, " (P)", python_blue)
+    plot_versions(p, c_versions, " (C)", :gray, "C")
+    plot_versions(p, julia_versions, " (J)", julia_green, "julia")
+    plot_versions(p, python_versions, " (P)", python_blue, "python")
     display(p)
     savefig(p, "plots/speedup_$(bm)_$(preset)_$(arch).svg")
 end
@@ -73,9 +73,9 @@ function make_plot(bm::String, preset::String; collect=false, version=nothing, l
     df = CSV.read("results.csv", DataFrame)
     grouped = groupby(df, [:benchmark, :language, :preset, :gpu])
 
-    julia_versions      = grouped[(bm, "julia", preset, false)]
-    c_versions          = grouped[(bm, "C",     preset, false)]
-    python_versions     = grouped[(bm, "python",preset, false)]
+    julia_versions      = haskey(grouped, (bm, "julia", preset, false)) ? grouped[(bm, "julia", preset, false)] : empty_df()
+    c_versions          = haskey(grouped, (bm, "C",     preset, false)) ? grouped[(bm, "C",     preset, false)] : empty_df()
+    python_versions     = haskey(grouped, (bm, "python",preset, false)) ? grouped[(bm, "python",preset, false)] : empty_df()
     
     
     versions = [julia_versions, c_versions, python_versions]
@@ -94,9 +94,9 @@ function make_plot(bm::String, preset::String; collect=false, version=nothing, l
 
 
 
-    julia_gpu_versions  = grouped[(bm, "julia", preset, true)]
-    c_gpu_versions      = grouped[(bm, "C",     preset, true)]
-    python_gpu_versions = grouped[(bm, "python",preset, true)]
+    julia_gpu_versions  = haskey(grouped, (bm, "julia", preset, true)) ? grouped[(bm, "julia", preset, true)] : empty_df()
+    c_gpu_versions      = haskey(grouped, (bm, "C",     preset, true)) ? grouped[(bm, "C",     preset, true)] : empty_df()
+    python_gpu_versions = haskey(grouped, (bm, "python",preset, true)) ? grouped[(bm, "python",preset, true)] : empty_df()
 
     versions = [julia_gpu_versions, c_gpu_versions, python_gpu_versions]
     i = findfirst(v->v=="naive_gpu", c_gpu_versions.version)

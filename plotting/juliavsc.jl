@@ -114,9 +114,9 @@ function make_plot(preset::String, gpu::Bool)
 
     c_versions = grouped[("C", preset, gpu)]
     julia_versions = grouped[("julia", preset, gpu)]
-
-    display(c_versions)
-    display(julia_versions)
+    
+    # display(c_versions)
+    # display(julia_versions)
 
     c_grouped = groupby(c_versions, :benchmark)
     best_c = combine(c_grouped, :median => minimum => :best)
