@@ -1,3 +1,4 @@
+
 naive:
 	gcc -o trisolv naive.c utils.c -lm
 	./trisolv

@@ -53,8 +53,8 @@ end
 
 
 function run_lu_kernel(N, A)
-    threadsPerBlock = (16, 16)
-    numBlocks = ((N - 1) ÷ 16 + 1, (N - 1) ÷ 16 + 1)
+    threadsPerBlock = 256
+    numBlocks = (N - 1) ÷ threadsPerBlock + 1
 
     @cuda threads=threadsPerBlock blocks=numBlocks lu_kernel(N, A)
     CUDA.synchronize()
