@@ -44,7 +44,7 @@ function plot_julia_vs_c(bms, c_times, julia_times, name, preset)
     bms = bms[s]
 
     mn, mx = (x->(minimum(x),maximum(x)))(percentage_speedup)
-    L = 600 # limit for plot
+    L = 400 # limit for plot
     mn = clamp(mn, -L, 0)
     mx = clamp(mx, 0, L)
     
@@ -78,7 +78,7 @@ function plot_julia_vs_c(bms, c_times, julia_times, name, preset)
 
     display(P)
     cd(@__DIR__)
-    savefig(P, "plots/julia_vs_c_$(name)_$(preset).pdf")
+    savefig(P, "plots/julia_vs_c_$(name)_$(preset).svg")
 end
 
 
@@ -100,7 +100,7 @@ function make_plot(preset::String, version::String, gpu::Bool)
     both = innerjoin(c_versions, julia_versions, on="benchmark", renamecols="_c"=>"_julia")
     both = both[both[!, "benchmark"] .!= "example", :]
 
-    plot_julia_vs_c(both[:, "benchmark"], both[:, "median_c"], both[:, "median_julia"], version * (gpu ? " gpu" : " cpu"), preset)
+    plot_julia_vs_c(both[:, "benchmark"], both[:, "median_c"], both[:, "median_julia"], version * (gpu ? "" : " cpu"), preset)
 end
 
 
@@ -114,6 +114,9 @@ function make_plot(preset::String, gpu::Bool)
 
     c_versions = grouped[("C", preset, gpu)]
     julia_versions = grouped[("julia", preset, gpu)]
+
+    display(c_versions)
+    display(julia_versions)
 
     c_grouped = groupby(c_versions, :benchmark)
     best_c = combine(c_grouped, :median => minimum => :best)

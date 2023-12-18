@@ -5,25 +5,25 @@
 # make_plot("syrk, "L", collect=true, languages=[:python, :julia, :C]) languages kwarg to specify languages, only collect measurements for these languages
 # make_plot("syrk, "L", collect=true, languages=[:C], version="naive") to recollect a specific version
 
-try
-    using CSV, DataFrames
-catch e
-    import Pkg
-    Pkg.add("CSV")
-    Pkg.add("DataFrames")
-    using CSV, DataFrames
-end
-try
-    using Plots
-catch e
-    import Pkg
-    Pkg.add("Plots")
-    using Plots
-end
+using CSV, DataFrames
+using Plots
+
 
 include("../timing/collect_measurements.jl")
 
 # assumes there exists a C version called "naive", and a cuda C version called "naive_gpu"
+
+
+function make_plots(preset)
+    bms = ["covariance", "doitgen", "floyd-warshall", "gemm", "lu", "syrk", "trisolv", "jacobi2d"]
+    for bm in bms
+        try
+            make_plot(bm, preset)
+        catch e end
+    end
+end
+
+
 
 
 plot_versions(plot, df, version_apdx, color; label=df[1, :language]) = bar!(plot, 
@@ -61,7 +61,7 @@ function plot_arch(bm, preset, c_versions, julia_versions, python_versions, arch
     plot_versions(p, julia_versions, " (J)", julia_green)
     plot_versions(p, python_versions, " (P)", python_blue)
     display(p)
-    savefig(p, "plots/speedup_$(bm)_$(preset)_$(arch).pdf")
+    savefig(p, "plots/speedup_$(bm)_$(preset)_$(arch).svg")
 end
 
 function make_plot(bm::String, preset::String; collect=false, version=nothing, languages=[:julia, :C, :python])
