@@ -14,13 +14,19 @@ end
 
 function kernel_j2d(tsteps, n, A, B)
     for t in 1:tsteps
-        for i in 2:(n-1)
-            for j in 2:(n-1)
+        for j in 2:3
+            for i in 2:(n-1)
                 B[i, j] = 0.2 * (A[i, j] + A[i, j-1] + A[i, j+1] + A[i+1, j] + A[i-1, j]);
             end
         end
-        for i in 2:(n-1)
-            for j in 2:(n-1)
+        for j in 4:(n-1)
+            for i in 2:(n-1)
+                B[i, j] = 0.2 * (A[i, j] + A[i, j-1] + A[i, j+1] + A[i+1, j] + A[i-1, j]);
+                A[i, j-2] = 0.2 * (B[i, j-2] + B[i, j-3] + B[i, j-1] + B[i+1, j-2] + B[i-1, j-2]);
+            end
+        end
+        for j in (n-2):(n-1)
+            for i in 2:(n-1)
                 A[i, j] = 0.2 * (B[i, j] + B[i, j-1] + B[i, j+1] + B[i+1, j] + B[i-1, j]);
             end
         end

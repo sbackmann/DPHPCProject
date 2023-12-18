@@ -1,13 +1,13 @@
 
 # naive cpu
 naive:
-	gcc -O3 -march=native -flto -o j2d naive.c -lm
+	gcc -Ofast -march=native -flto -o j2d naive.c -lm
 	./j2d
 	rm ./j2d
 
 # optimised cpu
 opt:
-	gcc -O3 -march=native -flto -o j2d opt.c -lm
+	gcc -Ofast -march=native -flto -o j2d opt.c -lm
 	./j2d
 	rm ./j2d
 
