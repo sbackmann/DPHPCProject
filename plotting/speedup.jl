@@ -1,4 +1,10 @@
 
+
+# call make_plot("syrk", "L") if measurements already collected
+# make_plot("syrk", "L", collect=true) otherwise, will collect measurements for all languages
+# make_plot("syrk, "L", collect=true, languages=[:python, :julia, :C]) languages kwarg to specify languages, only collect measurements for these languages
+# make_plot("syrk, "L", collect=true, languages=[:C], version="naive") to recollect a specific version
+
 try
     using CSV, DataFrames
 catch e

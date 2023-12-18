@@ -66,8 +66,8 @@ void init_array(int N, double* A) {
 
 
 void run_lu_kernel(int N, double* A) {
-    dim3 block(16, 16);
-    dim3 grid((N+block.x -1)/block.x, (N+block.y-1)/block.y);
+    int block = 16;
+    int grid = (N+block -1)/block;
     lu_kernal<<<grid,block>>>(N, A); 
     cudaDeviceSynchronize();
 }

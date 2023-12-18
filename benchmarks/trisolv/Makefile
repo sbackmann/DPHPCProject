@@ -1,16 +1,16 @@
-ju:
-	julia trisolve_gpu.jl
-	#julia trisolve.jl
 
-juserial:
-	julia trisolve.jl
+naive:
+	gcc -o trisolv naive.c utils.c -lm
+	./trisolv
+	rm ./trisolv
 
-py:
-	python trisolve.py
+naive_gpu:
+	nvcc -o trisolv naive_gpu.cu utils.cu -lm 
+	./trisolv
+	rm ./trisolv
 
-c:
-	gcc -o trisolve trisolve.c -lm -llapacke -lblas 
-	./trisolve
-	rm ./trisolve
+cc5:
+	nvcc -o trisolv GPU_5.cu utils.cu -lm
+	./trisolv
+	rm ./trisolv
 
-run: ju py c 
