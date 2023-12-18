@@ -1,6 +1,9 @@
 
 #include "../../timing/dphpc_timing.h"
 
+// define matrix A s.t. in the kernel, the memory of A is not accessed linearly, i.e. in a column major fashion, even though A is stored in rowmajor
+// this is much better for some reason
+
 #define get(A, ncols, r, c) A[(r)*(ncols)+(c)]
 
 __global__ void syrk(int n, int k, double alpha, double beta, double *C, double *A) {
@@ -9,7 +12,7 @@ __global__ void syrk(int n, int k, double alpha, double beta, double *C, double 
     if (r <= n && c <= n && r >= c) {
         double s = 0.0;
         for (int i = 0; i < k; i++) {
-            s += get(A, k, r, i) * get(A, k, c, i);
+            s += get(A, k, i, r) * get(A, k, i, c); // swap indeces
         }
         get(C, n, r, c) = beta * get(C, n, r, c) + alpha * s;
     }
@@ -22,7 +25,7 @@ void init_array(int n, int m, double *alpha, double *beta,
     *beta = 1.2;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            get(A, m, i, j) = (double) ((i*j+1)%n) / n;
+            get(A, m, j, i) = (double) ((i*j+1)%n) / n; // swap indeces
         }
     }
     for (int i = 0; i < n; i++) {
