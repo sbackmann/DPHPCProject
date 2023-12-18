@@ -32,15 +32,16 @@ end
 
 
 function doitgen(nr, nq, np, A, C4, sum)
-    for r in 1:nr
-        for q in 1:nq
-            for p in 1:np
-                sum[p] = 0.0
-                for s in 1:np
-                    sum[p] += A[r, q, s] * C4[s, p]
+    @inbounds for r in 1:nr
+        @inbounds for q in 1:nq
+            @inbounds for p in 1:np
+                tmp = 0.0
+                @inbounds for s in 1:np
+                    tmp += A[r, q, s] * @views C4[s, p]
                 end
+                sum[p] = tmp
             end
-            for p in 1:np
+            @inbounds for p in 1:np
                 A[r, q, p] = sum[p]
             end
         end
@@ -64,6 +65,13 @@ function assert_correctness(A, prefix)
 end
 
 function main()
+    nr = 60
+    nq = 60
+    np = 128
+    A, C4, sum = init_array(nr, nq, np)
+    @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "missing")
+    
+
     nr = 60
     nq = 60
     np = 128

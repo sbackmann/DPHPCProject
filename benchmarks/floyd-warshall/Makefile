@@ -5,8 +5,12 @@ naive:
 	gcc naive.c -O3 -o ./a.exe -lm
 	./a.exe
 
-GPU_1_naive:
-	nvcc -o ./a.exe GPU_1_naive.cu utils.cu
+cpu_optimized:
+	gcc cpu_optimized.c -O3 -o ./a.exe -lm
+	./a.exe
+
+naive_gpu:
+	nvcc -o ./a.exe naive_gpu.cu utils.cu
 	./a.exe
 
 GPU_2_tmp_var:
