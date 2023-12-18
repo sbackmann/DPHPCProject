@@ -15,11 +15,11 @@ end
 
 
 function floyd_kernel(graph, n)
-    k = 1:n
+    
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
     if i <= n && j <= n
-        for kk in k
+        for kk in 1:n
             if graph[i, j] < graph[i, kk] + graph[kk, j]
                 graph[i, j] = graph[i, j]
             else

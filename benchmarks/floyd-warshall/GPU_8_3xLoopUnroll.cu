@@ -24,10 +24,14 @@ __global__ void kernel_floyd_warshall(int n, int *graph) {
         graph[i * n + j] = tmp;
       }
     }
-    tmp = graph[i * n + (n - 1)] + graph[(n - 1) * n + j];
+
+    for (int k = n - 2; k < n; k++) {
+      tmp = graph[i * n + k] + graph[k * n + j];
       if (tmp < graph[i * n + j]) {
         graph[i * n + j] = tmp;
       }
+    }
+
   }
 }
 

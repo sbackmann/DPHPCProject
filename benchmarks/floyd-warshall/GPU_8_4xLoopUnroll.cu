@@ -27,18 +27,23 @@ __global__ void kernel_floyd_warshall(int n, int *graph) {
         graph[i * n + j] = tmp;
       }
     }
-    tmp = graph[i * n + (n - 1)] + graph[(n - 1) * n + j];
+
+    for (int k = n - 3; k < n; k++) {
+      tmp = graph[i * n + k] + graph[k * n + j];
       if (tmp < graph[i * n + j]) {
         graph[i * n + j] = tmp;
       }
+    }
+
   }
 }
 
 
 void run_floyd_warshall_gpu(int n, int *graph) {
   
-  dim3 threadsPerBlock(16, 16);
-  dim3 numBlocks(n / 16 + 1, n / 16 + 1);
+  int threads = 16;
+  dim3 threadsPerBlock(threads, threads);
+  dim3 numBlocks(n / threads + 1, n / threads + 1);
   kernel_floyd_warshall<<<numBlocks,threadsPerBlock>>>(n, graph);
   cudaDeviceSynchronize();
 }

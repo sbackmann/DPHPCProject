@@ -31,14 +31,14 @@ function floyd_kernel(graph, n)
                 graph[i, j] = tmp_min
             end
         end
-        @inbounds tmp = graph[i, n-1] + graph[n-1, j]
-        @inbounds if tmp < graph[i, j]
-            graph[i, j] = tmp
+        
+        @inbounds for kk in n-1:n
+            tmp = graph[i, kk] + graph[kk, j]
+            if tmp < graph[i, j]
+                graph[i, j] = tmp
+            end
         end
-        @inbounds tmp = graph[i, n] + graph[n, j]
-        @inbounds if tmp < graph[i, j]
-            graph[i, j] = tmp
-        end
+
     end
     return
 end
