@@ -78,7 +78,7 @@ function plot_julia_vs_c(bms, c_times, julia_times, name, preset)
 
     display(P)
     cd(@__DIR__)
-    savefig(P, "plots/julia_vs_c_$(name)_$(preset).svg")
+    savefig(P, "plots/julia_vs_c_$(name)_$(preset).png")
 end
 
 
@@ -114,7 +114,7 @@ function make_plot(preset::String, gpu::Bool)
 
     c_versions = grouped[("C", preset, gpu)]
     julia_versions = grouped[("julia", preset, gpu)]
-    
+
     # display(c_versions)
     # display(julia_versions)
 
