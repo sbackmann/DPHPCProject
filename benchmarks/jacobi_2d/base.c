@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define ASSERT 0
+#define ASSERT 1
 
 // grid has to be square
 void init_arrays(int n, double A[n][n], double B[n][n])
@@ -15,8 +15,7 @@ void init_arrays(int n, double A[n][n], double B[n][n])
     {
         for (int j = 0; j < n; j++)
         {
-            A[i][j] = ((double) i * (j + 2) + 2) / n;   // TODO this is not randomly generated, does that influence the computations? unless the compiler deletes the reset, it shouldn't -> check somehow
-            // TODO this is not randomly generated, so we might be optimising for this very specific case instead of generally -> consider
+            A[i][j] = ((double) i * (j + 2) + 2) / n;
             B[i][j] = ((double) i * (j + 3) + 3) / n;
         }
     }
@@ -40,6 +39,19 @@ void print_arrays(int n, double A[n][n], double B[n][n])
         for (int j = 0; j < n; j++)
         {
             printf("%.2f ", B[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void print_array(int n, double A[n][n])
+{   
+    puts("matrix A:");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%.2f ", A[i][j]);
         }
         printf("\n");
     }
@@ -74,15 +86,17 @@ void run_bm(int tsteps, int n, const char* preset)
 
     init_arrays(n, *A, *B);
     
-    dphpc_time3(
-        init_arrays(n, *A, *B),
-        kernel_j2d(tsteps, n, *A, *B),
-        preset
-    );  // TODO: since output is unused except at the end, does it skip the loop? hopefully not -> test by increasing number of runs, but not the matrix size
-    
-    if (ASSERT && strcmp(preset, "S") == 0)
+    if (ASSERT)
     {
-        print_arrays(n, *A, *B);
+        print_array(n, *A);
+    }
+    
+    kernel_j2d(tsteps, n, *A, *B);
+    
+    if (ASSERT)
+    {
+        //print_arrays(n, *A, *B);
+        print_array(n, *A);
     }
 
     free((void *) A);
@@ -92,9 +106,9 @@ void run_bm(int tsteps, int n, const char* preset)
 int main(int argc, char** argv)
 {
     run_bm(50, 150, "S");   // steps 50, n 150
-    run_bm(80, 350, "M");   // steps 80, n 350
-    run_bm(200, 700, "L");   // steps 200, n 700
-    run_bm(1000, 2800, "paper");  // steps 1000, n 2800
+    // run_bm(80, 350, "M");   // steps 80, n 350
+    // run_bm(200, 700, "L");   // steps 200, n 700
+    // run_bm(1000, 2800, "paper");  // steps 1000, n 2800
   
     return 0;
 }

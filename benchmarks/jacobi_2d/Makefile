@@ -1,4 +1,10 @@
 
+# base cpu
+base:
+	gcc -O3 -march=native -flto -o j2d base.c -lm
+	./j2d
+	rm ./j2d
+
 # naive cpu
 naive:
 	gcc -Ofast -march=native -flto -o j2d naive.c -lm

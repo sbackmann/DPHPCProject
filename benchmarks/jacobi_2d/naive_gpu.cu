@@ -33,6 +33,19 @@ void init_arrays(int n, double *A, double *B)
     }
 }
 
+void print_array(int n, double *A)
+{   
+    puts("matrix A:");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%.2f ", A[i * n + j]);
+        }
+        printf("\n");
+    }
+}
+
 void print_arrays(int n, double *A, double *B)
 {   
     puts("matrix A:");
@@ -66,50 +79,49 @@ void run_kernel_j2d(int tsteps, int n, double *A, double *B)
         // after 3 rows have been done, the reverse accumulation can begin simultaneously, in theory
         // could also put in kernel, with if guards. kinda difficult with the blocking though. maybe prev block row can start?
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, A, B); 
-        cudaDeviceSynchronize();
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, B, A);
-        cudaDeviceSynchronize();
+        cudaDeviceSynchronize();    // TODO can maybe be left off (and done only once after the loop) since only cuda commands are issued, which process sequentially anyway -> test
     }
 }
 
 void reset(int n, double *A, double *A_d, double *B, double *B_d)
 {
-    cudaMemcpy((void*) A_d, (void*) A, sizeof(*A) * n * n, cudaMemcpyHostToDevice);
-    cudaMemcpy((void*) B_d, (void*) B, sizeof(*B) * n * n, cudaMemcpyHostToDevice);
+    cudaMemcpy((void *) A_d, (void *) A, sizeof(*A) * n * n, cudaMemcpyHostToDevice);
+    cudaMemcpy((void *) B_d, (void *) B, sizeof(*B) * n * n, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
 }
 
 void run_bm(int tsteps, int n, const char* preset)
 {
-    double *A = malloc(sizeof(*A) * n * n);
-    double *B = malloc(sizeof(*B) * n * n);
+    double *A = (double *) malloc(sizeof(*A) * n * n);
+    double *B = (double *) malloc(sizeof(*B) * n * n);
 
     double *A_d, *B_d;
-    cudaMalloc((void**) &A_d, sizeof(*A) * n * n);
-    cudaMalloc((void**) &B_d, sizeof(*B) * n * n);
+    cudaMalloc((void **) &A_d, sizeof(*A) * n * n);
+    cudaMalloc((void **) &B_d, sizeof(*B) * n * n);
 
     init_arrays(n, A, B);
 
-    cudaMemcpy((void*) A_d, (void*) A, sizeof(*A) * n * n, cudaMemcpyHostToDevice);
-    cudaMemcpy((void*) B_d, (void*) B, sizeof(*B) * n * n, cudaMemcpyHostToDevice);
+    cudaMemcpy((void *) A_d, (void *) A, sizeof(*A) * n * n, cudaMemcpyHostToDevice);
+    cudaMemcpy((void *) B_d, (void *) B, sizeof(*B) * n * n, cudaMemcpyHostToDevice);
 
     dphpc_time3(
         reset(n, A, B, A_d, B_d),
         run_kernel_j2d(tsteps, n, A_d, B_d),
         preset
-    );
+    );  // TODO: since data is never copied back from gpu in the runs, does it actually execute?
     
     if (ASSERT && strcmp(preset, "S") == 0)
     {
-        print_arrays(n, *A_d, *B_d);
-        print_arrays(n, *A, *B);
+        cudaMemcpy((void *) A, (void *) A_d, sizeof(*A) * n * n, cudaMemcpyDeviceToHost); // read output back
+        print_array(n, A);
     }
 
-    cudaFree((void*) A_d);
-    cudaFree((void*) B_d);
+    cudaFree((void *) A_d);
+    cudaFree((void *) B_d);
 
-    free((void*) A);
-    free((void*) B);
+    free((void *) A);
+    free((void *) B);
 }
 
 #ifndef MAIN_HANDLED
