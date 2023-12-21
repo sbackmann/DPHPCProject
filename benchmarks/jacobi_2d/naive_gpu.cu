@@ -8,6 +8,8 @@
 
 #define ASSERT 1
 
+cudaError_t cudaStatusJ2D;
+
 __global__ void kernel_j2d(int n, double *A, double *B)
 {
 
@@ -72,16 +74,23 @@ void print_arrays(int n, double *A, double *B)
 
 void run_kernel_j2d(int tsteps, int n, double *A, double *B)
 {   
-    dim3 threadsPerBlock(16, 16);
-    dim3 numBlocks(n / 16 + 1, n / 16 + 1);
+    dim3 threadsPerBlock(16, 16);   // threads per block: 256
+    //dim3 numBlocks(n / 16 + 1, n / 16 + 1);
+    dim3 numBlocks((n + threadsPerBlock.x - 1) / threadsPerBlock.x, (n + threadsPerBlock.y - 1) / threadsPerBlock.y);
     for (int t = 0; t < tsteps; t++)
     {
         // after 3 rows have been done, the reverse accumulation can begin simultaneously, in theory
         // could also put in kernel, with if guards. kinda difficult with the blocking though. maybe prev block row can start?
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, A, B);
-        cudaDeviceSynchronize();
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, B, A);
         cudaDeviceSynchronize();    // TODO can maybe be left off (and done only once after the loop) since only cuda commands are issued, which process sequentially anyway -> test
+    }
+    
+    cudaStatusJ2D = cudaGetLastError();
+    
+    if (cudaStatusJ2D != cudaSuccess)
+    {
+        printf("CUDA error: %s\n", cudaGetErrorString(cudaStatusJ2D));
     }
 }
 
@@ -89,19 +98,17 @@ void reset(int n, double *A, double *A_d, double *B, double *B_d)
 {
     cudaMemcpy((void *) A_d, (void *) A, sizeof(*A) * n * n, cudaMemcpyHostToDevice);
     cudaMemcpy((void *) B_d, (void *) B, sizeof(*B) * n * n, cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
 }
 
 void run_bm(int tsteps, int n, const char* preset)
 {
     double *A = (double *) malloc(sizeof(*A) * n * n);
     double *B = (double *) malloc(sizeof(*B) * n * n);
+    init_arrays(n, A, B);
 
     double *A_d, *B_d;
     cudaMalloc((void **) &A_d, sizeof(*A) * n * n);
     cudaMalloc((void **) &B_d, sizeof(*B) * n * n);
-
-    init_arrays(n, A, B);
 
     cudaMemcpy((void *) A_d, (void *) A, sizeof(*A) * n * n, cudaMemcpyHostToDevice);
     cudaMemcpy((void *) B_d, (void *) B, sizeof(*B) * n * n, cudaMemcpyHostToDevice);
