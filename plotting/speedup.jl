@@ -61,7 +61,7 @@ function plot_arch(bm, preset, c_versions, julia_versions, python_versions, arch
     plot_versions(p, julia_versions, " (J)", julia_green, "julia")
     plot_versions(p, python_versions, " (P)", python_blue, "python")
     display(p)
-    savefig(p, "plots/speedup_$(bm)_$(preset)_$(arch).svg")
+    savefig(p, "plots/speedup_$(bm)_$(preset)_$(arch).png")
 end
 
 function make_plot(bm::String, preset::String; collect=false, version=nothing, languages=[:julia, :C, :python])

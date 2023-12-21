@@ -81,8 +81,8 @@ void reset(int n, double *A, double *A_d, double *B, double *B_d)
 
 void run_bm(int tsteps, int n, const char* preset)
 {
-    double *A = malloc(sizeof(*A) * n * n);
-    double *B = malloc(sizeof(*B) * n * n);
+    double *A = (double*) malloc(sizeof(*A) * n * n);
+    double *B = (double*) malloc(sizeof(*B) * n * n);
 
     double *A_d, *B_d;
     cudaMalloc((void**) &A_d, sizeof(*A) * n * n);

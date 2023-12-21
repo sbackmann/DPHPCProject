@@ -104,7 +104,10 @@ function run(benchmark, version, languages)
 end
 
 function result_dataframe(bm, ver, lang, t)
-    DataFrame(benchmark=bm, language=lang, version=ver, preset=t.preset, gpu=uses_gpu(bm, ver, lang), 
+    remove_underscores(s) = begin v = Vector{Char}(s); v = v[v .!= '_']; String(v) end 
+    # just a hack, npench uses a long name to call the benchmark, but then stores in the database only the short name...
+    # so the proper way would be to not remove_underscores(), but NPBenchManager.get_short_name(long_name) or something like that...
+    DataFrame(benchmark=remove_underscores(bm), language=lang, version=ver, preset=t.preset, gpu=uses_gpu(bm, ver, lang), 
               median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
 end
 
