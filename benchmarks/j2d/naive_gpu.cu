@@ -6,6 +6,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#define ASSERT 1
+
 __global__ void kernel_j2d(int n, double *A, double *B)
 {
 
@@ -14,7 +16,7 @@ __global__ void kernel_j2d(int n, double *A, double *B)
     
     if (i > 0 && i < (n - 1) && j > 0 && j < (n - 1))
     {
-        B[i * n + j] = 0.2 * (A[i * n + j] + A[i * n + (j - 1)] + A[i * n + (j + 1)] + A[(i + 1) * n + j] + A[(i - 1) * n + j]); // mean (sum/5) of -|- w/ Aij in centre
+        B[i * n + j] = 0.2 * (A[i * n + j] + A[i * n + (j - 1)] + A[i * n + (j + 1)] + A[(i + 1) * n + j] + A[(i - 1) * n + j]);
     }
         
 }
@@ -31,6 +33,29 @@ void init_arrays(int n, double *A, double *B)
     }
 }
 
+void print_arrays(int n, double *A, double *B)
+{   
+    puts("matrix A:");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%.2f ", A[i * n + j]);
+        }
+        printf("\n");
+    }
+    
+    puts("\nmatrix B:");
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            printf("%.2f ", B[i * n + j]);
+        }
+        printf("\n");
+    }
+}
+
 
 void run_kernel_j2d(int tsteps, int n, double *A, double *B)
 {   
@@ -38,6 +63,8 @@ void run_kernel_j2d(int tsteps, int n, double *A, double *B)
     dim3 numBlocks(n / 16 + 1, n / 16 + 1);
     for (int t = 0; t < tsteps; t++)
     {
+        // after 3 rows have been done, the reverse accumulation can begin simultaneously, in theory
+        // could also put in kernel, with if guards. kinda difficult with the blocking though. maybe prev block row can start?
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, A, B); 
         cudaDeviceSynchronize();
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, B, A);
@@ -71,6 +98,12 @@ void run_bm(int tsteps, int n, const char* preset)
         run_kernel_j2d(tsteps, n, A_d, B_d),
         preset
     );
+    
+    if (ASSERT && strcmp(preset, "S") == 0)
+    {
+        print_arrays(n, *A_d, *B_d);
+        print_arrays(n, *A, *B);
+    }
 
     cudaFree((void*) A_d);
     cudaFree((void*) B_d);

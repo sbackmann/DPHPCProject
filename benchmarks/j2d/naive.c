@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define ASSERT 0
+#define ASSERT 1
 
 // grid has to be square
 void init_arrays(int n, double A[n][n], double B[n][n])
