@@ -78,7 +78,8 @@ void run_kernel_j2d(int tsteps, int n, double *A, double *B)
     {
         // after 3 rows have been done, the reverse accumulation can begin simultaneously, in theory
         // could also put in kernel, with if guards. kinda difficult with the blocking though. maybe prev block row can start?
-        kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, A, B); 
+        kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, A, B);
+        cudaDeviceSynchronize();
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, B, A);
         cudaDeviceSynchronize();    // TODO can maybe be left off (and done only once after the loop) since only cuda commands are issued, which process sequentially anyway -> test
     }
