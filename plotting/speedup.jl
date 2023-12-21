@@ -15,7 +15,7 @@ include("../timing/collect_measurements.jl")
 
 
 function make_plots(preset)
-    bms = ["covariance", "doitgen", "floyd-warshall", "gemm", "lu", "syrk", "trisolv", "jacobi2d"]
+    bms = ["covariance", "doitgen", "floyd-warshall", "gemm", "lu", "syrk", "trisolv", "jacobi_2d"]
     for bm in bms
         try
             make_plot(bm, preset)
@@ -50,7 +50,7 @@ function plot_arch(bm, preset, c_versions, julia_versions, python_versions, arch
         title="Speedup $bm, preset '$preset', $arch", 
         ylabel="Speedup", 
         xlabel=" ", # it will give more space at the bottom this way
-        xrotation=45,
+        xrotation=30,
         ylims=(0, 1.1*max(
             maximum(c_versions.speedup_ub, init=0.0),
             maximum(julia_versions.speedup_ub, init=0.0),
@@ -73,9 +73,11 @@ function make_plot(bm::String, preset::String; collect=false, version=nothing, l
     df = CSV.read("results.csv", DataFrame)
     grouped = groupby(df, [:benchmark, :language, :preset, :gpu])
 
-    julia_versions      = haskey(grouped, (bm, "julia", preset, false)) ? grouped[(bm, "julia", preset, false)] : empty_df()
-    c_versions          = haskey(grouped, (bm, "C",     preset, false)) ? grouped[(bm, "C",     preset, false)] : empty_df()
-    python_versions     = haskey(grouped, (bm, "python",preset, false)) ? grouped[(bm, "python",preset, false)] : empty_df()
+    short_name = NPBenchManager.get_short_name(bm)
+
+    julia_versions      = haskey(grouped, (short_name, "julia", preset, false)) ? grouped[(short_name, "julia", preset, false)] : empty_df()
+    c_versions          = haskey(grouped, (short_name, "C",     preset, false)) ? grouped[(short_name, "C",     preset, false)] : empty_df()
+    python_versions     = haskey(grouped, (short_name, "python",preset, false)) ? grouped[(short_name, "python",preset, false)] : empty_df()
     
     
     versions = [julia_versions, c_versions, python_versions]
@@ -94,9 +96,9 @@ function make_plot(bm::String, preset::String; collect=false, version=nothing, l
 
 
 
-    julia_gpu_versions  = haskey(grouped, (bm, "julia", preset, true)) ? grouped[(bm, "julia", preset, true)] : empty_df()
-    c_gpu_versions      = haskey(grouped, (bm, "C",     preset, true)) ? grouped[(bm, "C",     preset, true)] : empty_df()
-    python_gpu_versions = haskey(grouped, (bm, "python",preset, true)) ? grouped[(bm, "python",preset, true)] : empty_df()
+    julia_gpu_versions  = haskey(grouped, (short_name, "julia", preset, true)) ? grouped[(short_name, "julia", preset, true)] : empty_df()
+    c_gpu_versions      = haskey(grouped, (short_name, "C",     preset, true)) ? grouped[(short_name, "C",     preset, true)] : empty_df()
+    python_gpu_versions = haskey(grouped, (short_name, "python",preset, true)) ? grouped[(short_name, "python",preset, true)] : empty_df()
 
     versions = [julia_gpu_versions, c_gpu_versions, python_gpu_versions]
     i = findfirst(v->v=="naive_gpu", c_gpu_versions.version)
