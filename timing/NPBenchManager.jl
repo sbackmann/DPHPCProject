@@ -118,7 +118,7 @@ function make_parameter_header(bm::String)
     for preset in keys(params)
         s = ""
         for (i, (k, v)) in enumerate(params[preset])
-            s *= "params[$(i-1)] = $v;\n\t\t"
+            s *= "_params[$(i-1)] = $v;\n\t\t"
         end
         ps[preset] = s
     end
@@ -130,25 +130,26 @@ function make_parameter_header(bm::String)
 #include <stdlib.h>
 #include <string.h>
 
-static int* params = NULL;
+static const int nr_parameters = $(n);
+static int* _params = NULL;
 
 int* get_params(const char* preset) {
-    params = realloc(params, 10*sizeof(int))
+    _params = (int*) realloc(_params, 10*sizeof(int));
     if (strcmp(preset, "S") == 0) {
-        $(ps["S"])return params;
+        $(ps["S"])return _params;
     } else if (strcmp(preset, "M") == 0) {
-        $(ps["M"])return params;
+        $(ps["M"])return _params;
     } else if (strcmp(preset, "L") == 0) {
-        $(ps["L"])return params;
+        $(ps["L"])return _params;
     } else if (strcmp(preset, "paper") == 0) {
-        $(ps["paper"])return params;
+        $(ps["paper"])return _params;
     }
     return NULL;
 }
 
 #endif 
 """
-    path = joinpath(@__DIR__, "..", "benchmarks", bm, "parameters.h")
+    path = joinpath(@__DIR__, "..", "benchmarks", bm, "_parameters.h")
     write(path, header)
 end
  
