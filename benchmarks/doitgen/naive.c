@@ -85,7 +85,7 @@ void kernel_doitgen(int nr, int nq, int np,
             for (int p = 0; p < np; p++) {
                 sum[p] = 0.0;
                 for (int s = 0; s < np; s++)
-                sum[p] = sum[p] + A[r][q][s] * C4[s][p];
+                    sum[p] = sum[p] + A[r][q][s] * C4[s][p];
             }
             for (int p = 0; p < np; p++)
                 A[r][q][p] = sum[p];

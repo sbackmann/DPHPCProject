@@ -104,8 +104,17 @@ function run(benchmark, version, languages)
 end
 
 function result_dataframe(bm, ver, lang, t)
-    DataFrame(benchmark=bm, language=lang, version=ver, preset=t.preset, gpu=uses_gpu(bm, ver, lang), 
-              median=t.median_ms, median_lb=t.median_lb_ms, median_ub=t.median_ub_ms, nr_runs=t.nr_runs)
+    DataFrame(
+        benchmark=NPBenchManager.get_short_name(bm), 
+        language=lang, 
+        version=ver, 
+        preset=t.preset, 
+        gpu=uses_gpu(bm, ver, lang), 
+        median=t.median_ms, 
+        median_lb=t.median_lb_ms, 
+        median_ub=t.median_ub_ms, 
+        nr_runs=t.nr_runs
+    )
 end
 
 function run_julia_bm(bm, ver)

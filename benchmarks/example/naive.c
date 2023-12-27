@@ -26,6 +26,42 @@ void example(
     }
 }
 
+int is_valid() {
+
+    int n = 50;
+
+    double (*A)[n][n]; A = (double(*)[n][n]) malloc(n*n*sizeof(double));
+    double (*B)[n][n]; B = (double(*)[n][n]) malloc(n*n*sizeof(double));
+    double (*C)[n][n]; C = (double(*)[n][n]) malloc(n*n*sizeof(double));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            (*A)[i][j] = 1.0;
+            (*B)[i][j] = 1.0;
+            (*C)[i][j] = 0.0;
+        }
+    }
+
+    example(n, *A, *B, *C);
+
+    free((void*)B);
+    free((void*)A);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if ((*C)[i][j] != n) {
+
+                free((void*)C);
+                return 0;
+            }
+        }
+    }
+
+    free((void*)C);
+    return 1;
+
+}
+
 void run_bm(int n, const char* preset) {
 
     double (*A)[n][n]; A = (double(*)[n][n]) malloc(n*n*sizeof(double));
@@ -40,18 +76,8 @@ void run_bm(int n, const char* preset) {
     );
 
     free((void*)C);
+    free((void*)B);
     free((void*)A);
 }
 
-#ifndef MAIN_HANDLED
-int main(int argc, char** argv)
-{   
-
-    run_bm(100, "S");
-    run_bm(400, "M");
-    run_bm(800, "L");
-    run_bm(1600, "paper");
-
-    return 0;
-}
-#endif
+#include "_main.h"

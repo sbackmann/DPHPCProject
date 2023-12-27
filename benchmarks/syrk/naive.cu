@@ -30,7 +30,6 @@ void init_array(int n, int m, double *alpha, double *beta,
             get(C, n, i, j) = (double) ((i*j+2)%m) / m;
         }
     }
-    
 }
 
 void run_kernel(int n, int k, double alpha, double beta, double *C, double *A) {

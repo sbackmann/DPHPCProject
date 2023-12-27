@@ -1,7 +1,7 @@
 include("../../timing/dphpc_timing.jl")
 using Serialization
 
-ASSERT = false
+ASSERT = true
 
 
 function init_array(nr, nq, np, A=nothing, C4=nothing)

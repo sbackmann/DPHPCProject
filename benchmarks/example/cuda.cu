@@ -29,7 +29,7 @@ void init_array(int n, double *A, double *B, double *out)
 
 void run_kernel(int n, double *A, double *B, double *C) {
     dim3 threadsPerBlock(16, 16);
-    dim3 numBlocks(n / 16 + 1, n / 16 + 1);
+    dim3 numBlocks((n-1) / 16 + 1, (n-1) / 16 + 1);
     kernel<<<numBlocks,threadsPerBlock>>>(n, A, B, C); 
     cudaDeviceSynchronize();
 }
@@ -68,16 +68,61 @@ void run_bm(int n, const char* preset) {
     
 }
 
-#ifndef MAIN_HANDLED
-int main(int argc, char** argv)
-{   
-    run_bm(100, "S");
-    run_bm(400, "M");
-    run_bm(800, "L");
-    run_bm(1600,"paper");
+int is_valid() {
 
-    return 0;
+    int n = 50;
+
+    double *A = (double*) malloc(n*n*sizeof(double));
+    double *B = (double*) malloc(n*n*sizeof(double));
+    double *C = (double*) malloc(n*n*sizeof(double));
+    
+
+    double *A_d, *B_d, *C_d;
+    cudaMalloc((void**) &A_d, n*n*sizeof(double));
+    cudaMalloc((void**) &B_d, n*n*sizeof(double));
+    cudaMalloc((void**) &C_d, n*n*sizeof(double));
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            get(A, n, i, j) = 1.0;
+            get(B, n, i, j) = 1.0;
+            get(C, n, i, j) = 0.0;
+        }
+    }
+
+    cudaMemcpy((void*) A_d, (void*) A, n*n*sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy((void*) B_d, (void*) B, n*n*sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy((void*) C_d, (void*) C, n*n*sizeof(double), cudaMemcpyHostToDevice);
+    
+
+
+    run_kernel(n, A_d, B_d, C_d);
+
+
+    cudaMemcpy((void*) C, (void*) C_d, n*n*sizeof(double), cudaMemcpyDeviceToHost);
+
+    cudaFree((void*) A_d);
+    cudaFree((void*) B_d);
+    cudaFree((void*) C_d);
+
+    free((void*)A);
+    free((void*)B);
+
+
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (get(C, n, i, j) != n) {
+                free((void*)C);
+                return 0;
+            }
+        }
+    }
+    free((void*)C);
+    return 1;
 }
-#endif
+
+
+#include "_main.h"
 
 

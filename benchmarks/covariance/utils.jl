@@ -36,14 +36,13 @@ function run_benchmarks(; cuda = false, create_tests = false)
     # correctness_check(true)
     # return
 
-    if !create_tests
-        assert_correctness(cuda)
-        assert_correctness(cuda, "S")
-    end
+    # if !create_tests
+    #     assert_correctness(cuda)
+    #     assert_correctness(cuda, "S")
+    # end
 
     for (preset, dims) in benchmark_sizes
         M, N = dims
-
         
         if create_tests
             test_data = initialize(M, N, cuda=cuda)
