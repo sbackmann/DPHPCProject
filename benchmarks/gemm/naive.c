@@ -14,6 +14,7 @@
 #define alpha 1.5 
 #define beta 1.2
 
+
 // initialize matrices A, B, and C with random values
 void init_matrices(int N, int M, int K, double A[N][K], double B[K][M], double C[N][M]){
     for (int i = 0; i < N; i++)

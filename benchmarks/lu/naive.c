@@ -65,6 +65,15 @@ void lu(int N, double A[N][N]) {
 }
 
 
+void print2DArray(int N, double arr[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%lf\t", arr[i][j]);
+        }
+        printf("\n");
+    }
+}
+
 
 void run_bm(int N, const char* preset) {
 
@@ -86,6 +95,16 @@ void run_bm(int N, const char* preset) {
 
 int main(int argc, char** argv) {
 
+    // for testign 
+    // int N = 30;
+    // double (*A)[N][N]; 
+    // A = (double(*)[N][N]) malloc(N*N*sizeof(double));
+
+    // init_array(N, *A);
+    // lu(N,*A);
+    // print2DArray(N, *A); 
+
+    // real code
     run_bm(60, "S"); 
     run_bm(220, "M"); 
     run_bm(700, "L"); 

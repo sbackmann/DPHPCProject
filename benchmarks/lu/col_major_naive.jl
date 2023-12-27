@@ -1,4 +1,7 @@
 include("../../timing/dphpc_timing.jl")
+include("./validation.jl")
+
+validation = false
 
 function init_array(N)
 
@@ -29,49 +32,24 @@ function init_array(N)
     return A
 end
 
-# This function works exactly as the C version
-# function lu(N, A)
-#     i = 1
-#     while i <= N
-#         j = 1
-#         while j < i
-#             k = 1
-#             while k < j
-#                 A[i, j] -= A[i, k] * A[k, j]
-#                 k += 1
-#             end
-#             A[i, j] /= A[j, j]
-#             j += 1
-#         end
-#         j = i
-#         while j <= N
-#             k = 1
-#             while k < i
-#                 A[i, j] -= A[i, k] * A[k, j]
-#                 k += 1
-#             end
-#             j += 1
-#         end
-#         i += 1
-#     end
-# end
 
 function lu(N, A)
-    for i in 1:N
-        for j in 1:i-1
-            for k in 1:j-1
+    for j in 1:N
+        for i in 1:j-1
+            for k in 1:i-1
                 A[i, j] -= A[i, k] * A[k, j]
             end
             A[i, j] /= A[j, j]
         end
-        
-        for j in i:N
-            for k in 1:i-1
+        for i in (j + 1):N
+            for k in 1:j-1
                 A[i, j] -= A[i, k] * A[k, j]
             end
         end
     end
 end
+
+
 
 
 
@@ -86,10 +64,17 @@ end
 
 function main()
 
+
+    if validation 
+    A = init_array(30)
+    test_result = lu(30,A)
+    print(validate_cpu(test_result))
+
+    else 
+
     N = 60
     A = init_array(N)
     @dphpc_time(A = init_array(N), lu(N, A), "S")
-
 
     N = 220
     @dphpc_time(A = init_array(N), lu(N, A), "M")
@@ -100,8 +85,10 @@ function main()
     N = 2000
     @dphpc_time(A = init_array(N), lu(N, A), "paper")
 
+    end 
 
 
 end
 
 main()
+
