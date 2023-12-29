@@ -5,106 +5,48 @@
 
 #include "../../timing/dphpc_timing.h"
 
-#define VALIDATION // toggle to turn on/off 
+//#define VALIDATION // toggle to turn on/off 
 
 // Diffcult to parallelize as its prone to race condition (A is modified while being read)
-// There are many nested loops so the naive approach is to call the kernel in a loop
-// Doesn't work yet 
-__global__ void lu_kernel_1(int N, double* A, int i){
-
- //int i = blockIdx.x * blockDim.x + threadIdx.x;
- int j = blockIdx.y * blockDim.y + threadIdx.y;
- int k;
-
-    if (j<i) {
-        for (k = 0; k < j; k++) {
-            A[i * N + j] = A[i * N + j] - (A[i * N + k] * A[k * N + j]);
-            } 
-           // __syncthreads();
-
-    }
-
-}
-
-__global__ void lu_kernel_2(int N, double* A, int i){
-
- //int i = blockIdx.x * blockDim.x + threadIdx.x;
- int j = blockIdx.y * blockDim.y + threadIdx.y; // column
-
-    if (j<i) {
-        A[i * N + j] = A[i * N + j] / A[j * N + j];
-         //__syncthreads();
-    }
-
-}
+// This approach works but the GPU block is 1D, I don't know how that will effect perf on larger inpute 
+// Lower triangle is not correct 
 
 
-__global__ void lu_kernel_3(int N, double* A, int i){
-
-//int i = blockIdx.x * blockDim.x + threadIdx.x;
-int j = blockIdx.y * blockDim.y + threadIdx.y; // column
-int k;
-
-    if (j<=i) {
-    for (k = 0; k < i; k++) {
-        A[i * N + j] = A[i * N + j] - (A[i * N + k] * A[k * N + j]);
-       
-        }    
-       // __syncthreads();
-    
-}
-
-}
-
-
-__global__ void lu_kernel_test(int N, double* A) {
+__global__ void lu_kernel(int N, double* A) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int j = blockIdx.y * blockDim.y + threadIdx.y;
-    int k;
 
-    if (i < N && j < N) {
-        if (j < i) {
-            for (k = 0; k < j; k++) {
+    if (i < N) {
+        for (int j = 0; j < i; j++) {
+            for (int k = 0; k < j; k++) {
                 A[i * N + j] = A[i * N + j] - (A[i * N + k] * A[k * N + j]);
-              
             }
             A[i * N + j] = A[i * N + j] / A[j * N + j];
+        }
 
-        } else {
-            for (k = 0; k < i; k++) {
-                A[i * N + j] = A[i * N + j] - A[i * N + k] * A[k * N + j];
-                
+        __syncthreads();  // Ensure previous calculations are complete before proceeding
+
+        for (int j = i; j < N; j++) {
+            for (int k = 0; k < i; k++) {
+               A[i * N + j] = A[i * N + j] - A[i * N + k] * A[k * N + j];
             }
         }
     }
 }
 
-// Using different blocks and cudaDeviceSync after each kernel call doesn't effet the result 
+// All values are not NaN and postive; upper triangle is correct but not the lower 
 void run_lu_kernel(int N, double* A) {
-    dim3 block1(16, 16);
-    dim3 grid1((N+block1.x -1)/block1.x, (N+block1.y-1)/block1.y);
+   
+    // Define thread block and grid dimensions
 
-    dim3 block2(16, 16);
-    dim3 grid2((N+block2.x -1)/block2.x, (N+block2.y-1)/block2.y);
+    // Note, the blocksize that I was using was an issue 
+    // 1D block works 
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
 
-    //dim3 block3(16, 16);
-    //dim3 grid3((N+block3.x -1)/block3.x, (N+block3.y-1)/block3.y);
-    // lu_kernel_test<<<grid,block>>>(N, A); 
-
-    for (int i=0; i<N; i++){
-
-    lu_kernel_1<<<grid1,block1>>>(N, A, i);
-    cudaDeviceSynchronize(); 
-    lu_kernel_2<<<grid1,block1>>>(N, A, i); 
+    // Launch kernel
+    lu<<<blocksPerGrid, threadsPerBlock>>>(N, A);
     cudaDeviceSynchronize();
-    lu_kernel_3<<<grid2,block2>>>(N, A, i);
-    cudaDeviceSynchronize(); 
 
-
-    }
-
-
-    //cudaDeviceSynchronize();
 }
 
 
