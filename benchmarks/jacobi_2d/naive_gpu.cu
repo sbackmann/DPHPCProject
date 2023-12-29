@@ -6,9 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define ASSERT 1
-
-cudaError_t cudaStatusJ2D;
+#define ASSERT 0
 
 __global__ void kernel_j2d(int n, double *A, double *B)
 {
@@ -75,23 +73,13 @@ void print_arrays(int n, double *A, double *B)
 void run_kernel_j2d(int tsteps, int n, double *A, double *B)
 {   
     dim3 threadsPerBlock(16, 16);   // threads per block: 256
-    //dim3 numBlocks(n / 16 + 1, n / 16 + 1);
     dim3 numBlocks((n + threadsPerBlock.x - 1) / threadsPerBlock.x, (n + threadsPerBlock.y - 1) / threadsPerBlock.y);
     for (int t = 0; t < tsteps; t++)
     {
-        // after 3 rows have been done, the reverse accumulation can begin simultaneously, in theory
-        // could also put in kernel, with if guards. kinda difficult with the blocking though. maybe prev block row can start?
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, A, B);
         kernel_j2d<<<numBlocks,threadsPerBlock>>>(n, B, A);
-        cudaDeviceSynchronize();    // TODO can maybe be left off (and done only once after the loop) since only cuda commands are issued, which process sequentially anyway -> test
     }
-    
-    cudaStatusJ2D = cudaGetLastError();
-    
-    if (cudaStatusJ2D != cudaSuccess)
-    {
-        printf("CUDA error: %s\n", cudaGetErrorString(cudaStatusJ2D));
-    }
+    cudaDeviceSynchronize();
 }
 
 void reset(int n, double *A, double *A_d, double *B, double *B_d)
@@ -114,10 +102,10 @@ void run_bm(int tsteps, int n, const char* preset)
     cudaMemcpy((void *) B_d, (void *) B, sizeof(*B) * n * n, cudaMemcpyHostToDevice);
 
     dphpc_time3(
-        reset(n, A, B, A_d, B_d),
+        reset(n, A, A_d, B, B_d),
         run_kernel_j2d(tsteps, n, A_d, B_d),
         preset
-    );  // TODO: since data is never copied back from gpu in the runs, does it actually execute?
+    );
     
     if (ASSERT && strcmp(preset, "S") == 0)
     {
