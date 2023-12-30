@@ -105,7 +105,7 @@ void run_bm(int tsteps, int n, const char* preset)
         reset(n, A, A_d, B, B_d),
         run_kernel_j2d(tsteps, n, A_d, B_d),
         preset
-    );
+    );  // TODO: since data is never copied back from gpu in the runs, does it actually execute?
     
     if (ASSERT && strcmp(preset, "S") == 0)
     {
