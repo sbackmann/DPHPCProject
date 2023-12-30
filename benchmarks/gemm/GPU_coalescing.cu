@@ -10,7 +10,7 @@
 #define BLOCKSIZE 32
 
 cudaError_t cudaStatus;
-#define VALIDATION  // comment or uncomment to toggle 
+//#define VALIDATION  // comment or uncomment to toggle 
 
 // using accumulator (local register) 
 // Global memory coalescing (src: https://siboehm.com/articles/22/CUDA-MMM)

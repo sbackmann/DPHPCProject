@@ -1,0 +1,11 @@
+{
+    "benchmark": {
+        "short_name": "example",
+        "parameters": {
+            "S": { "N": 50 },
+            "M": { "N": 100 },
+            "L": { "N": 200 },
+            "paper": { "N": 220 }
+        }
+    }
+}

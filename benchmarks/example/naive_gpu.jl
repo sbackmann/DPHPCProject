@@ -17,21 +17,8 @@ end
 
 function example(A, B, n, out)
     b = n ÷ 16 + 1
-    @cuda threads=(16, 16) blocks=(b, b) kernel(A, B, n, out)
-    synchronize()
+    CUDA.@sync(@cuda threads=(16, 16) blocks=(b, b) kernel(A, B, n, out))
 end
 
 
-function run_kernel(n, preset)
-    matrices_h = init(n)
-    (A, B, out) = CuArray.(matrices_h)
-    @dphpc_time(
-        out .= 0,
-        example(A, B, n, out),
-        preset
-    )
-end
-
-
-run_kernel(100, "missing") # warmup, need to compile stuff...
-main()
+main(gpu=true)
