@@ -5,6 +5,8 @@
 
 #include "../../timing/dphpc_timing.h"
 
+// valid 
+
 void init_array(int N, double A[N][N]) {
 
   // create lower triangle of matrix 
@@ -44,25 +46,23 @@ void init_array(int N, double A[N][N]) {
 }
 
 
+// indices swapped to have col major 
 void lu(int N, double A[N][N]) {
-
-// first nested loop calculates the upper triangle
-// second nested loop calculates the lower trinagle 
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < i; j++) {
-      for (int k = 0; k < j; k++) {
-        A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
-      }
-      A[i][j] = A[i][j] / A[j][j];
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < i; j++) {
+            for (int k = 0; k < j; k++) {
+                A[j][i] = A[j][i] - (A[k][i] * A[j][k]);
+            }
+            A[j][i] = A[j][i] / A[j][j];
+        }
+        for (int j = i; j < N; j++) {
+            for (int k = 0; k < i; k++) {
+                A[j][i] = A[j][i] - (A[k][i] * A[j][k]);
+            }
+        }
     }
-    for (int j = i; j < N; j++) {
-      for (int k = 0; k < i; k++) {
-        A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
-      }
-    }
-  }
-
 }
+
 
 
 void print2DArray(int N, double arr[N][N]) {

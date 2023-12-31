@@ -3,6 +3,8 @@ include("./validation.jl")
 
 validation = false
 
+#valid 
+
 function init_array(N)
 
     A = zeros(Float64,N, N)

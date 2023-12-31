@@ -5,30 +5,31 @@
 
 #include "../../timing/dphpc_timing.h"
 
-// #define VALIDATION // toggle to turn on/off 
+//#define VALIDATION // toggle to turn on/off 
 
 // the values of the lower part are close enough to the correct ones
-__global__ void lu(int N, double* A) {
 
+__global__ void lu(int N, double* A) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < N) {
         for (int j = 0; j < i; j++) {
             for (int k = 0; k < j; k++) {
-                A[i * N + j] = A[i * N + j] - (A[i * N + k] * A[k * N + j]);
+                A[j * N + i] = A[j * N + i] - (A[i * N + k] * A[k * N + j]);
             }
-            A[i * N + j] = A[i * N + j] / A[j * N + j];
+            A[j * N + i] = A[j * N + i] / A[j * N + j];
         }
 
         __syncthreads();  // Ensure previous calculations are complete before proceeding
 
         for (int j = i; j < N; j++) {
             for (int k = 0; k < i; k++) {
-               A[i * N + j] = A[i * N + j] - A[i * N + k] * A[k * N + j];
+                A[j * N + i] = A[j * N + i] - (A[i * N + k] * A[k * N + j]); // A[i][k] and A[k][j] accessed in row major 
             }
         }
     }
 }
+
 
 // Using different blocks and cudaDeviceSync after each kernel call doesn't effet the result 
 void run_lu_kernel(int N, double* A) {
