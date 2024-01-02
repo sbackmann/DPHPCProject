@@ -1,6 +1,7 @@
 include("../../timing/dphpc_timing.jl")
 using CUDA 
 
+# naive GPU implemenation but unrolled 
 
 function init_array(N)
 
@@ -32,12 +33,11 @@ function init_array(N)
 end
 
 
-
 function lu_kernel(N, A)
     i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
 
     if i <= N
-        for j in 1:i
+        @inbounds @simd for j in 1:i
             for k in 1:j
                 A[i, j] -= A[i, k] * A[k, j]
             end
@@ -46,7 +46,7 @@ function lu_kernel(N, A)
 
         # synchronization is not necessary here as julia handles it
 
-        for j in i:N
+        @inbounds @simd for j in i:N
             for k in 1:i
                 A[i, j] -= A[i, k] * A[k, j]
             end
@@ -55,7 +55,6 @@ function lu_kernel(N, A)
 
     return
 end
-
 
 
 function run_lu_kernel(N, A)

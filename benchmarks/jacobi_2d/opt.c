@@ -76,6 +76,7 @@ void kernel_j2d(int tsteps, int n, double A[n][n], double B[n][n])
         {
             for (int j = 1; j < (n - 1); j++)
             {
+                // TODO unroll with stride 3
                 B[i][j] = 0.2 * (A[i][j] + A[i][j-1] + A[i][j+1] + A[i+1][j] + A[i-1][j]);
                 A[i-2][j] = 0.2 * (B[i-2][j] + B[i-2][j-1] + B[i-2][j+1] + B[i-1][j] + B[i-3][j]);
             }

@@ -31,12 +31,13 @@ void init_matrices(int N, int M, int K, double* A, double* B, double* C){
             C[i*M + j] = (double) ((i*j+1) % M) / M;
 }
 
-void gemm(int N, int M, int K, double* A, double* B, double* C){
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < M; j++) {
-            C[i*M + j] *= beta;
+// correct and validated 
+void gemm(int N, int M, int K, double* A, double* B, double* C) {
+    for (int j = 0; j < M; j++) {
+        for (int i = 0; i < N; i++) {
+            C[N * j + i] *= beta;
             for (int k = 0; k < K; k++) {
-                C[i*M + j] += alpha * A[i*K + k] * B[k*M + j];
+                C[N * j + i] += alpha * A[N * k + i] * B[K * j+ k];
             }
         }
     }
@@ -60,6 +61,7 @@ void run_bm(int N, int M, int K, const char* preset) {
     free(B);
     free(C); 
 }
+
 
 // ************************ Validation **********************************
 
@@ -91,7 +93,7 @@ void validation(int N, int M, int K) {
 
     // write C to file called gemm_unrolledx4_acc_gpu
     FILE *outputFile;
-    char fileName[] = "optimized_1_output.txt";
+    char fileName[] = "optimized_col_major_output.txt";
 
     // Open the file for writing
     outputFile = fopen(fileName, "w");
