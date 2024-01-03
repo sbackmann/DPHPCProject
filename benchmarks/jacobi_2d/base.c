@@ -108,6 +108,7 @@ int main(int argc, char** argv)
     run_bm(50, 150, "S");   // steps 50, n 150
     // run_bm(80, 350, "M");   // steps 80, n 350
     // run_bm(200, 700, "L");   // steps 200, n 700
+    // run_bm(500, 1400, "test"); // steps 500, n 1400, testing purposes
     // run_bm(1000, 2800, "paper");  // steps 1000, n 2800
   
     return 0;
