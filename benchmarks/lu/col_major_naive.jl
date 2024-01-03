@@ -1,6 +1,8 @@
 include("../../timing/dphpc_timing.jl")
 include("./validation.jl")
 
+using LinearAlgebra
+
 validation = false
 
 #valid 
@@ -35,7 +37,7 @@ function init_array(N)
 end
 
 
-function lu(N, A)
+function LinearAlgebra.lu(N::Int, A)
     for j in 1:N
         for i in 1:j-1
             for k in 1:i-1

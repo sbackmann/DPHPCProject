@@ -1,7 +1,7 @@
 
 function is_valid(n, k, C, A)
-    alpha = 3
-    beta = 5
+    alpha = 3.
+    beta = 5.
     A .= 1
     C .= 1
 
@@ -21,8 +21,8 @@ function is_valid(n, k, C, A)
 end
 
 function is_valid_gpu(n, k, C, A)
-    alpha = 3
-    beta = 5
+    alpha = 3.
+    beta = 5.
     A .= 1
     C .= 1
 

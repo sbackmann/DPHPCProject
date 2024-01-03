@@ -1,6 +1,6 @@
 include("../../timing/dphpc_timing.jl")
 using CUDA 
-
+using LinearAlgebra
 # naive GPU implemenation but unrolled 
 
 function init_array(N)

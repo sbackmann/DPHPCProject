@@ -1,4 +1,5 @@
 include("../../timing/dphpc_timing.jl")
+using LinearAlgebra
 
 function init_array(N)
 
@@ -56,7 +57,7 @@ end
 #     end
 # end
 
-function lu(N, A)
+function LinearAlgebra.lu(N::Int, A)
     for i in 1:N
         for j in 1:i-1
             for k in 1:j-1

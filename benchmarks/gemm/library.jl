@@ -1,5 +1,7 @@
 include("../../timing/dphpc_timing.jl")
 
+using LinearAlgebra
+
 const alpha = 1.5
 const beta = 1.2
 
@@ -14,7 +16,7 @@ function init_matrices(N, M, K)
 end
 
 
-gemm(N, M, K, A, B, C) = C .= alpha .* (A * B) .+ beta .* C
+gemm(N, M, K, A, B, C) = BLAS.gemm!('N', 'N', alpha, A, B, beta, C)
 
 
 # "parameters": {

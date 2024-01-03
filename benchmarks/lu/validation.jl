@@ -1,3 +1,6 @@
+
+using LinearAlgebra
+
 function init_array(N)
 
     A = zeros(Float64,N, N)
@@ -27,7 +30,7 @@ function init_array(N)
     return A
 end
 
-function lu(N, A)
+function LinearAlgebra.lu(N::Int, A)
     for i in 1:N
         for j in 1:i-1
             for k in 1:j-1

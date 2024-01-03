@@ -5,14 +5,19 @@ using CUDA
 include("../../timing/dphpc_timing.jl")
 
 function initialize(N, transpose; cuda=false)
-    L = [((i + N - j + 1) * 2 / N) for i in 1:N, j in 1:N]
+    # L = [((i + N - j + 1) * 2 / N) for i in 1:N, j in 1:N]
+    L = zeros(N, N)
+    for j=1:N, i=1:N
+        L[i, j] = 2 * (i + N - j + 1)
+    end
+    L *= (1/N)
+    
     if transpose
-        L_transpose = [L[j, i] for i in 1:N, j in 1:N]
-        L = L_transpose
+        L = transpose(L)[:, :]
     end
 
     x = zeros(N)
-    b = [i - 1 for i in 1:N]
+    b = collect(0:N-1)
 
     if cuda
         L = CUDA.CuArray(L)
@@ -71,7 +76,7 @@ function create_testfile(solution, prefix)
 end
 
 function assert_correctness(cuda, transpose, prefix="dev")
-    data = initialize(benchmark_sizes[prefix]..., transpose, cuda=cuda)
+    data = initialize(benchmark_sizes[prefix], transpose, cuda=cuda)
     solution = kernel(data...)
 
     test_cases_dir = "benchmarks/trisolv/test_cases"

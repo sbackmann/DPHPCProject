@@ -5,19 +5,7 @@ using CUDA
 const alpha = 1.5
 const beta = 1.2
 
-function init_matrices(N, M, K)
-
-    A = zeros(Float64, N, K)
-    B = zeros(Float64, K, M)
-    C = zeros(Float64, N, M)
-
-    A = [(i*j+1) % K / K for i in 1:N, j in 1:K]
-    B = [(i*j+1) % M / M for i in 1:K, j in 1:M]
-    C = [(i*j+1) % M / M for i in 1:N, j in 1:M]
-
-    return CuArray(A), CuArray(B), CuArray(C)
-
-end
+include("_init_matrices_gpu.jl")
 
 function gemm_kernel(N, M, K, A, B, C)
     i = threadIdx().x + (blockIdx().x - 1) * blockDim().x

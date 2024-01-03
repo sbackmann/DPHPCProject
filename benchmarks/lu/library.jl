@@ -1,4 +1,5 @@
 include("../../timing/dphpc_timing.jl")
+
 using LinearAlgebra
 
 function init_array(N, A)
@@ -25,7 +26,7 @@ function init_array(N, A)
     A .= B
 end
 
-function lu_kernel(N, A)
+function LinearAlgebra.lu(N::Int, A)
     dcp = lu(A, NoPivot())
     dcp.L + dcp.U - I 
 end # builtin LU, return same result as c implementation
@@ -39,19 +40,19 @@ function main()
 
     N = 60
     A = zeros(N, N)
-    @dphpc_time(init_array(N, A), lu_kernel(N, A), "S")
+    @dphpc_time(init_array(N, A), lu(N, A), "S")
 
     N = 220
     A = zeros(N, N)
-    @dphpc_time(init_array(N, A), lu_kernel(N, A), "M")
+    @dphpc_time(init_array(N, A), lu(N, A), "M")
 
     N = 700
     A = zeros(N, N)
-    @dphpc_time(init_array(N, A), lu_kernel(N, A), "L")
+    @dphpc_time(init_array(N, A), lu(N, A), "L")
 
     N = 2000
     A = zeros(N, N)
-    @dphpc_time(init_array(N, A), lu_kernel(N, A), "paper")
+    @dphpc_time(init_array(N, A), lu(N, A), "paper")
 
 
 end

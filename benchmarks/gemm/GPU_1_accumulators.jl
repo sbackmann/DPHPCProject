@@ -16,19 +16,7 @@ function initialize_matrices_val(N, M, K)
 end
 
 
-function init_matrices(N, M, K)
-
-    A = zeros(Float64, N, K)
-    B = zeros(Float64, K, M)
-    C = zeros(Float64, N, M)
-
-    A = [(i*j+1) % K / K for i in 1:N, j in 1:K]
-    B = [(i*j+1) % M / M for i in 1:K, j in 1:M]
-    C = [(i*j+1) % M / M for i in 1:N, j in 1:M]
-
-    return CuArray(A), CuArray(B), CuArray(C)
-
-end
+include("_init_matrices_gpu.jl")
 
 function gemm_kernel(N, M, K, A, B, C)
     i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
@@ -56,38 +44,7 @@ function run_gemm_kernel(N, M, K, A, B, C)
 end
 
 
-function main()
-
-    if validation 
-
-        N, M, K = 30, 40, 50
-        A, B, C = initialize_matrices_val(N, M, K)
-        run_gemm_kernel(N,M,K,A,B,C)
-        C_empty = zeros(Float64, N, M)
-        C_cpu = CUDA.copyto!(C_empty, C)  
-        is_valid = validate(C_cpu)
-
-        #println(C_cpu)
-
-        print(is_valid)
-
-        else 
-
-        N, M, K = 1000, 1100, 1200
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "S")
-
-        N, M, K = 2500, 2750, 3000
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "M")
-
-        N, M, K = 7000, 7500, 8000
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "L")
-
-        N, M, K = 2000, 2300, 2600
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "paper")
-
-        end 
-
-end
+include("_main.jl")
 
 main()
 

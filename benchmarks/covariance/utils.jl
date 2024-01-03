@@ -5,7 +5,9 @@ using CUDA
 include("../../timing/dphpc_timing.jl")
 
 function initialize(M, N, datatype=Float64; cuda=false)
-    data = [datatype((i-1) * (j-1)) / M for i in 1:N, j in 1:M]
+    # data = [datatype((i-1) * (j-1)) / M for i in 1:N, j in 1:M]
+    data = datatype.(collect(0:N-1) * collect(0:M-1)')
+    data = data .* (1/M)
     return cuda ? CuArray(data) : data
 end
 

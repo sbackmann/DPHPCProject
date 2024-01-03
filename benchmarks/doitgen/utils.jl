@@ -66,14 +66,36 @@ function doitgen_kernel_assert(nr, nq, np, A, C4, sum)
 end
 
 
+function doitgen_assert(nr, nq, np, A, C4, sum)
+    for r in 1:nr
+        for q in 1:nq
+            for p in 1:np
+                sum[p] = 0.0
+                for s in 1:np
+                    sum[p] += A[r, q, s] * C4[s, p]
+                end
+            end
+            for p in 1:np
+                A[r, q, p] = sum[p]
+            end
+        end
+    end
+    return A
+end
+
+
 function assert_naive(res, nr, nq, np)
     A, C4 = init_array(nr, nq, np)
     A_gpu, C4_gpu, sum = reset(A, C4, nr, nq, np)
     doitgen_gpu_assert!(nr, nq, np, A_gpu, C4_gpu, sum)
     A_cpu = CUDA.copyto!(Array{Float64}(undef, nr, nq, np), A_gpu)
-    #println(A_cpu[1:5, 1:5, 1:5])
-    #println(res[1:5, 1:5, 1:5])
+    A_naive_cpu, C4 = init_array(nr, nq, np)
+    doitgen_assert(nr, nq, np, A_naive_cpu, C4, zeros(np))
+    # println(A_cpu[1:5, 1:5, 1:5])
+    # println(res[1:5, 1:5, 1:5])
+    @assert isequal(A_naive_cpu, A_cpu)
     @assert isequal(res, A_cpu)
+    
 end
 
 
