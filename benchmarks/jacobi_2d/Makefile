@@ -11,9 +11,15 @@ naive:
 	./j2d
 	rm ./j2d
 
-# optimised cpu
+# optimised cpu, flat array
 opt:
 	gcc -Ofast -march=native -flto -o j2d opt.c -lm
+	./j2d
+	rm ./j2d
+
+# optimised cpu, unflattened 2d array
+unflat:
+	gcc -Ofast -march=native -flto -o j2d opt_2darr.c -lm
 	./j2d
 	rm ./j2d
 
