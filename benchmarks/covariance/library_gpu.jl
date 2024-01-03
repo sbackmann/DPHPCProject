@@ -15,7 +15,11 @@ function kernel(M, N, data)
 
     data .-= mean
     
-    return (1/(N-1)) .* (data' * data)
+    cov = (1/(N-1)) .* (data' * data)
+
+    CUDA.synchronize()
+
+    return cov
 end
 
 

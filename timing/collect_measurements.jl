@@ -118,6 +118,8 @@ function result_dataframe(bm, ver, lang, t)
 end
 
 function run_julia_bm(bm, ver)
+    global RESULTS
+    RESULTS = []
     file = joinpath(ROOT, "benchmarks", bm, "$(ver).jl")
     include(file) # timing results are stored in RESULTS
     results = empty_df()

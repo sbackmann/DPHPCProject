@@ -1,5 +1,6 @@
 include("../../timing/dphpc_timing.jl")
 using Serialization
+using LinearAlgebra: mul!
 
 ASSERT = true
 
@@ -35,15 +36,8 @@ end
 function doitgen(nr, nq, np, A, C4, sum)
     for r in 1:nr
         for q in 1:nq
-            for p in 1:np
-                sum[p] = 0.0
-                for s in 1:np
-                    sum[p] += A[r, q, s] * C4[s, p]
-                end
-            end
-            for p in 1:np
-                A[r, q, p] = sum[p]
-            end
+            mul!(sum, C4', @view(A[r, q, :]))
+            @view(A[r, q, :]) .= sum
         end
     end
     return A
