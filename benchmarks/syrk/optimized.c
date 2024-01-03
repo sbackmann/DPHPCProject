@@ -60,19 +60,50 @@ void run_bm(int n, int m, const char* preset) {
     free((void*)A);
 }
 
+
+int is_valid() {
+    int n = 200;
+    int m = 70;
+
+    double alpha = 3.0;
+    double beta = 5.0;
+    
+    double* C = malloc(n*n*sizeof(double));
+    double* A = malloc(n*m*sizeof(double));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            get(C, n, i, j) = 1;
+        }
+        for (int j = 0; j < m; j++) {
+            get(A, m, i, j) = 1;
+        }
+    } 
+
+    kernel_syrk(n, m, alpha, beta, C, A);
+    
+    free((void*)A);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (j <= i && get(C, n, i, j) != beta + alpha * m) {
+                free((void*)C);
+                printf("validation failed");
+                return 0;
+            }
+        }
+    } 
+
+    free((void*)C);
+    return 1;
+
+}
+
+
 // "S": { "M": 50, "N": 70 },
 // "M": { "M": 150, "N": 200 },
 // "L": { "M": 500, "N": 600 },
 // "paper": { "M": 1000, "N": 1200 }
 
 
-int main(int argc, char** argv)
-{   
-    // run_bm(5, 3, "missing");
-    run_bm(70, 50, "S");
-    run_bm(200, 150, "M");
-    run_bm(600, 500, "L");
-    run_bm(1200, 1000, "paper");
-
-    return 0;
-}
+#include "_main.h"

@@ -1,5 +1,6 @@
 
 include("_validate.jl")
+if !isdefined(Main, :NPBenchManager) include("../../timing/NPBenchManager.jl") end
 
 function init(n, k)
     A = zeros(Float64, n, k)
@@ -45,6 +46,8 @@ end
 
 function main()
 
+    benchmarks = NPBenchManager.get_parameters("syrk")
+
     n, k = 200, 70
     α, β, C, A = init(n, k)
 
@@ -53,23 +56,17 @@ function main()
         n, k = 10, 5
         @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A)) # warmup
 
-        n, k = 70, 50
-        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "S")
-
-        n, k = 200, 150
-        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "M")
-
-        n, k = 600, 500
-        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "L")
-
-        n, k = 1200, 1000
-        @dphpc_time((α, β, C, A) = init(n, k), syrk(n, k, α, β, C, A), "paper")
-
+        for (preset, sizes) in benchmarks
+            (n, k) = collect(values(sizes))
+            @dphpc_time((α, β, C, A)=init(n, k), syrk(n, k, α, β, C, A), preset)
+        end
     end
 
 end
 
 function main_gpu()
+
+    benchmarks = NPBenchManager.get_parameters("syrk")
 
     n, k = 200, 70
     α, β, hostC, C, A = init_gpu(n, k)
@@ -82,34 +79,15 @@ function main_gpu()
             run_kernel(n, k, α, β, C, A)
         )
 
-        n, k = 70, 50
-        @dphpc_time(
-            (α, β, hostC, C, A) = init_gpu(n, k), 
-            run_kernel(n, k, α, β, C, A), 
-            "S"
-        )
-
-        n, k = 200, 150
-        @dphpc_time(
-            (α, β, hostC, C, A) = init_gpu(n, k), 
-            run_kernel(n, k, α, β, C, A), 
-            "M"
-        )
-
-        n, k = 600, 500
-        @dphpc_time(
-            (α, β, hostC, C, A) = init_gpu(n, k), 
-            run_kernel(n, k, α, β, C, A), 
-            "L"
-        )
-
-        n, k = 1200, 1000
-        @dphpc_time(
-            (α, β, hostC, C, A) = init_gpu(n, k), 
-            run_kernel(n, k, α, β, C, A), 
-            "paper"
-        )
-
+        for (preset, sizes) in benchmarks
+            (n, k) = collect(values(sizes))
+            @dphpc_time(
+                (α, β, hostC, C, A) = init_gpu(n, k), 
+                run_kernel(n, k, α, β, C, A), 
+                preset
+            )
+        end
+        
     end
 
 end

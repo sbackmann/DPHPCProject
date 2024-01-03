@@ -16,7 +16,7 @@ int* get_params(const char* preset) {
         _params[0] = 100;
 		return _params;
     } else if (strcmp(preset, "L") == 0) {
-        _params[0] = 200;
+        _params[0] = 1000;
 		return _params;
     } else if (strcmp(preset, "paper") == 0) {
         _params[0] = 220;

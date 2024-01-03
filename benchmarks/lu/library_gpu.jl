@@ -1,5 +1,6 @@
 include("../../timing/dphpc_timing.jl")
 using CUDA 
+using LinearAlgebra
 
 
 function init_array(N)
@@ -33,44 +34,20 @@ end
 
 
 
-function lu_kernel(N, A)
-    i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
-
-    if i <= N
-        for j in 1:i
-            for k in 1:j
-                A[i, j] -= A[i, k] * A[k, j]
-            end
-            A[i, j] /= A[j, j]
-        end
-
-        # synchronization is not necessary here as julia handles it
-
-        for j in i:N
-            for k in 1:i
-                A[i, j] -= A[i, k] * A[k, j]
-            end
-        end
-    end
-
-    return
-end
-
-
 
 function run_lu_kernel(N, A)
-
-    threadsPerBlock = 256
-    blocksPerGrid = (N + threadsPerBlock - 1) ÷ threadsPerBlock
-    @cuda threads=threadsPerBlock blocks=blocksPerGrid lu_kernel(N, A)
-    CUDA.synchronize()
-
-
+    dcp = lu(A)
+    CUDA.@sync(result = dcp.L + dcp.U - I) 
+    result
 end
 
 
 
 function main()
+
+    N = 5
+    A = init_array(N)
+    @dphpc_time(A=init_array(N), run_lu_kernel(N, A)) # warmup
 
     N = 60
     A = init_array(N)

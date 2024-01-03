@@ -9,10 +9,10 @@
 __global__ void syrk(int n, int k, double alpha, double beta, double *C, double *A) {
     int c = blockIdx.x * blockDim.x + threadIdx.x;
     int r = blockIdx.y * blockDim.y + threadIdx.y;
-    if (r <= n && c <= n && r >= c) {
+    if (r < n && c < n && r >= c) {
         double s = 0.0;
         for (int i = 0; i < k; i++) {
-            s += get(A, k, i, r) * get(A, k, i, c); // swap indeces
+            s += get(A, n, i, r) * get(A, n, i, c); // swap indeces
         }
         get(C, n, r, c) = beta * get(C, n, r, c) + alpha * s;
     }
@@ -25,7 +25,7 @@ void init_array(int n, int m, double *alpha, double *beta,
     *beta = 1.2;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            get(A, m, j, i) = (double) ((i*j+1)%n) / n; // swap indeces
+            get(A, n, j, i) = (double) ((i*j+1)%n) / n; // swap indeces
         }
     }
     for (int i = 0; i < n; i++) {
@@ -72,21 +72,63 @@ void run_bm(int n, int m, const char* preset) {
     free((void*)A);
 }
 
-// "S": { "M": 50, "N": 70 },
-// "M": { "M": 150, "N": 200 },
-// "L": { "M": 500, "N": 600 },
-// "paper": { "M": 1000, "N": 1200 }
 
+int is_valid() {
 
-int main(int argc, char** argv)
-{   
-    // run_bm(5, 3, "missing");
-    run_bm(70, 50, "S");
-    run_bm(200, 150, "M");
-    run_bm(600, 500, "L");
-    run_bm(1200, 1000, "paper");
+    int n = 200;
+    int m = 70;
 
-    return 0;
+    double alpha = 3.0;
+    double beta = 5.0;
+    
+    double *C = (double*) malloc(n*n*sizeof(double));
+    double *A = (double*) malloc(n*m*sizeof(double));
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            get(C, n, i, j) = 1;
+        }
+        for (int j = 0; j < m; j++) {
+            get(A, m, i, j) = 1;
+        }
+    } 
+
+    double *C_d, *A_d;
+    cudaMalloc((void**) &C_d, n*n*sizeof(double));
+    cudaMalloc((void**) &A_d, n*m*sizeof(double));
+
+    cudaMemcpy((void*) C_d, (void*) C, n*n*sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy((void*) A_d, (void*) A, n*m*sizeof(double), cudaMemcpyHostToDevice);
+
+    run_kernel(n, m, alpha, beta, C_d, A_d);
+
+    cudaMemcpy((void*) C, (void*) C_d, n*n*sizeof(double), cudaMemcpyDeviceToHost);
+
+    cudaDeviceSynchronize();
+
+    cudaFree((void*) C_d);
+    cudaFree((void*) A_d);
+
+    free((void*)A);
+
+    
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (j <= i && get(C, n, i, j) != beta + alpha * m) {
+                free((void*)C);
+                printf("validation failed");
+                return 0;
+            }
+        }
+    } 
+
+    free((void*)C);
+    return 1;
 }
+
+
+
+#include "_main.h"
 
 
