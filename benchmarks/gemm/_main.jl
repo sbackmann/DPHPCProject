@@ -1,4 +1,5 @@
 
+using LinearAlgebra
 
 function reference(N, M, K, A, B, C)
     alpha = 1.5
@@ -16,6 +17,8 @@ function is_valid(result)
     #print("C from validation script")
     #println(c_cpu_)
 
+    # println(norm(ref - result))
+    # display(ref - result)
     return norm(ref - result) < 1e-8 
 
 end 

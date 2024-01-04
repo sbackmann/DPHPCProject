@@ -27,8 +27,8 @@ GPU_coalescing:
 	nvcc -o ./a.exe GPU_coalescing.cu
 	./a.exe
 
-GPU_unrolledx4_acc:
-	nvcc -o ./a.exe GPU_unrolledx4_acc.cu
+GPU_unrolledx4:
+	nvcc -o ./a.exe GPU_unrolledx4.cu
 	./a.exe
 
 GPU_col_major:
