@@ -18,22 +18,15 @@ cudaError_t cudaStatus;
 // thread block is now a 1D block 
 __global__ void gemm_kernel(int N, int M, int K, double *A, double *B, double *C){
 
-    int i = blockIdx.x * BLOCKSIZE  + (threadIdx.x/ BLOCKSIZE);
-    int j = blockIdx.y * BLOCKSIZE + (threadIdx.x % BLOCKSIZE);
-    int k;
-
-    double acc1 = 0.0; // C value 
-    double acc2 = 0.0; // A*B*alpha 
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+    int k; 
 
     if (i < N && j < M) {
-        acc1 = C[i * M + j];
-        acc1 = acc1 * beta; 
-
+        C[i * M + j] *= beta;
         for (k = 0; k < K; k++) {
-            acc2 += alpha * A[i * K + k] * B[k * M + j];
+            C[i * M + j] += alpha * A[i * K + k] * B[k * M + j];
         }
-
-        C[i * M + j] = acc1 + acc2; 
     }
 }
 

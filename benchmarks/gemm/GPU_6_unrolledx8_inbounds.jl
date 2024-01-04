@@ -25,9 +25,9 @@ function gemm_kernel(N, M, K, A, B, C)
     beta = 1.2
 
     if i <= N && j <= M
-        @inbounds acc1 = C[i, j] * beta
+        @inbounds C[i, j] *= beta
+        acc1 = 0.0  
         acc2 = 0.0
-
         acc3 = 0.0
         acc4 = 0.0
         acc5 = 0.0
@@ -35,28 +35,25 @@ function gemm_kernel(N, M, K, A, B, C)
         acc7 = 0.0
         acc8 = 0.0
         acc9 = 0.0
-        acc10 = 0.0
 
-        # Unroll the loop by 4
-        @inbounds for k = 1:8:K-7
-            @inbounds acc3 += alpha * A[i, k] * B[k, j]
-            @inbounds acc4 += alpha * A[i, k+1] * B[k+1, j]
-            @inbounds acc5 += alpha * A[i, k+2] * B[k+2, j]
-            @inbounds acc6 += alpha * A[i, k+3] * B[k+3, j]
-            @inbounds acc7 += alpha * A[i, k+4] * B[k+4, j]
-            @inbounds acc8 += alpha * A[i, k+5] * B[k+5, j]
-            @inbounds acc9 += alpha * A[i, k+6] * B[k+6, j]
-            @inbounds acc10 += alpha * A[i, k+7] * B[k+7, j]
+        for k = 1:8:K-7
+            @inbounds acc1 += alpha * A[i, k] * B[k, j]
+            @inbounds acc2 += alpha * A[i, k+1] * B[k+1, j]
+            @inbounds acc3 += alpha * A[i, k+2] * B[k+2, j]
+            @inbounds acc4 += alpha * A[i, k+3] * B[k+3, j]
+            @inbounds acc5 += alpha * A[i, k+4] * B[k+4, j]
+            @inbounds acc6 += alpha * A[i, k+5] * B[k+5, j]
+            @inbounds acc7 += alpha * A[i, k+6] * B[k+6, j]
+            @inbounds acc8 += alpha * A[i, k+7] * B[k+7, j]
         end
 
-        # Handle the remaining values
-        @inbounds for k = (K - rem(K, 8)) + 1:K
-            @inbounds acc2 += alpha * A[i, k] * B[k, j]
+        for k = (K - rem(K, 8)) + 1:K
+            @inbounds acc9 += alpha * A[i, k] * B[k, j]
         end
 
-        @inbounds C[i, j] = acc1 + acc2 + acc3 + acc4 + acc5 + acc6 + acc7 + acc8 + acc9 + acc10
+        @inbounds C[i, j] += (acc1 + acc2 + acc3+ acc4 + acc5+ acc6+ acc7+ acc8+ acc9)
     end
-    nothing
+    return
 end
 
 function run_gemm_kernel(N, M, K, A, B, C)

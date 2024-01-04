@@ -25,30 +25,27 @@ function gemm_kernel(N, M, K, A, B, C)
     beta = 1.2
 
     if i <= N && j <= M
-        acc1 = C[i, j] * beta
+        C[i, j] *= beta
+        acc1 = 0.0  
         acc2 = 0.0
-
         acc3 = 0.0
         acc4 = 0.0
         acc5 = 0.0
-        acc6 = 0.0
 
-        # Unroll the loop by 4
         for k = 1:4:K-3
-            acc3 += alpha * A[i, k] * B[k, j]
-            acc4 += alpha * A[i, k+1] * B[k+1, j]
-            acc5 += alpha * A[i, k+2] * B[k+2, j]
-            acc6 += alpha * A[i, k+3] * B[k+3, j]
+            acc1 += alpha * A[i, k] * B[k, j]
+            acc2 += alpha * A[i, k+1] * B[k+1, j]
+            acc3 += alpha * A[i, k+2] * B[k+2, j]
+            acc4 += alpha * A[i, k+3] * B[k+3, j]
         end
 
-        # Handle the remaining values
         for k = (K - rem(K, 4)) + 1:K
-            acc2 += alpha * A[i, k] * B[k, j]
+            acc5 += alpha * A[i, k] * B[k, j]
         end
 
-        C[i, j] = acc1 + acc2 + acc3 + acc4 + acc5 + acc6
+        C[i, j] += (acc1 + acc2 + acc3+ acc4 + acc5)
     end
-    nothing
+    return
 end
 
 function run_gemm_kernel(N, M, K, A, B, C)
