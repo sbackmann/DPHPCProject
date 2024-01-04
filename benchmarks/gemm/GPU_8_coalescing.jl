@@ -3,11 +3,13 @@ include("./validation.jl")
 
 using CUDA 
 
-# eliminate global variables + accumulators 
 # global memory coalescing 
 
 const BLOCKSIZE = 32
 validation = false
+
+const alpha = 1.5
+const beta = 1.2
 
 # for validation 
 function initialize_matrices_val(N, M, K)
@@ -20,32 +22,21 @@ end
 include("_init_matrices_gpu.jl")
 
 function gemm_kernel(N, M, K, A, B, C)
-    i, j = blockIdx().x * BLOCKSIZE + div(threadIdx().x, BLOCKSIZE), blockIdx().y * BLOCKSIZE + mod(threadIdx().x, BLOCKSIZE)
-
-    alpha = 1.5
-    beta = 1.2
-
+    i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
+    j = threadIdx().y + (blockIdx().y - 1) * blockDim().y
+    
     if i <= N && j <= M
-        acc1 = C[i, j] * beta
-        acc2 = 0.0
+        C[i, j] *= beta
         for k = 1:K
-            acc2 += alpha * A[i, k] * B[k, j]
+            C[i, j] += alpha * A[i, k] * B[k, j]
         end
-        C[i, j] = acc1 + acc2
     end
-    nothing 
+    nothing
 end
 
 function run_gemm_kernel(N, M, K, A, B, C)
     block = (BLOCKSIZE,BLOCKSIZE)
     grid = ((M + block[1] - 1) ÷ block[1], (N + block[2] - 1) ÷ block[2])
-    # The following line could be wrong 
-    # block.x = 32*32 
-    # block.y = 1
-    # I changed the blocksize here, the prev one could be wrong
-    #numBlocks = ((M+ 32*32 -1 ) ÷ 32*32, N)
-
-    #@cuda threads=threadsPerBlock blocks=numBlocks gemm_kernel(N, M, K, A, B, C)
 
     @cuda threads=block blocks=grid gemm_kernel(N, M, K, A, B, C)
     CUDA.synchronize()
