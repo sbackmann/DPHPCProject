@@ -55,7 +55,7 @@ function get_results()
         benchmark = s[1, :benchmark]
         version = s[1, :framework] .* (s[1, :details] != "default" ? " ($(s[1, :details]))" : "")
         preset = s[1, :preset]
-        gpu = is_gpu(version)
+        gpu = is_gpu(s[1, :framework])
         append!(out_df,
             DataFrame(benchmark=benchmark, language="python", version=version, preset=preset, gpu=gpu, median=median, median_lb=median_lb, median_ub=median_ub, nr_runs=10)
         )
