@@ -5,14 +5,7 @@ using PrettyTables
 include("utils.jl")
 include("../../timing/dphpc_timing.jl")
 
-VALIDATE = false
 
-function main()
-    if VALIDATE
-        correctness_check(true, ["S", "M"])
-    end
-    run_benchmarks(cuda=true)
-end
 
 function dot_product_kernel(L, x, dp, i, N)
     j = threadIdx().x + (blockIdx().x - 1) * blockDim().x

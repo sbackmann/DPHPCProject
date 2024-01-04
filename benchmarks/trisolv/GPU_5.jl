@@ -1,15 +1,8 @@
 using LinearAlgebra
 using CUDA
-using PrettyTables
 
 include("utils.jl")
-include("../../timing/dphpc_timing.jl")
 
-function main()
-    # correctness_check(true, ["S", "M"])
-    correctness_check(true, ["S"])
-    run_benchmarks(cuda=true)
-end
 
 
 function pre_comp_kernel(L, Lx, x, j, N)
@@ -54,13 +47,13 @@ function kernel(L, x, b)
     inv_diag = CUDA.zeros(eltype(L), N)
     @cuda threads=t blocks=blocks inv_diag_kernel(L, inv_diag, N)
 
-    b_prod_inv_diag = CUDA.zeros(eltype(L), N)
+    # b_prod_inv_diag = CUDA.zeros(eltype(L), N)
     b_prod_inv_diag = b .* inv_diag
 
     Lx = CUDA.zeros(eltype(L), N, N)
 
-    x = CuArray(b_prod_inv_diag)
-    CUDA.@allowscalar Lx[:, 1] = L[:, 1] * b_prod_inv_diag[1]
+    x .= b_prod_inv_diag
+    CUDA.@allowscalar Lx[:, 1] .= L[:, 1] .* b_prod_inv_diag[1]
     
     for i in 2:N
         @cuda threads=1 blocks=1 scalar_update_kernel(x, i, Lx, inv_diag)
