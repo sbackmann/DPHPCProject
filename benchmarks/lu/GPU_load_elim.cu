@@ -8,28 +8,32 @@
 // #define VALIDATION // toggle to turn on/off 
 
 // the values of the lower part are close enough to the correct ones
-
 __global__ void lu(int N, double* A) {
+
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (i < N) {
+        double tmp;
         for (int j = 0; j < i; j++) {
+            tmp = A[i * N + j];
             for (int k = 0; k < j; k++) {
-                A[j * N + i] = A[j * N + i] - (A[j * N + k] * A[k * N + i]);
+                tmp -= A[i * N + k] * A[k * N + j];
             }
-            A[j * N + i] = A[j * N + i] / A[j * N + j];
+            tmp /= A[j * N + j];
+            A[i * N + j] = tmp;
         }
 
         __syncthreads();  // Ensure previous calculations are complete before proceeding
 
         for (int j = i; j < N; j++) {
+            tmp = A[i * N + j];
             for (int k = 0; k < i; k++) {
-                A[j * N + i] = A[j * N + i] - (A[j * N + k] * A[k * N + i]); // A[i][k] and A[k][j] accessed in row major 
+                tmp -= A[i * N + k] * A[k * N + j];
             }
+            A[i * N + j] = tmp;
         }
     }
 }
-
 
 // Using different blocks and cudaDeviceSync after each kernel call doesn't effet the result 
 void run_lu_kernel(int N, double* A) {
@@ -128,7 +132,7 @@ void validation(int N) {
     run_lu_kernel(N, A_d);
 
     // copy C from device back to host 
-    cudaMemcpy(A, A_d, N*N*sizeof(double), cudaMemcpyDeviceToHost);
+    cudaMemcpy(A, A_d, N*N*sizeof(double), cudaMemcpyDeviceToHost); 
     
     // write C to file called gemm_unrolledx4_acc_gpu
     FILE *outputFile;
@@ -145,7 +149,7 @@ void validation(int N) {
     // Print the matrix C to the file
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            fprintf(outputFile, "%.2f ", A[j * N + i]); // output the transpose
+            fprintf(outputFile, "%.2f ", A[i * N + j]);
         }
         fprintf(outputFile, "\n");
     }

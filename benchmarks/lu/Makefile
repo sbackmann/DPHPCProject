@@ -8,9 +8,9 @@ naive_colmajor:
 	./a.exe
 
 naive_gpu:
-	nvcc -o ./a.exe lu_naive_gpu.cu
+	nvcc -o ./a.exe naive_gpu.cu
 	./a.exe
 
 colmaj_gpu:
-	nvcc -o ./a.exe GPU_col_major.cu
+	nvcc -o ./a.exe GPU_col_major_load_elim.cu
 	./a.exe
