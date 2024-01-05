@@ -1,34 +1,7 @@
 include("../../timing/dphpc_timing.jl")
 using LinearAlgebra
 
-function init_array(N)
 
-    A = zeros(Float64,N, N)
-
-    for i in 1:N
-        for j in 1:i
-            A[i, j] = ((-j-1) % N) / N + 1.0
-        end
-        for j in i+1:N
-            A[i, j] = 0.0
-        end
-        A[i, i] = 1.0
-    end
-
-    B = zeros(Float64, N, N)
-    
-    for t in 1:N
-        for r in 1:N
-            for s in 1:N
-                B[r, s] += A[r,t] * A[s,t]
-            end
-        end
-    end
-
-    A .= B
-
-    return A
-end
 
 # This function works exactly as the C version
 # function lu(N, A)
@@ -85,24 +58,6 @@ function printMatrix(matrix)
     end
 end
 
-function main()
-
-    N = 60
-    A = init_array(N)
-    @dphpc_time(A = init_array(N), lu(N, A), "S")
-
-
-    N = 220
-    @dphpc_time(A = init_array(N), lu(N, A), "M")
-
-    N = 700
-    @dphpc_time(A = init_array(N), lu(N, A), "L")
-
-    N = 2000
-    @dphpc_time(A = init_array(N), lu(N, A), "paper")
-
-
-
-end
+include("_main_cpu.jl")
 
 main()
