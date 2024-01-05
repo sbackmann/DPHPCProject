@@ -1,8 +1,8 @@
 
 include("speedup.jl")
 
-make_plots("paper")
+make_plots("M")
 
 include("juliavsc.jl")
 
-make_plots("paper")
+make_plots("M")

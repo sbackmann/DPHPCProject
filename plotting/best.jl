@@ -107,6 +107,12 @@ function combine_plots(plots, arch, bms, preset)
     return the_plot
 end
 
+function make_single_plot(bm, preset)
+    cpu_vs, gpu_vs = get_best_versions(bm, preset)
+    display(make_sub_plot(cpu_vs..., bm))
+    display(make_sub_plot(gpu_vs..., bm))
+end
+
 function make_plot(preset)
     cpu_plots = []
     gpu_plots = []
