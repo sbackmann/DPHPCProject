@@ -1,7 +1,8 @@
 *.csv
 *.exe
 .vscode/
-
+*.so
+*.png
 
 build/
 timing/presets.h

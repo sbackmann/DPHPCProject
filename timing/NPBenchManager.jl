@@ -3,7 +3,9 @@ module NPBenchManager
 
 # some functionality to help integrate NPBench into our timing infrastructure
 
-import SQLite, JSON
+using DataStructures: OrderedDict
+import JSON3
+import SQLite
 using DataFrames
 
 # Database, where NPBench stores its results
@@ -76,13 +78,21 @@ end
 
 function get_bench_info(bm::String)
     bench_info_path = joinpath(@__DIR__, "..", "NPBench", "bench_info")
-    info = read(joinpath(bench_info_path, "$bm.json"), String) |> JSON.parse
-    return info["benchmark"]
+    info = read(joinpath(bench_info_path, "$bm.json"), String) |> JSON3.read
+    return info.benchmark
 end
 
-get_short_name(bm::String) = get_bench_info(bm)["short_name"]
+get_short_name(bm::String) = get_bench_info(bm).short_name
 
-get_parameters(bm::String) = get_bench_info(bm)["parameters"]
+function get_parameters(bm::String)
+    dict = get_bench_info(bm).parameters |> OrderedDict
+    ordered = OrderedDict()
+    ordered["S"]     = dict[:S]     |> OrderedDict
+    ordered["M"]     = dict[:M]     |> OrderedDict
+    ordered["L"]     = dict[:L]     |> OrderedDict
+    ordered["paper"] = dict[:paper] |> OrderedDict
+    ordered
+end
 
 function set_parameters(bm::String, preset::String, params::Tuple)
     old = get_parameters(bm)
@@ -98,9 +108,9 @@ function set_parameters(bm::String, preset::String, params::Tuple)
     info = Dict("benchmark" => all_info)
     bench_info_path = joinpath(@__DIR__, "..", "NPBench", "bench_info", "$bm.json")
 
-    buff = IOBuffer()
-    s = JSON.print(buff, info, 4)
-    write(bench_info_path, String(take!(buff)))
+    open(bench_info_path, "w") do io
+        JSON3.pretty(io, info)
+    end
     make_parameter_header(bm)
 end
 

@@ -1,4 +1,6 @@
 
+if !isdefined(Main, :NPBenchManager) include("NPBenchManager.jl") end # for convenience
+
 
 # macro for timing benchmarks, determines median and 95% confidence interval for median runtime in ms
 # need at least 6 measurements to be able to give 95% confidence interval
