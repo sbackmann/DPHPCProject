@@ -34,17 +34,11 @@ function main()
         N, M, K = 100, 110, 120 # warmup
         @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C))
 
-        N, M, K = 1000, 1100, 1200
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "S")
-
-        N, M, K = 2500, 2750, 3000
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "M")
-
-        N, M, K = 7000, 7500, 8000
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "L")
-
-        N, M, K = 2000, 2300, 2600
-        @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), "paper")
+        benchmarks = NPBenchManager.get_parameters("gemm")
+        for (preset, sizes) in benchmarks
+            N, M, K = collect(values(sizes))
+            @dphpc_time((A, B, C) = init_matrices(N,M,K), run_gemm_kernel(N, M, K, A, B, C), preset)
+        end
 
     else
         println("VALIDATION FAILED")

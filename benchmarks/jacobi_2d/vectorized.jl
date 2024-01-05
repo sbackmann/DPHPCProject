@@ -37,30 +37,6 @@ function print_array(A)
 end
 
 
-function main()
-    tsteps, n = 50, 150
-    A, B = init_arrays(n)
-    #println("matrix A in:")
-    #print_array(A)
-    res = @dphpc_time((A,B)=init_arrays(n), kernel_j2d(tsteps, n, A, B), "S")
-    #println("matrix A out:")
-    #print_array(A)
-    println(res)
-
-    tsteps, n = 80, 350
-    A, B = init_arrays(n)
-    res = @dphpc_time((A,B)=init_arrays(n), kernel_j2d(tsteps, n, A, B), "M")
-    println(res)
-
-    tsteps, n = 200, 700
-    A, B = init_arrays(n)
-    res = @dphpc_time((A,B)=init_arrays(n), kernel_j2d(tsteps, n, A, B), "L")
-    println(res)
-
-    tsteps, n = 1000, 2800
-    A, B = init_arrays(n)
-    res = @dphpc_time((A,B)=init_arrays(n), kernel_j2d(tsteps, n, A, B), "paper")
-    println(res)
-end
+include("_main_cpu.jl")
 
 main()

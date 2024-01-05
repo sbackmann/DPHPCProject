@@ -3,9 +3,9 @@ naive:
 	gcc naive.c -O3 -o ./a.exe -lm 
 	./a.exe
 
-naive_col_major:
-	gcc naive_col_major.c -O3 -o ./a.exe -lm 
-	./a.exe
+# naive_col_major:
+# 	gcc naive_col_major.c -O3 -o ./a.exe -lm 
+# 	./a.exe
 
 optimized_1: 
 	gcc optimized_1.c -O3 -o ./a.exe -lm 
@@ -19,9 +19,9 @@ naive_gpu:
 	nvcc -o ./a.exe gemm_naive_gpu.cu
 	./a.exe
 
-GPU_acc:
-	nvcc -o ./a.exe GPU_acc.cu
-	./a.exe
+# GPU_acc:
+# 	nvcc -o ./a.exe GPU_acc.cu
+# 	./a.exe
 
 GPU_coalescing:
 	nvcc -o ./a.exe GPU_coalescing.cu

@@ -16,7 +16,7 @@ cudaError_t cudaStatus;
 // unrolling the inner loop by factor of 4 
 
 
-__global__ void gemm_kernel(int N, int M, int K, double alpha, double beta, double *A, double *B, double *C) {
+__global__ void gemm_kernel(int N, int M, int K, double *A, double *B, double *C) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
     int k;
@@ -186,6 +186,8 @@ void validation(int N, int M, int K) {
     free(C); 
 }
 
+#include "_parameters.h"
+
 int main(){
     
     #ifdef VALIDATION 
@@ -194,10 +196,15 @@ int main(){
 
     #else
 
-    run_bm(1000, 1100, 1200, "S"); 
-    run_bm(2500, 2750, 3000, "M"); 
-    run_bm(7000, 7500, 8000, "L"); 
-    run_bm(2000, 2300, 2600, "paper"); 
+    const char *presets[] = {"S", "M", "L", "paper"};
+
+    for (int i = 0; i < 4; i++) {
+        const char* preset = presets[i];
+        int n = get_params(preset)[0];
+        int m = get_params(preset)[1];
+        int k = get_params(preset)[2];
+        run_bm(n, m, k, preset);
+    }
 
     #endif
     

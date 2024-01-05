@@ -103,13 +103,36 @@ void run_bm(int tsteps, int n, const char* preset)
     free((void *) B);
 }
 
+
+
+#include "_parameters.h"
 int main(int argc, char** argv)
-{
-    run_bm(50, 150, "S");   // steps 50, n 150
-    // run_bm(80, 350, "M");   // steps 80, n 350
-    // run_bm(200, 700, "L");   // steps 200, n 700
-    // run_bm(500, 1400, "test"); // steps 500, n 1400, testing purposes
-    // run_bm(1000, 2800, "paper");  // steps 1000, n 2800
+{   
+    const char *presets[] = {"S", "M", "L", "paper"};
+
+    for (int i = 0; i < 4; i++) {
+        const char* preset = presets[i];
+        int tsteps = get_params(preset)[0];
+        int n      = get_params(preset)[1];
+        run_bm(tsteps, n, preset);
+    }
+
+
+    //run_bm(500, 1400, "missing"); // in-between for testing
   
     return 0;
 }
+
+
+
+// int main(int argc, char** argv)
+// {
+//     run_bm(50, 150, "S");   // steps 50, n 150
+//     // run_bm(80, 350, "M");   // steps 80, n 350
+//     // run_bm(200, 700, "L");   // steps 200, n 700
+//     // run_bm(500, 1400, "test"); // steps 500, n 1400, testing purposes
+//     // run_bm(1000, 2800, "paper");  // steps 1000, n 2800
+  
+//     return 0;
+// }
+
