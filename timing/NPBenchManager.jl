@@ -103,8 +103,8 @@ function set_parameters(bm::String, preset::String, params::Tuple)
         end
     end
     new = old
-    all_info = get_bench_info(bm)
-    all_info["parameters"] = new
+    all_info = get_bench_info(bm) |> OrderedDict
+    all_info[:parameters] = new
     info = Dict("benchmark" => all_info)
     bench_info_path = joinpath(@__DIR__, "..", "NPBench", "bench_info", "$bm.json")
 
