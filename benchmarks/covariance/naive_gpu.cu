@@ -125,10 +125,14 @@ void run_bm(int M, int N, const char* preset) {
 }
 
 int main() {
-    run_bm(500, 600, "S");
-    run_bm(1400, 1800, "M");
-    run_bm(3200, 4000, "L");
-    run_bm(1200, 1400, "paper");
+    const char *presets[] = {"S", "M", "L", "paper"};
+
+    for (int i = 0; i < 4; i++) {
+        const char* preset = presets[i];
+        int m = get_params(preset)[0];
+        int n = get_params(preset)[0];
+        run_bm(m, n, preset);
+    }
 
     return 0;
 }

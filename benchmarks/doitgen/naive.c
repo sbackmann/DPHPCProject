@@ -184,25 +184,17 @@ void run_bm(int nr, int nq, int np, const char* preset) {
 int main(int argc, char** argv)
 {
 
-    int nr = 60;
-    int nq = 60;
-    int np = 128;
-    run_bm(nr, nq, np, "S");
+    const char *presets[] = {"S", "M", "L", "paper"};
 
-    nr = 110;
-    nq = 125;
-    np = 256;
-    run_bm(nr, nq, np, "M");
+    for (int i = 0; i < 4; i++) {
+        const char* preset = presets[i];
+        int nr = get_params(preset)[0];
+        int nq = get_params(preset)[1];
+        int np = get_params(preset)[2];
+        run_bm(nr, nq, np, preset);
+    }
 
-    nr = 220;
-    nq = 250;
-    np = 512;
-    run_bm(nr, nq, np, "L");
-
-    nr = 220;
-    nq = 250;
-    np = 270;
-    run_bm(nr, nq, np, "paper");
+    return 0;
 
     return 0;
 }

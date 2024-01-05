@@ -1,4 +1,4 @@
-
+#define PARAMETERSH // dont include definition of get_params function again
 #include "utils.h"
 #include "../../timing/dphpc_timing.h"
 

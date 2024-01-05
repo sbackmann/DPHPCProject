@@ -81,43 +81,27 @@ end
 
 function main()
 
-    n = 200
+    n = 40
     graph = init_graph(n)
     graph_gpu = reset_graph(graph)
-    # CUDA.@time floyd_warshall_gpu!(n, graph)
-    res = @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), "S")
-    # print(result_graph[1:50, 1:50])
-    if ASSERT && res != nothing
-        result_graph = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
-        assert_naive(result_graph, n)
-        #assert_correctness(result_graph, "S")
+    @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu)) # warmup
+
+    benchmark_sizes = NPBenchManager.get_parameters("floyd_warshall")
+
+    for (preset, sizes) in benchmark_sizes
+        (n,) = collect(values(sizes))
+        graph = init_graph(n)
+        graph_gpu = reset_graph(graph)
+        # CUDA.@time floyd_warshall_gpu!(n, graph)
+        res = @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), preset)
+        # print(result_graph[1:50, 1:50])
+        if preset == "S" && ASSERT && res != nothing
+            result_graph = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
+            assert_naive(result_graph, n)
+            #assert_correctness(result_graph, "S")
+        end
     end
 
-    n = 400
-    graph = init_graph(n)
-    graph_gpu = reset_graph(graph)
-    res = @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), "M")
-    if ASSERT && res != nothing
-        result_graph = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
-        assert_naive(result_graph, n)
-    end
 
-    n = 850
-    graph = init_graph(n)
-    graph_gpu = reset_graph(graph)
-    res = @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), "L")
-    if ASSERT && res != nothing
-        result_graph = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
-        assert_naive(result_graph, n)
-    end
-
-    n = 2800
-    graph = init_graph(n)
-    graph_gpu = reset_graph(graph)
-    res = @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), "paper")
-    if ASSERT && res != nothing
-        result_graph = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
-        assert_naive(result_graph, n)
-    end
 
 end

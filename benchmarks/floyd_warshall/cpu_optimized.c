@@ -10,6 +10,7 @@
 /* floyd-warshall.c: this file is part of PolyBench/C */
 
 #include "../../timing/dphpc_timing.h"
+#include "_parameters.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -154,10 +155,10 @@ void run_bm(int n, const char* preset) {
 
 int main(int argc, char** argv)
 {
-  run_bm(200, "S");
-  run_bm(400, "M");
-  run_bm(850, "L");
-  run_bm(2800, "paper");
+  run_bm(get_params("S")[0], "S");
+  run_bm(get_params("M")[0], "M");
+  run_bm(get_params("L")[0], "L");
+  run_bm(get_params("paper")[0], "paper");
   
   return 0;
 }

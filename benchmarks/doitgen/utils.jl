@@ -93,6 +93,10 @@ function assert_naive(res, nr, nq, np)
     doitgen_assert(nr, nq, np, A_naive_cpu, C4, zeros(np))
     # println(A_cpu[1:5, 1:5, 1:5])
     # println(res[1:5, 1:5, 1:5])
+    # println("$nr, $nq, $np")
+    # display(A_naive_cpu)
+    # display(A_cpu)
+    # display(res)
     @assert isequal(A_naive_cpu, A_cpu)
     @assert isequal(res, A_cpu)
     
@@ -116,10 +120,16 @@ function assert_correctness(A, prefix)
 end
 
 function main()
+
+    benchmark_sizes = NPBenchManager.get_parameters("doitgen")
+
+    nr,nq,np = 30, 30, 64
+    A, C4 = init_array(nr, nq, np)
+    A_gpu, C4_gpu, sum = reset(A, C4, nr, nq, np)
+    @dphpc_time((A_gpu, C4_gpu, sum) = reset(A, C4, nr, nq, np), doitgen_gpu!(nr, nq, np, A_gpu, C4_gpu, sum)) # warmup
     
-    nr = 60
-    nq = 60
-    np = 128
+    
+    nr,nq,np = benchmark_sizes["S"] |> values |> collect
     A, C4 = init_array(nr, nq, np)
     A_gpu, C4_gpu, sum = reset(A, C4, nr, nq, np)
     res = @dphpc_time((A_gpu, C4_gpu, sum) = reset(A, C4, nr, nq, np), doitgen_gpu!(nr, nq, np, A_gpu, C4_gpu, sum), "S")
@@ -129,9 +139,7 @@ function main()
     end
     
 
-    nr = 110
-    nq = 125
-    np = 256
+    nr,nq,np = benchmark_sizes["M"] |> values |> collect
     A, C4 = init_array(nr, nq, np)
     A_gpu, C4_gpu, sum = reset(A, C4, nr, nq, np)
     res = @dphpc_time((A_gpu, C4_gpu, sum) = reset(A, C4, nr, nq, np), doitgen_gpu!(nr, nq, np, A_gpu, C4_gpu, sum), "M")
@@ -141,9 +149,7 @@ function main()
     end
 
 
-    nr = 220
-    nq = 250
-    np = 512
+    nr,nq,np = benchmark_sizes["L"] |> values |> collect
     A, C4 = init_array(nr, nq, np)
     A_gpu, C4_gpu, sum = reset(A, C4, nr, nq, np)
     res = @dphpc_time((A_gpu, C4_gpu, sum) = reset(A, C4, nr, nq, np), doitgen_gpu!(nr, nq, np, A_gpu, C4_gpu, sum), "L")
@@ -153,9 +159,7 @@ function main()
     end
 
 
-    nr = 220
-    nq = 250
-    np = 270
+    nr,nq,np = benchmark_sizes["paper"] |> values |> collect
     A, C4 = init_array(nr, nq, np)
     A_gpu, C4_gpu, sum = reset(A, C4, nr, nq, np)
     res = @dphpc_time((A_gpu, C4_gpu, sum) = reset(A, C4, nr, nq, np), doitgen_gpu!(nr, nq, np, A_gpu, C4_gpu, sum), "paper")

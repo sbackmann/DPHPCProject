@@ -56,39 +56,24 @@ function assert_correctness(A, prefix)
 end
 
 function main()
-    nr = 60
-    nq = 60
-    np = 4
-    A, C4, sum = init_array(nr, nq, np)
-    @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "missing")
-    
 
-    nr = 60
-    nq = 60
-    np = 128
-    A, C4, sum = init_array(nr, nq, np)
-    res = @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "S")
-    if ASSERT && res != nothing
-        assert_correctness(A, "S")
+    benchmark_sizes = NPBenchManager.get_parameters("doitgen")
+
+    nr,nq,np = 60, 60, 128
+    (A, C4, sum) = init_array(nr, nq, np)
+    @dphpc_time((A, C4, sum) = init_array(nr, nq, np), doitgen(nr, nq, np, A, C4, sum)) #warmup
+
+    for (preset, dims) in benchmark_sizes
+        nr,nq,np = dims |> values |> collect
+        (A, C4, sum) = init_array(nr, nq, np)
+
+        if preset == "S"
+            doitgen(nr, nq, np, A, C4, sum)
+            assert_correctness(A, preset)
+        end
+
+        @dphpc_time((A, C4, sum) = init_array(nr, nq, np), doitgen(nr, nq, np, A, C4, sum), preset)
     end
-
-    nr = 110
-    nq = 125
-    np = 256
-    A, C4, sum = init_array(nr, nq, np)
-    res = @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "M")
-
-    nr = 220
-    nq = 250
-    np = 512
-    A, C4, sum = init_array(nr, nq, np)
-    res = @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "L")
-
-    nr = 220
-    nq = 250
-    np = 270
-    A, C4, sum = init_array(nr, nq, np)
-    res = @dphpc_time(reset(nr, nq, np, A, C4), doitgen(nr, nq, np, A, C4, sum), "paper")
 
 end
 

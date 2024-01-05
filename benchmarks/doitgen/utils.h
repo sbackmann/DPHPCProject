@@ -1,21 +1,23 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#define NR_S 60
-#define NQ_S 60
-#define NP_S 128
+#include "_parameters.h"
 
-#define NR_M 110
-#define NQ_M 125
-#define NP_M 256
+#define NR_S get_params("S")[0]
+#define NQ_S get_params("S")[1]
+#define NP_S get_params("S")[2]
 
-#define NR_L 220
-#define NQ_L 250
-#define NP_L 512
+#define NR_M get_params("M")[0]
+#define NQ_M get_params("M")[1]
+#define NP_M get_params("M")[2]
 
-#define NR_PAPER 220
-#define NQ_PAPER 250
-#define NP_PAPER 270
+#define NR_L get_params("L")[0]
+#define NQ_L get_params("L")[1]
+#define NP_L get_params("L")[2]
+
+#define NR_PAPER get_params("paper")[0]
+#define NQ_PAPER get_params("paper")[1]
+#define NP_PAPER get_params("paper")[2]
 
 #define CEIL_DIV(M, N) (((M) + (N)-1) / (N))
 

@@ -3,6 +3,7 @@ using Statistics
 using CUDA
 
 include("../../timing/dphpc_timing.jl")
+if !isdefined(Main, :NPBenchManager) include("../../timing/NPBenchManager.jl") end
 
 function initialize(M, N, datatype=Float64; cuda=false)
     # data = [datatype((i-1) * (j-1)) / M for i in 1:N, j in 1:M]
@@ -11,13 +12,6 @@ function initialize(M, N, datatype=Float64; cuda=false)
     return cuda ? CuArray(data) : data
 end
 
-benchmark_sizes = Dict(
-    "S"     => (500, 600),
-    "M"     => (1400, 1800),
-    "L"     => (3200, 4000),
-    "paper" => (1200, 1400),
-    "dev"   => (3, 4)
-)
 
 function reset(M, N, datatype=Float64; cuda=false)
    data = initialize(M, N, datatype, cuda=cuda) 
@@ -42,9 +36,12 @@ function run_benchmarks(; cuda = false, create_tests = false)
     #     assert_correctness(cuda)
     #     assert_correctness(cuda, "S")
     # end
+    
+    @dphpc_time(data = reset(300, 400, cuda=cuda), kernel(300, 400, data)) # warmup
+    benchmark_sizes = NPBenchManager.get_parameters("covariance")
 
     for (preset, dims) in benchmark_sizes
-        M, N = dims
+        M, N = dims |> values |> collect
         
         if create_tests
             test_data = initialize(M, N, cuda=cuda)
@@ -52,7 +49,7 @@ function run_benchmarks(; cuda = false, create_tests = false)
             create_testfile(solution, preset)
         end
 
-        print(@dphpc_time(data = reset(M, N, cuda=cuda), kernel(M, N, data), preset))
+        @dphpc_time(data = reset(M, N, cuda=cuda), kernel(M, N, data), preset) # |> println
     end
 end
 

@@ -1,13 +1,11 @@
 include("../../timing/dphpc_timing.jl")
 using Serialization
 
-ASSERT = false
+ASSERT = true
 
-function init_graph(n, graph=nothing)
+function init_graph(n)
     tmp = 0
-    if graph == nothing
-        graph = zeros(Int, n, n)
-    end
+    graph = zeros(Int, n, n)
     for i in 0:n-1
         for j in 0:n-1
             graph[i+1, j+1] = i * j % 7 + 1
@@ -20,19 +18,17 @@ function init_graph(n, graph=nothing)
     return graph
 end
 
-function reset_graph(n, graph)
-    init_graph(n, graph)
-end
 
 function floyd_warshall(n, graph)
 
     for k in 1:n
         for i in 1:n
-            for j in 1:n
-                graph[i, j] = min(graph[i, j], graph[i, k] + graph[k, j])
-                # Optimization column major
-                #graph[j, i] = min(graph[j, i], graph[j, k] + graph[k, i])
-            end
+            # @views graph[i, 1:n] .= min.(graph[i, 1:n], graph[i, k] .+ graph[k, 1:n])
+
+
+            @views graph[1:k-1, i] .= min.(graph[1:k-1, k] .+ graph[k, i], graph[1:k-1, i])
+            graph[k, i] = min(graph[k, i], graph[k, k] + graph[k, i])
+            @views graph[k+1:n, i] .= min.(graph[k+1:n, k] .+ graph[k, i], graph[k+1:n, i])
         end
     end
 
@@ -40,14 +36,14 @@ function floyd_warshall(n, graph)
 end
 
 function create_testfile(graph, prefix)
-    open("benchmarks/floyd-warshall/test_cases/$prefix.jls", "w") do io
+    open("benchmarks/floyd_warshall/test_cases/$prefix.jls", "w") do io
         Serialization.serialize(io, graph)
     end
 end
 
 
 function assert_correctness(graph, prefix)
-    graph_test = open("benchmarks/floyd-warshall/test_cases/$prefix.jls" ) do io
+    graph_test = open(joinpath(@__DIR__, "test_cases/$prefix.jls") ) do io
         Serialization.deserialize(io)
     end
     @assert isequal(graph, graph_test)
@@ -59,22 +55,22 @@ function main()
 
     n = (benchmarks["S"] |> values |> collect)[1]
     graph = init_graph(n)
-    res = @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"S")
+    res = @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"S")
     if ASSERT && res != nothing
         assert_correctness(graph, "S")
     end
 
     n = (benchmarks["M"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"M")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"M")
 
     n = (benchmarks["L"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"L")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"L")
 
     n = (benchmarks["paper"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n),floyd_warshall(n, graph),"paper")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"paper")
 
 end
 

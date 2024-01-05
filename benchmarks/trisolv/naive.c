@@ -5,6 +5,7 @@
 
 #include "utils.h"
 #include "../../timing/dphpc_timing.h"
+#include "_parameters.h"
 
 bool VALIDATE = false;
 
@@ -60,10 +61,12 @@ void simple_validate() {
 }
 
 int main() {
-    run_bm(2000, "S");
-    run_bm(5000, "M");
-    run_bm(14000, "L");
-    run_bm(16000, "paper");
+    const char *presets[] = {"S", "M", "L", "paper"};
+    for (int i = 0; i < 4; i++) {
+        const char* preset = presets[i];
+        int n = get_params(preset)[0];
+        run_bm(n, preset);
+    }
 
     return 0;
 }
