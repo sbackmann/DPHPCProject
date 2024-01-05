@@ -3,7 +3,7 @@ using LinearAlgebra
 include("old_utils.jl")
 include("../../timing/dphpc_timing.jl")
 
-VALIDATE = true
+VALIDATE = false
 
 function kernel(L, x, b)
     N = length(x)

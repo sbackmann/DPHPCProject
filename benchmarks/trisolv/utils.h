@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "_parameters.h"
+
 #include <stdbool.h>
 
 void printMatrix(int n, int m, double *matrix);

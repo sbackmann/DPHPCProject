@@ -27,12 +27,14 @@ function initialize(N, transpose; cuda=false)
     return L, x, b
 end
 
+
+sizes = NPBenchManager.get_parameters("trisolv")
+
 benchmark_sizes = Dict(
-    "S"     => 2000, 
-    "M"     => 5000, 
-    "L"     => 14000, 
-    "paper" => 16000, 
-    "dev"   => 4, 
+    "S"     => (sizes["S"] |> values |> collect)[1], 
+    "M"     => (sizes["M"] |> values |> collect)[1], 
+    "L"     => (sizes["L"] |> values |> collect)[1], 
+    "paper" => (sizes["paper"] |> values |> collect)[1], 
 )
 
 function correctness_check(cuda, transpose=false, prefix=["S", "M", "L", "paper"])

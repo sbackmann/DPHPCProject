@@ -18,15 +18,6 @@ function initialize(N)
     return CuArray.((L, x, b))
 end
 
-benchmark_sizes = Dict(
-    "S"     => 2000, 
-    "M"     => 5000, 
-    "L"     => 14000, 
-    "paper" => 16000, 
-    "dev"   => 4, 
-)
-
-
 function is_valid(L, x, b)
     # display(LowerTriangular(L))
     # display(x)
@@ -47,9 +38,11 @@ function main()
         N = 20 # warmup
         @dphpc_time(data = initialize(N), kernel(data...))
 
+        benchmark_sizes = NPBenchManager.get_parameters("trisolv")
+
         for (preset, dims) in benchmark_sizes
-            N = dims
-    
+
+            (N,) = collect(values(dims))
             @dphpc_time(data = initialize(N), kernel(data...), preset)
         end
     else 
