@@ -46,7 +46,9 @@ function get_best_versions(bm::String, preset::String)
 end
 
 function add_performance!(df)
-    df.performance = 1 ./ df.median
+    df.performance    = 1 ./ df.median
+    df.performance_ub = 1 ./ df.median_lb
+    df.performance_lb = 1 ./ df.median_ub
 end
 
 function make_sub_plot(c, python, julia, library, bm)
@@ -57,27 +59,37 @@ function make_sub_plot(c, python, julia, library, bm)
 
         yticks=(yticks, string.(round.(100 .* yticks) .|> Int).*"%"),
         # ylabel="Performance",
+        ylims=(0,1.1),
         xrotation=20,
         legend=false
     )
 
+    function get_yerror(df)
+        (df.performance    - df.performance_lb, 
+         df.performance_ub - df.performance) ./ max_performance
+    end
+
     bar!(P, 
         c.version .* " (C)", c.performance ./ max_performance, 
+        yerror=get_yerror(c),
         color=gray,
     )
 
     bar!(P, 
         python.version .* " (P)", python.performance ./ max_performance, 
+        yerror=get_yerror(python),
         color=blue,
     )
 
     bar!(P, 
         julia.version .* " (J)", julia.performance ./ max_performance, 
+        yerror=get_yerror(julia),
         color=green,
     )
 
     bar!(P, 
         library.version .* " (J)", library.performance ./ max_performance, 
+        yerror=get_yerror(library),
         color=red,
     )
 
