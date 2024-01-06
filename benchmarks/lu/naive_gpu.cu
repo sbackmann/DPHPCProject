@@ -10,18 +10,14 @@
 // the values of the lower part are close enough to the correct ones
 __global__ void lu(int N, double* A) {
 
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-
-    if (i < N) {
+    for (int i = 0; i < N; i++) {
         for (int j = 0; j < i; j++) {
             for (int k = 0; k < j; k++) {
                 A[i * N + j] = A[i * N + j] - (A[i * N + k] * A[k * N + j]);
             }
             A[i * N + j] = A[i * N + j] / A[j * N + j];
         }
-
-        __syncthreads();  // Ensure previous calculations are complete before proceeding
-
+        
         for (int j = i; j < N; j++) {
             for (int k = 0; k < i; k++) {
                A[i * N + j] = A[i * N + j] - A[i * N + k] * A[k * N + j];
@@ -34,8 +30,8 @@ __global__ void lu(int N, double* A) {
 void run_lu_kernel(int N, double* A) {
     // Note: the blocksize that I was using was an issue 
     // 1D block works 
-    int threadsPerBlock = 256;
-    int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+    int threadsPerBlock = 1;
+    int blocksPerGrid = 1;
 
     lu<<<blocksPerGrid, threadsPerBlock>>>(N, A);
     cudaDeviceSynchronize();

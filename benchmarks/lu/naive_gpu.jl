@@ -3,20 +3,16 @@ using CUDA
 
 
 function lu_kernel(N, A)
-    i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
-
-    if i <= N
-        for j in 1:i
-            for k in 1:j
+    for i in 1:N
+        for j in 1:i-1
+            for k in 1:j-1
                 A[i, j] -= A[i, k] * A[k, j]
             end
             A[i, j] /= A[j, j]
         end
-
-        # synchronization is not necessary here as julia handles it
-
+        
         for j in i:N
-            for k in 1:i
+            for k in 1:i-1
                 A[i, j] -= A[i, k] * A[k, j]
             end
         end
@@ -28,13 +24,8 @@ end
 
 
 function run_lu_kernel(N, A)
-
-    threadsPerBlock = 256
-    blocksPerGrid = (N + threadsPerBlock - 1) ÷ threadsPerBlock
-    @cuda threads=threadsPerBlock blocks=blocksPerGrid lu_kernel(N, A)
+    @cuda threads=1 blocks=1 lu_kernel(N, A)
     CUDA.synchronize()
-
-
 end
 
 

@@ -39,7 +39,8 @@ function is_valid(N, A)
     if difference < 1e-6
         return true
     else
-        display(A)
+        # display(A)
+        println("VALIDATION FAILED")
         return false
     end
 
@@ -47,7 +48,7 @@ end
 
 function main() 
 
-    N = 30
+    N = 300
     A = init_array(N)
     run_lu_kernel(N, A)
     if is_valid(N, A)
