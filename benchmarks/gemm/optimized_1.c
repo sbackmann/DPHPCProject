@@ -127,12 +127,12 @@ int main(){
     const char *presets[] = {"S", "M", "L", "paper"};
 
     for (int i = 0; i < 4; i++) {
-            const char* preset = presets[i];
-            int n = get_params(preset)[0];
-            int m = get_params(preset)[1];
-            int k = get_params(preset)[2];
-            run_bm(n, m, k, preset);
-        }
+        const char* preset = presets[i];
+        int n = get_params(preset)[0];
+        int m = get_params(preset)[1];
+        int k = get_params(preset)[2];
+        run_bm(n, m, k, preset);
+    }
     
     return 0;
 

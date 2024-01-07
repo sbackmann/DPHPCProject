@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "../../timing/dphpc_timing.h"
+#include "_parameters.h"
 
 void init_array(int N, double A[N][N]) {
 
@@ -104,11 +105,13 @@ int main(int argc, char** argv) {
     // lu(N,*A);
     // print2DArray(N, *A); 
 
-    // real code
-    run_bm(60, "S"); 
-    run_bm(220, "M"); 
-    run_bm(700, "L"); 
-    run_bm(2000, "paper"); 
+    const char *presets[] = {"S", "M", "L", "paper"};
 
-  return 0;
+    for (int i = 0; i < 4; i++) {
+        const char* preset = presets[i];
+        int n = get_params(preset)[0];
+        run_bm(n, preset);
+    }
+
+    return 0;
 }

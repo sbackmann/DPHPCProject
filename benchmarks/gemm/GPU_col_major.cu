@@ -19,9 +19,8 @@ __global__ void gemm_kernel(int N, int M, int K, double *A, double *B, double *C
 
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
-    int k; 
 
-   if (i < N && j < M) {
+    if (i < N && j < M) {
         C[N * j + i] *= beta;
         for (int k = 0; k < K; k++) {
             C[N * j + i] += alpha * A[N * k + i] * B[K * j + k];

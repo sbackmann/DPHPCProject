@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "../../timing/dphpc_timing.h"
+#include "_parameters.h"
 
 // #define VALIDATION // toggle to turn on/off 
 
@@ -163,10 +164,13 @@ int main(int argc, char** argv) {
 
     #else
 
-    run_bm(60, "S"); 
-    run_bm(220, "M"); 
-    run_bm(700, "L"); 
-    run_bm(2000, "paper"); 
+    const char *presets[] = {"S", "M", "L", "paper"};
+
+    for (int i = 0; i < 4; i++) {
+        const char* preset = presets[i];
+        int n = get_params(preset)[0];
+        run_bm(n, preset);
+    }
 
    #endif 
 
