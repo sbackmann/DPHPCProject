@@ -10,6 +10,7 @@
 /* doitgen.c: this file is part of PolyBench/C */
 
 #include "../../timing/dphpc_timing.h"
+#include "_parameters.h"
 
 #include <stdio.h>
 #include <unistd.h>

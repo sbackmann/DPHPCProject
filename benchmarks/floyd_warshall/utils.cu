@@ -99,7 +99,12 @@ void run_bm(int n, const char* preset, void (*kernel)(int, int*), int ASSERT) {
   init_array(n, graph);                                                             
   int *graph_gpu;                                                                   
   cudaMalloc((void**) &graph_gpu, n * n * sizeof(int));                      
-  cudaDeviceSynchronize();                                                          
+  cudaDeviceSynchronize();   
+
+  if (ASSERT && should_run_preset(preset)) {                                        
+      cudaMemcpy(graph, graph_gpu, n * n * sizeof(int), cudaMemcpyDeviceToHost);    
+      assertCorrectness(n, graph, preset);                                          
+  }                                                          
                                                                                     
   dphpc_time3(                                                                      
       reset(n, graph, graph_gpu),                                                   
@@ -107,10 +112,7 @@ void run_bm(int n, const char* preset, void (*kernel)(int, int*), int ASSERT) {
       preset                                                                        
   );                                                                                
                                                                                     
-  if (ASSERT && should_run_preset(preset)) {                                        
-      cudaMemcpy(graph, graph_gpu, n * n * sizeof(int), cudaMemcpyDeviceToHost);    
-      assertCorrectness(n, graph, preset);                                          
-  }                                                                                 
+                                                                                
                                                                                     
   cudaFree(graph_gpu);                                                              
   free(graph);                                                                      

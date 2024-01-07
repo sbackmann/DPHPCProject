@@ -68,8 +68,9 @@ void run_doitgen_gpu_test(int nr, int nq, int np,
 
 void assertCorrectness(int nr, int nq, int np,
     double *A, const char *prefix) {
-
-    fprintf(stderr, "A[0][0][1] = %f\n", prefix, A[1]);
+    
+    // fprintf(stderr, "A[0][0][1] = %f\n", prefix, A[1]);
+    fprintf(stderr, "A[0][0][1] = %f\n", A[1]);
 
     double *A_test;
     A_test = (double*)malloc (nr * nq * np* sizeof(double));
@@ -88,7 +89,8 @@ void assertCorrectness(int nr, int nq, int np,
 
     run_doitgen_gpu_test(nr, nq, np, A_test_gpu, C4_test_gpu, sum_test_gpu);
     cudaMemcpy(A_test, A_test_gpu, nr * nq * np * sizeof(double), cudaMemcpyDeviceToHost);
-    fprintf(stderr, "A_test[0][0][1] = %f\n", prefix, A_test[1]);
+    // fprintf(stderr, "A_test[0][0][1] = %f\n", prefix, A_test[1]);
+    fprintf(stderr, "A_test[0][0][1] = %f\n",  A_test[1]);
     //fprintf(stderr, "A[%d][%d][%d] = %f\n", nr /2, nq / 2, np / 2, A[(nr / 2) * nq * np + (nq / 2) * np + (np / 2)]);
     //fprintf(stderr, "A_test[%d][%d][%d] = %f\n", nr /2, nq / 2, np / 2, A_test[(nr / 2) * nq * np + (nq / 2) * np + (np / 2)]);
     //fprintf(stderr, "A_test[0][96][45] = %f\n", A_test[0 * nq * np + 96 * np + 45]);

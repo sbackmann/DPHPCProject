@@ -73,7 +73,7 @@ int main() {
     for (int i = 0; i < 4; i++) {
         const char* preset = presets[i];
         int m = get_params(preset)[0];
-        int n = get_params(preset)[0];
+        int n = get_params(preset)[1];
         run_bm(m, n, preset);
     }
 

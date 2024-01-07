@@ -39,17 +39,25 @@ function floyd_warshall(n, graph)
     return graph
 end
 
-function create_testfile(graph, prefix)
-    open("benchmarks/floyd-warshall/test_cases/$prefix.jls", "w") do io
-        Serialization.serialize(io, graph)
+
+function floyd_warshall_naive(n) # to validate the validation I guess
+    graph = init_graph(n)
+
+    for k in 1:n
+        for i in 1:n
+            for j in 1:n
+                graph[i, j] = min(graph[i, j], graph[i, k] + graph[k, j])
+                # Optimization column major
+                #graph[j, i] = min(graph[j, i], graph[j, k] + graph[k, i])
+            end
+        end
     end
+
+    return graph
 end
 
-
-function assert_correctness(graph, prefix)
-    graph_test = open("benchmarks/floyd-warshall/test_cases/$prefix.jls" ) do io
-        Serialization.deserialize(io)
-    end
+function assert_correctness(graph, n)
+    graph_test = floyd_warshall_naive(n)
     @assert isequal(graph, graph_test)
 end
 
@@ -59,22 +67,24 @@ function main()
 
     n = (benchmarks["S"] |> values |> collect)[1]
     graph = init_graph(n)
-    res = @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"S")
-    if ASSERT && res != nothing
-        assert_correctness(graph, "S")
-    end
+    floyd_warshall(n, graph)
+    assert_correctness(graph, n)
+    
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"S")
+
+    
 
     n = (benchmarks["M"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"M")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"M")
 
     n = (benchmarks["L"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"L")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"L")
 
     n = (benchmarks["paper"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n),floyd_warshall(n, graph),"paper")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"paper")
 
 end
 

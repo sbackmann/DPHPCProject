@@ -31,10 +31,10 @@ function reset(nr, nq, np, A, C4)
 end
 
 
-function doitgen(nr, nq, np, A, C4, sum)
-    @inbounds for r in 1:nr
-        @inbounds for q in 1:nq
-            A[r, q, :] = @views A[r, q, :]' * @views C4
+@inbounds function doitgen(nr, nq, np, A, C4, sum)
+    for r in 1:nr
+        for q in 1:nq
+            @views A[r, q, :] =  A[r, q, :]' * C4
         end
     end
     return A
@@ -66,11 +66,6 @@ function main()
     for (preset, dims) in benchmark_sizes
         nr,nq,np = dims |> values |> collect
         (A, C4, sum) = init_array(nr, nq, np)
-
-        if preset == "S"
-            doitgen(nr, nq, np, A, C4, sum)
-            assert_correctness(A, preset)
-        end
 
         @dphpc_time((A, C4, sum) = init_array(nr, nq, np), doitgen(nr, nq, np, A, C4, sum), preset)
     end

@@ -61,45 +61,52 @@ function assert_naive(res, n)
     graph_gpu = reset_graph(graph)
     floyd_warshall_gpu_assert!(n, graph_gpu)
     graph_cpu = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
-    @assert isequal(res, graph_cpu)
+    # display(result_graph[1:50, 1:50])
+
+    return isequal(res, graph_cpu)
 end
 
 
-function create_testfile(graph, prefix)
-    open("benchmarks/floyd-warshall/test_cases/$prefix.jls", "w") do io
-        Serialization.serialize(io, graph)
-    end
-end
+# function create_testfile(graph, prefix)
+#     open("benchmarks/floyd-warshall/test_cases/$prefix.jls", "w") do io
+#         Serialization.serialize(io, graph)
+#     end
+# end
 
 
-function assert_correctness(graph, prefix)
-    graph_test = open("benchmarks/floyd-warshall/test_cases/$prefix.jls" ) do io
-        Serialization.deserialize(io)
-    end
-    @assert isequal(graph, graph_test)
-end
+# function assert_correctness(graph, prefix)
+#     graph_test = open("benchmarks/floyd-warshall/test_cases/$prefix.jls" ) do io
+#         Serialization.deserialize(io)
+#     end
+#     @assert isequal(graph, graph_test)
+# end
 
 function main()
 
-    n = 40
+    n = 200
     graph = init_graph(n)
     graph_gpu = reset_graph(graph)
-    @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu)) # warmup
+    floyd_warshall_gpu!(n, graph_gpu)
+    result_graph = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
 
-    benchmark_sizes = NPBenchManager.get_parameters("floyd_warshall")
+    if assert_naive(result_graph, n)
 
-    for (preset, sizes) in benchmark_sizes
-        (n,) = collect(values(sizes))
-        graph = init_graph(n)
-        graph_gpu = reset_graph(graph)
-        # CUDA.@time floyd_warshall_gpu!(n, graph)
-        res = @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), preset)
-        # print(result_graph[1:50, 1:50])
-        if preset == "S" && ASSERT && res != nothing
-            result_graph = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
-            assert_naive(result_graph, n)
-            #assert_correctness(result_graph, "S")
+        @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu)) # warmup
+
+        benchmark_sizes = NPBenchManager.get_parameters("floyd_warshall")
+
+        for (preset, sizes) in benchmark_sizes
+            (n,) = collect(values(sizes))
+            graph = init_graph(n)
+            graph_gpu = reset_graph(graph)
+            # CUDA.@time floyd_warshall_gpu!(n, graph)
+            @dphpc_time(graph_gpu = reset_graph(graph), floyd_warshall_gpu!(n, graph_gpu), preset)
+            
+
         end
+
+    else
+        println("VALIDATION FAILED")
     end
 
 

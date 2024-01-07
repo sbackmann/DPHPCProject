@@ -64,6 +64,12 @@ function assert_correctness(A, prefix)
     @assert isequal(A, A_test)
 end
 
+nr,nq,np = NPBenchManager.get_parameters("doitgen")["S"] |> values |> collect
+NPBenchManager.reset_parameters("doitgen")
+(A, C4, sum) = init_array(nr, nq, np)
+doitgen(nr, nq, np, A, C4, sum)
+create_testfile(A, "S")
+
 function main()
 
     benchmark_sizes = NPBenchManager.get_parameters("doitgen")
@@ -75,11 +81,6 @@ function main()
     for (preset, dims) in benchmark_sizes
         nr,nq,np = dims |> values |> collect
         (A, C4, sum) = init_array(nr, nq, np)
-
-        if preset == "S"
-            doitgen(nr, nq, np, A, C4, sum)
-            assert_correctness(A, preset)
-        end
 
         @dphpc_time((A, C4, sum) = init_array(nr, nq, np), doitgen(nr, nq, np, A, C4, sum), preset)
     end
