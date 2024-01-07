@@ -4,6 +4,7 @@
 *.so
 *.png
 
+_parameters.h
 build/
 timing/presets.h
 .dacecache/
@@ -12,3 +13,5 @@ _dacegraphs/
 
 npbench.db
 
+benchmarks/test/test.o
+benchmarks/test/libtest.so

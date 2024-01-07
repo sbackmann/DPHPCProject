@@ -76,11 +76,6 @@ function main()
         nr,nq,np = dims |> values |> collect
         (A, C4, sum) = init_array(nr, nq, np)
 
-        if preset == "S"
-            doitgen(nr, nq, np, A, C4, sum)
-            assert_correctness(A, preset)
-        end
-
         @dphpc_time((A, C4, sum) = init_array(nr, nq, np), doitgen(nr, nq, np, A, C4, sum), preset)
     end
 

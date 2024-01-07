@@ -101,6 +101,9 @@ void run_bm(int n, const char* preset, void (*kernel)(int, int*), int ASSERT) {
   cudaMalloc((void**) &graph_gpu, n * n * sizeof(int));                      
   cudaDeviceSynchronize();   
 
+  reset(n, graph, graph_gpu);                                             
+  (*kernel)(n, graph_gpu);
+
   if (ASSERT && should_run_preset(preset)) {                                        
       cudaMemcpy(graph, graph_gpu, n * n * sizeof(int), cudaMemcpyDeviceToHost);    
       assertCorrectness(n, graph, preset);                                          

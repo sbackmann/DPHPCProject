@@ -28,39 +28,24 @@ function reset_graph(graph)
     return graph_gpu
 end
 
+function fw_naive(n, graph)
 
-function floyd_warshall_gpu_assert!(n, graph)
+    for k in 1:n
+        for i in 1:n
+            for j in 1:n
+                graph[i, j] = min(graph[i, j], graph[i, k] + graph[k, j])
+                # Optimization column major
+                #graph[j, i] = min(graph[j, i], graph[j, k] + graph[k, i])
+            end
+        end
+    end
 
-    threads = 16
-    threads_per_block = (threads, threads)
-    blocks = (ceil(Int, n / threads), ceil(Int, n / threads))
-
-    CUDA.@sync blocking=true (@cuda threads=threads_per_block blocks=blocks floyd_kernel_assert(graph, n))
     return graph
 end
 
 
-function floyd_kernel_assert(graph, n)
-    k = 1:n
-    i = (blockIdx().x - 1) * blockDim().x + threadIdx().x
-    j = (blockIdx().y - 1) * blockDim().y + threadIdx().y
-    if i <= n && j <= n
-        for kk in k
-            if graph[i, j] < graph[i, kk] + graph[kk, j]
-                graph[i, j] = graph[i, j]
-            else
-                graph[i, j] = graph[i, kk] + graph[kk, j]
-            end
-        end
-    end
-    return
-end
-
 function assert_naive(res, n)
-    graph = init_graph(n)
-    graph_gpu = reset_graph(graph)
-    floyd_warshall_gpu_assert!(n, graph_gpu)
-    graph_cpu = CUDA.copyto!(Array{Int}(undef, n, n), graph_gpu)
+    graph_cpu = fw_naive(n, init_graph(n))
     # display(result_graph[1:50, 1:50])
 
     return isequal(res, graph_cpu)
@@ -83,7 +68,7 @@ end
 
 function main()
 
-    n = 200
+    n = 500
     graph = init_graph(n)
     graph_gpu = reset_graph(graph)
     floyd_warshall_gpu!(n, graph_gpu)
