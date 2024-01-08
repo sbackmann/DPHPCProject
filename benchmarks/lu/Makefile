@@ -7,3 +7,7 @@ naive:
 naive_gpu:
 	nvcc -o ./a.exe naive_gpu.cu
 	./a.exe
+
+reorder_loop_gpu:
+	nvcc -o ./a.exe reorder_loop_gpu.cu
+	./a.exe
