@@ -1,5 +1,6 @@
 using DataFrames
 import CSV
+import Base.run
 
 include("NPBenchManager.jl")
 
