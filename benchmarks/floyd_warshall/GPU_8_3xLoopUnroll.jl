@@ -1,3 +1,5 @@
+#= DOES NOT RESOLVE RACE CONDITION - BUGGY
+
 include("./utils.jl")
 
 ASSERT = true
@@ -44,3 +46,4 @@ function floyd_kernel(graph, n)
 end
 
 main()
+=#

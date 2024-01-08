@@ -22,7 +22,7 @@ void init_array (int n,
          graph[i * n + j] = 999;}
     }}
 }
-
+/*
 __global__ void kernel_floyd_warshall_test(int n, int *graph) {
 
   int tmp;
@@ -52,6 +52,26 @@ void run_floyd_warshall_gpu_test(int n, int *graph) {
   kernel_floyd_warshall_test<<<numBlocks,threadsPerBlock>>>(n, graph);
   cudaDeviceSynchronize();
 }
+*/
+
+void kernel_floyd_warshall(int n,
+      int *graph)
+{
+  int tmp;
+  #pragma scop
+  for (int k = 0; k < n; k++){
+    for(int i = 0; i < n; i++){
+      for (int j = 0; j < n; j++){
+        tmp=graph[i * n + j] < graph[i * n + k] + graph[k * n + j];
+        if (tmp==0){
+          graph[i * n + j] = graph[i * n + k] + graph[k * n + j];
+        }
+      }
+    }
+  }
+  #pragma endscop
+
+}
 
 
 void assertCorrectness(int n,
@@ -61,15 +81,16 @@ void assertCorrectness(int n,
     int *graph_test;
     graph_test = (int*) malloc(n * n * sizeof(int));
 
-    int *graph_test_gpu;
-    cudaMalloc((void**) &graph_test_gpu, n * n * sizeof(int));
+    //int *graph_test_gpu;
+    //cudaMalloc((void**) &graph_test_gpu, n * n * sizeof(int));
 
     init_array(n, graph_test);
-    cudaMemcpy(graph_test_gpu, graph_test, n * n * sizeof(int), cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
+    //cudaMemcpy(graph_test_gpu, graph_test, n * n * sizeof(int), cudaMemcpyHostToDevice);
+    //cudaDeviceSynchronize();
 
-    run_floyd_warshall_gpu_test(n, graph_test_gpu);
-    cudaMemcpy(graph_test, graph_test_gpu, n * n * sizeof(int), cudaMemcpyDeviceToHost);
+    kernel_floyd_warshall(n, graph_test);
+    //run_floyd_warshall_gpu_test(n, graph_test_gpu);
+    //cudaMemcpy(graph_test, graph_test_gpu, n * n * sizeof(int), cudaMemcpyDeviceToHost);
 
     
     // Perform assertion
@@ -84,7 +105,7 @@ void assertCorrectness(int n,
         }
     }
     fprintf(stderr, "Arrays are equal.\n");
-    cudaFree(graph_test_gpu);
+    //cudaFree(graph_test_gpu);
     free(graph_test);
 }
 

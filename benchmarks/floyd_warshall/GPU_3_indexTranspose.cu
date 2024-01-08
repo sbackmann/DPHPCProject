@@ -1,9 +1,37 @@
-
 #include "utils.h"
 
 #define ASSERT 1
 
+__global__ void kernel_floyd_warshall(int n, int *graph, int k) {
 
+  int tmp;
+  int j = blockIdx.x * blockDim.x + threadIdx.x;
+  int i = blockIdx.y * blockDim.y + threadIdx.y;
+
+  if (i < n && j < n) {
+    tmp = graph[i * n + j] < graph[i * n + k] + graph[k * n + j];
+    if (tmp==1){
+      graph[i * n + j] = graph[i * n + j];
+    }
+    else {
+      graph[i * n + j] = graph[i * n + k] + graph[k * n + j];
+    }
+  }
+}
+
+
+void run_floyd_warshall_gpu(int n, int *graph) {
+  
+  int threads = 16;
+  dim3 threadsPerBlock(threads, threads);
+  dim3 numBlocks(n / threads + 1, n / threads + 1);
+  for (int k = 0; k < n; k++){
+    kernel_floyd_warshall<<<numBlocks,threadsPerBlock>>>(n, graph, k);
+    cudaDeviceSynchronize();
+  }
+}
+
+/*
 __global__ void kernel_floyd_warshall(int n, int *graph) {
 
   int tmp;
@@ -32,7 +60,7 @@ void run_floyd_warshall_gpu(int n, int *graph) {
   kernel_floyd_warshall<<<numBlocks,threadsPerBlock>>>(n, graph);
   cudaDeviceSynchronize();
 }
-
+*/
 int main(int argc, char** argv) {
   
   run_bm(N_S, "S", run_floyd_warshall_gpu, ASSERT);
