@@ -64,11 +64,11 @@ function assert_correctness(A, prefix)
     @assert isequal(A, A_test)
 end
 
-nr,nq,np = NPBenchManager.get_parameters("doitgen")["S"] |> values |> collect
-NPBenchManager.reset_parameters("doitgen")
-(A, C4, sum) = init_array(nr, nq, np)
-doitgen(nr, nq, np, A, C4, sum)
-create_testfile(A, "S")
+# nr,nq,np = NPBenchManager.get_parameters("doitgen")["S"] |> values |> collect
+# NPBenchManager.reset_parameters("doitgen")
+# (A, C4, sum) = init_array(nr, nq, np)
+# doitgen(nr, nq, np, A, C4, sum)
+# create_testfile(A, "S")
 
 function main()
 

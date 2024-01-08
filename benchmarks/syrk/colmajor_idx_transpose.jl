@@ -8,7 +8,7 @@ using CUDA
 
 
 function syrk(n, k, α, β, C, A)
-    c = (blockIdx().x - Int32(1)) * blockDim().x + threadIdx().x
+    c = (blockIdx().x - Int32(1)) * blockDim().x + threadIdx().x # c and r swapped
     r = (blockIdx().y - Int32(1)) * blockDim().y + threadIdx().y
     cond = (r <= n) * (c <= n) * (r >= c)
     if cond
@@ -27,9 +27,10 @@ end
 function run_kernel(n, k, α, β, C, A)
     threads_per_block = 16
     t = threads_per_block
-    b = n ÷ t + 1
+    b = (n-1) ÷ t + 1
     CUDA.@sync(@cuda threads=(t, t) blocks=(b, b) syrk(Int32(n), Int32(k), α, β, C, A))
 end
+
 
 
 main_gpu()

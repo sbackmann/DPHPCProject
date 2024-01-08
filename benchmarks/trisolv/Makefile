@@ -14,3 +14,7 @@ cc5:
 	./trisolv
 	rm ./trisolv
 
+loop_kernel:
+	nvcc -o trisolv loop_kernel.cu utils.cu -lm
+	./trisolv
+	rm ./trisolv

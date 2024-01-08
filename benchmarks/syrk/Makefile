@@ -14,3 +14,7 @@ naive_gpu:
 colmajor_gpu:
 	nvcc -o ./a.exe colmajor.cu
 	./a.exe
+
+colmajor_unroll4x_gpu:
+	nvcc -o ./a.exe colmajor_unroll4x.cu
+	./a.exe

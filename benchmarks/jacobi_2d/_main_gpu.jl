@@ -27,6 +27,11 @@ function main()
 
     benchmarks = NPBenchManager.get_parameters("jacobi_2d")
 
+    tsteps, n = 10, 30
+    A_cpu, B_cpu = init_arrays(n)   # it doesn't write through to these
+    A, B = reset(A_cpu, B_cpu)
+    @dphpc_time((A,B)=reset(A_cpu, B_cpu), run_kernel_j2d(tsteps, n, A, B)) # warmup
+
     for (preset, sizes) in benchmarks
         tsteps, n = collect(values(sizes))
         A_cpu, B_cpu = init_arrays(n)   # it doesn't write through to these
