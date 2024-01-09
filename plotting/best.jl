@@ -53,13 +53,14 @@ end
 
 function make_sub_plot(c, python, julia, library, bm)
     add_performance!.((c, python, julia, library))
-    max_performance = max(c[1, :performance], python[:, :performance]..., julia[1, :performance], library[:, :performance]...)
+    max_performance =    max(c[1, :performance],    python[:, :performance]...,    julia[1, :performance],    library[:, :performance]...)
+    max_performance_ub = max(c[1, :performance_ub], python[:, :performance_ub]..., julia[1, :performance_ub], library[:, :performance_ub]...)
     yticks = collect(0:0.25:1.1)
     P = bar(
 
         yticks=(yticks, string.(round.(100 .* yticks) .|> Int).*"%"),
         # ylabel="Performance",
-        ylims=(0,1.1),
+        ylims=(0,max(1.1, 1.05*max_performance_ub/max_performance)),
         xrotation=20,
         legend=false
     )
