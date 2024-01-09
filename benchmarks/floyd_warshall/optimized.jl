@@ -25,10 +25,10 @@ function floyd_warshall(n, graph)
         for i in 1:n
             # @views graph[i, 1:n] .= min.(graph[i, 1:n], graph[i, k] .+ graph[k, 1:n])
 
-
-            @views graph[1:k-1, i] .= min.(graph[1:k-1, k] .+ graph[k, i], graph[1:k-1, i])
-            graph[k, i] = min(graph[k, i], graph[k, k] + graph[k, i])
-            @views graph[k+1:n, i] .= min.(graph[k+1:n, k] .+ graph[k, i], graph[k+1:n, i])
+            gki = graph[k, i]
+            @views graph[1:k, i] .= min.(graph[1:k, k] .+ gki, graph[1:k, i])
+            gki = graph[k, i]
+            @views graph[k+1:n, i] .= min.(graph[k+1:n, k] .+ gki, graph[k+1:n, i])
         end
     end
 

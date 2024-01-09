@@ -38,44 +38,79 @@ function reset_graph(n, graph)
     init_graph(n, graph)
 end
 
-floyd_warshall(n, graph) = for it in (1:n, n:-1:1) for k in it graph[:, k] .+= graph * graph[:, k] end end # I know it's not pretty, but it works
+# function floyd_warshall(n, graph)
+
+#     for k in 1:n
+#         graph[1:k, k]     .+= graph[1:k, :]     * graph[:, k] 
+#         graph[k+1:end, k] .+= graph[k+1:end, :] * graph[:, k] 
+#     end 
+
+# end
 
 
-function create_testfile(graph, prefix)
-    open("benchmarks/floyd-warshall/test_cases/$prefix.jls", "w") do io
-        Serialization.serialize(io, graph)
-    end
+function floyd_warshall(n, graph)
+    t = Vector{FWNumber{Int}}(undef, n)
+
+    for k in 1:n
+        @views mul!(t, graph, graph[:, k] )
+        @view(graph[:, k]) .+= t
+    end 
+
+    for k in n:-1:1
+        @views mul!(t, graph, graph[:, k] )
+        @view(graph[:, k]) .+= t
+    end 
+
 end
 
 
-function assert_correctness(graph, prefix)
-    graph_test = open("benchmarks/floyd-warshall/test_cases/$prefix.jls" ) do io
-        Serialization.deserialize(io)
+
+function floyd_warshall_naive(n) # to validate the validation I guess
+    graph = init_graph(n)
+
+    for k in 1:n
+        for i in 1:n
+            for j in 1:n
+                graph[i, j] += graph[i, k] * graph[k, j]
+                # Optimization column major
+                #graph[j, i] = min(graph[j, i], graph[j, k] + graph[k, i])
+            end
+        end
     end
+
+    return graph
+end
+
+function assert_correctness(graph, n)
+    graph_test = floyd_warshall_naive(n)
     @assert isequal(graph, graph_test)
 end
 
+
 function main()
 
-    n = 200
+    benchmarks = NPBenchManager.get_parameters("floyd_warshall")
+
+    n = (benchmarks["S"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"S")
     floyd_warshall(n, graph)
-    if ASSERT
-        assert_correctness(Int.(graph), "S")
-    end
+    assert_correctness(graph, n)
+    
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"S")
 
-    n = 400
-    graph = init_graph(n)
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"M")
+    
 
-    n = 850
+    n = (benchmarks["M"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n, graph),floyd_warshall(n, graph),"L")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"M")
 
-    n = 2800
+    n = (benchmarks["L"] |> values |> collect)[1]
     graph = init_graph(n)
-    @dphpc_time(init_graph(n),floyd_warshall(n, graph),"paper")
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"L")
+
+    n = (benchmarks["paper"] |> values |> collect)[1]
+    graph = init_graph(n)
+    @dphpc_time(graph = init_graph(n),floyd_warshall(n, graph),"paper")
 
 end
 
