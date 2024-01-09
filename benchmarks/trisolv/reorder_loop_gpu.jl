@@ -28,10 +28,10 @@ end
 function kernel(L, x, b)
     N = length(x)
 
-    threads = 256
+    threads = 64
 
     for i in 1:N
-        blocks = (N - i + 1) ÷ threads + 1
+        blocks = (N - i) ÷ threads + 1
         @cuda threads=threads blocks=blocks trisolv_kernel(L, x, b, i, N)
     end
 

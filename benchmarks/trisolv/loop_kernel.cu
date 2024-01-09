@@ -21,11 +21,11 @@ __global__ void kernel(double *L, double *x, double *b, int i, int N) {
 }
 
 void kernel(double *L, double *x, double *b, int N) {
-    int threads = 256;
+    int threads = 64;
     
 
     for(int i = 1; i <= N; i++) {
-        int numBlocks = (N - i + 1) / threads + 1;
+        int numBlocks = (N - i) / threads + 1;
         kernel<<<numBlocks, threads>>>(L, x, b, N, i);
     }
 
