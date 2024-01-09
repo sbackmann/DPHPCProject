@@ -74,13 +74,7 @@ function make_sub_plot(c, python, julia, library, bm)
         yerror=get_yerror(c),
         color=gray,
     )
-
-    bar!(P, 
-        python.version .* " (P)", python.performance ./ max_performance, 
-        yerror=get_yerror(python),
-        color=blue,
-    )
-
+    
     bar!(P, 
         julia.version .* " (J)", julia.performance ./ max_performance, 
         yerror=get_yerror(julia),
@@ -93,6 +87,13 @@ function make_sub_plot(c, python, julia, library, bm)
         color=red,
     )
 
+    bar!(P, 
+        python.version .* " (P)", python.performance ./ max_performance, 
+        yerror=get_yerror(python),
+        color=blue,
+    )
+
+
     return P
 
 end
@@ -102,7 +103,7 @@ function combine_plots(plots, arch, bms, preset)
         legend_columns=4, legend_position=:topleft,
         legendfontsize = 11,
     )
-    for (l, c) in [" C" => gray, " python    " => blue, " julia" => green, " library" => red]
+    for (l, c) in [" C" => gray, " \"python\"    " => blue, " julia" => green, " library" => red]
         bar!(legend, [], [], label=l, color=c)
     end
     the_plot = plot(
@@ -113,8 +114,8 @@ function combine_plots(plots, arch, bms, preset)
         size=(1200, 650),
         bottom_margin=30*Plots.px,
         top_margin=10*Plots.px,
-        right_margin=30*Plots.px,
-        left_margin=20*Plots.px,
+        right_margin=10*Plots.px,
+        left_margin=40*Plots.px,
     )
     return the_plot
 end
