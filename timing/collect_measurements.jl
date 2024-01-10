@@ -1,5 +1,6 @@
 using DataFrames
 import CSV
+import Base.run
 
 include("NPBenchManager.jl")
 
@@ -10,7 +11,7 @@ ROOT = joinpath(@__DIR__, "..")
 
 function uses_gpu(bm, ver, lang) # determine somehow whether benchmarks use cuda or not
     if lang == "julia"
-        keywords = ["using CUDA", "import CUDA", "@cuda", "CuArray"]
+        keywords = ["CUDA", "@cuda", "CuArray"]
         path = joinpath(ROOT, "benchmarks", bm, "$(ver).jl")
         file = read(open(path, "r"), String)
         for k in keywords
@@ -35,7 +36,7 @@ get_benchmarks() = readdir(joinpath(ROOT, "benchmarks"))
 get_julia_versions(bm) = readdir(joinpath(ROOT, "benchmarks", bm)) |> filter(x -> endswith(x, ".jl") && !startswith(x, "_")) .|> x->x[1:end-3]
 get_c_versions(bm) = get_rules(open(io->read(io, String), joinpath(ROOT, "benchmarks", bm, "Makefile")))
 
-get_rules(makefile) = [m.captures[1] for m in eachmatch(r"\n([^_\s]\w*):", makefile)]
+get_rules(makefile) = [m.captures[1] for m in eachmatch(r"\n([^_#\s]\w*):", makefile)]
 
 
 julia_has_bm(bm, ver) = bm ∈ get_benchmarks() && ver ∈ get_julia_versions(bm)
@@ -70,6 +71,7 @@ function run(benchmark, languages)
         println()
     end
 
+    free_gpu_mem() # free the gpu mempool managed by julia, so that the c versions can do their thing
     if :C ∈ languages
         versions = get_c_versions(benchmark)
         print("C: ")
@@ -172,6 +174,18 @@ function reset()
     cd(INITIAL_WD)
 end
 
+function free_gpu_mem()
+    if isdefined(Main, :CUDA)
+        eval(quote
+            using CUDA # because of all the includes, world age increases.. it works like this tho
+            CUDA.memory_status()
+            GC.gc(true)
+            CUDA.reclaim() 
+            CUDA.memory_status()
+        end)
+    end
+end
+
 
 function collect_measurements(benchmarks::Vector{String}, languages::Vector{Symbol}, 
                               presets::Vector{String},    version::Union{Nothing, String})
@@ -204,6 +218,7 @@ function collect_measurements(benchmarks::Vector{String}, languages::Vector{Symb
     end
 
     if :python ∈ languages
+        free_gpu_mem()
         NPBenchManager.run(benchmarks, PRESETS_TO_RUN) # run all python benchmarks
         append!(results, NPBenchManager.get_results())
     end

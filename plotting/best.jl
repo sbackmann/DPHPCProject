@@ -53,13 +53,14 @@ end
 
 function make_sub_plot(c, python, julia, library, bm)
     add_performance!.((c, python, julia, library))
-    max_performance = max(c[1, :performance], python[:, :performance]..., julia[1, :performance], library[:, :performance]...)
+    max_performance =    max(c[1, :performance],    python[:, :performance]...,    julia[1, :performance],    library[:, :performance]...)
+    max_performance_ub = max(c[1, :performance_ub], python[:, :performance_ub]..., julia[1, :performance_ub], library[:, :performance_ub]...)
     yticks = collect(0:0.25:1.1)
     P = bar(
 
         yticks=(yticks, string.(round.(100 .* yticks) .|> Int).*"%"),
         # ylabel="Performance",
-        ylims=(0,1.1),
+        ylims=(0,max(1.1, 1.05*max_performance_ub/max_performance)),
         xrotation=20,
         legend=false
     )
@@ -74,13 +75,7 @@ function make_sub_plot(c, python, julia, library, bm)
         yerror=get_yerror(c),
         color=gray,
     )
-
-    bar!(P, 
-        python.version .* " (P)", python.performance ./ max_performance, 
-        yerror=get_yerror(python),
-        color=blue,
-    )
-
+    
     bar!(P, 
         julia.version .* " (J)", julia.performance ./ max_performance, 
         yerror=get_yerror(julia),
@@ -93,6 +88,13 @@ function make_sub_plot(c, python, julia, library, bm)
         color=red,
     )
 
+    bar!(P, 
+        python.version .* " (P)", python.performance ./ max_performance, 
+        yerror=get_yerror(python),
+        color=blue,
+    )
+
+
     return P
 
 end
@@ -102,7 +104,7 @@ function combine_plots(plots, arch, bms, preset)
         legend_columns=4, legend_position=:topleft,
         legendfontsize = 11,
     )
-    for (l, c) in [" C" => gray, " python    " => blue, " julia" => green, " library" => red]
+    for (l, c) in [" C" => gray, " \"python\"    " => blue, " julia" => green, " library" => red]
         bar!(legend, [], [], label=l, color=c)
     end
     the_plot = plot(
@@ -113,8 +115,8 @@ function combine_plots(plots, arch, bms, preset)
         size=(1200, 650),
         bottom_margin=30*Plots.px,
         top_margin=10*Plots.px,
-        right_margin=30*Plots.px,
-        left_margin=20*Plots.px,
+        right_margin=10*Plots.px,
+        left_margin=40*Plots.px,
     )
     return the_plot
 end

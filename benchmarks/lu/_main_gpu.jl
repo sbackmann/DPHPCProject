@@ -15,19 +15,7 @@ function init_array(N)
         A[i, i] = 1.0
     end
 
-    B = zeros(Float64, N, N)
-    
-    for t in 1:N
-        for r in 1:N
-            for s in 1:N
-                B[r, s] += A[r,t] * A[s,t]
-            end
-        end
-    end
-
-    A .= B
-
-    return CuArray(A)
+    return CuArray(A * A')
 end
 
 function is_valid(N, A)

@@ -6,4 +6,7 @@ _make_lib:
 test: _make_lib
 	gcc -O2 -L./ -Wl,-rpath=./ main.c -o ./a.exe -lm -ltest
 	./a.exe
+	rm ./test.o ./libtest.so
 
+rm:
+	rm *.exe *.o *.so

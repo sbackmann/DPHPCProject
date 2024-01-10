@@ -1,6 +1,6 @@
 
 naive:
-	gcc -o covariance naive.c utils.c -lm
+	gcc -o covariance -Ofast naive.c utils.c -lm
 	./covariance
 	rm ./covariance
 

@@ -14,6 +14,10 @@ function main()
     if is_valid()
         @dphpc_time sleep1()
     end
+
+    try
+        run(Cmd(`make rm`, dir=@__DIR__))
+    catch e end
 end
 
 main()

@@ -46,23 +46,57 @@ void init_array(int N, double A[N][N]) {
 
 
 void lu(int N, double A[N][N]) {
-
-// first nested loop calculates the upper triangle
-// second nested loop calculates the lower trinagle 
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < i; j++) {
-      for (int k = 0; k < j; k++) {
-        A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
-      }
-      A[i][j] = A[i][j] / A[j][j];
+    // first nested loop calculates the upper triangle
+    // second nested loop calculates the lower trinagle 
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < i; j++) {
+            for (int k = 0; k < j; k++) {
+                A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
+            }
+            A[i][j] = A[i][j] / A[j][j];
+        }
+        for (int j = i; j < N; j++) {
+            for (int k = 0; k < i; k++) {
+                A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
+            }
+        }
     }
-    for (int j = i; j < N; j++) {
-      for (int k = 0; k < i; k++) {
-        A[i][j] = A[i][j] - (A[i][k] * A[k][j]);
-      }
-    }
-  }
-
+  
+    // alternative 1
+    // for (int i = 0; i < N; i++) {
+    //     for (int j = i + 1; j < N; j++) {
+    //         A[j][i] /= A[i][i]; // lower triangle
+    //         for (int k = i + 1; k < N; k++) {
+    //             A[j][k] -= (A[i][k] * A[j][i]); // upper triangle + diagonal
+    //         }   
+    //     }
+    // }
+    
+    // alternative 1, loops separated
+    // for (int i = 0; i < N; i++) {
+    //     for (int j = i + 1; j < N; j++) {
+    //         A[j][i] /= A[i][i]; // lower triangle
+    //     }
+        
+    //     for (int j = i + 1; j < N; j++) {
+    //         for (int k = i + 1; k < N; k++) {
+    //             A[j][k] -= (A[i][k] * A[j][i]); // upper triangle + diagonal
+    //         }   
+    //     }
+    // }
+    
+    // alternative 2
+    // for (int i = 0; i < N; i++) {
+    //     for (int j = 0; j < N; j++) {
+    //         for (int k = 0; k < i && k < j; k++) {
+    //             A[j][i] -= A[j][k] * A[k][i];
+    //         }
+    //         if (j > i)
+    //         {
+    //             A[j][i] /= A[i][i];
+    //         }
+    //     }
+    // }
 }
 
 
