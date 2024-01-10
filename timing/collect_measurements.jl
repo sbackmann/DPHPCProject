@@ -71,8 +71,9 @@ function run(benchmark, languages)
         println()
     end
 
-    free_gpu_mem() # free the gpu mempool managed by julia, so that the c versions can do their thing
     if :C ∈ languages
+        free_gpu_mem() # free the gpu mempool managed by julia, so that the c versions can do their thing
+        
         versions = get_c_versions(benchmark)
         print("C: ")
         for version in versions
@@ -172,12 +173,13 @@ function reset()
     global PRESETS_TO_RUN = ["missing", "S"] # for when running a julia file with Ctrl+Enter...
     make_presets_header(PRESETS_TO_RUN)
     cd(INITIAL_WD)
+    free_gpu_mem()
 end
 
 function free_gpu_mem()
     if isdefined(Main, :CUDA)
         eval(quote
-            using CUDA # because of all the includes, world age increases.. it works like this tho
+            using CUDA # because of all the includes, world age increases and stuff.. it works like this tho
             CUDA.memory_status()
             GC.gc(true)
             CUDA.reclaim() 
@@ -216,6 +218,8 @@ function collect_measurements(benchmarks::Vector{String}, languages::Vector{Symb
         reset()
         rethrow()
     end
+
+    
 
     if :python ∈ languages
         free_gpu_mem()

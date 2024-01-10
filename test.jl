@@ -24,7 +24,7 @@ run(`julia run_benchmarks.jl syrk`)
 NPBenchManager.set_parameters("trisolv", "S", (50,))
 run(`julia run_benchmarks.jl trisolv`)
 
-run(`julia run_benchmarks.jl syrk -lp`)
+run(`julia run_benchmarks.jl jacobi_2d -ljcp`)
 
 for bm in ["covariance", "doitgen", "floyd_warshall", "gemm", "jacobi_2d", "lu", "syrk", "trisolv"]
     NPBenchManager.reset_parameters(bm)
