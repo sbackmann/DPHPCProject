@@ -29,6 +29,10 @@ GPU_5_noElse:
 	nvcc -o ./a.exe GPU_5_noElse.cu utils.cu
 	./a.exe
 
+GPU_9_blocked:
+	nvcc -o ./a.exe GPU_9_blocked.cu utils.cu
+	./a.exe
+
 #GPU_8_2xLoopUnroll:
 #	nvcc -o ./a.exe GPU_8_2xLoopUnroll.cu utils.cu
 #	./a.exe

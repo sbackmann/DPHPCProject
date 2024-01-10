@@ -8,6 +8,7 @@
 #define N_L get_params("L")[0]
 #define N_PAPER get_params("paper")[0]
 
+#define CEIL_DIV(M, N) (((M) + (N)-1) / (N))
 
 void run_bm(int n, const char* preset, void (*kernel)(int, int*), const int ASSERT);
 

@@ -8,13 +8,13 @@ using BenchmarkTools
 
 function init_graph(n)
     tmp = 0
-    graph = zeros(Int, n, n)
+    graph = zeros(Int32, n, n)
     for j in 0:n-1
         for i in 0:n-1
-            graph[i+1, j+1] = i * j % 7 + 1
-            tmp = (i + j) % 13 == 0 || (i + j) % 7 == 0 || (i + j) % 11 == 0 ? 1 : 0
+            graph[i+1, j+1] = Int32(i * j % 7 + 1)
+            tmp = (i + j) % 13 == 0 || (i + j) % 7 == 0 || (i + j) % 11 == 0 ? Int32(1) : Int32(0)
             if tmp == 0
-                graph[i+1, j+1] = 999
+                graph[i+1, j+1] = Int32(999)
             end
         end
     end
@@ -47,7 +47,8 @@ end
 function assert_naive(res, n)
     graph_cpu = fw_naive(n, init_graph(n))
     # display(result_graph[1:50, 1:50])
-
+    #println(res[1:50, 1:50])
+    #println(graph_cpu[1:50, 1:50])
     return isequal(res, graph_cpu)
 end
 
