@@ -1,6 +1,6 @@
 
 naive:
-	gcc -o trisolv -Ofast  naive.c utils.c -lm
+	gcc -o trisolv -O3 -march=native  naive.c utils.c -lm
 	./trisolv
 	rm ./trisolv
 
@@ -10,7 +10,7 @@ naive_gpu:
 	rm ./trisolv
 
 reorder_loop:
-	gcc -o trisolv -Ofast reorder_loop.c utils.c -lm 
+	gcc -o trisolv -O3 -march=native reorder_loop.c utils.c -lm 
 	./trisolv
 	rm ./trisolv
 

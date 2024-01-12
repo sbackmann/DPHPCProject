@@ -1,6 +1,6 @@
 
 naive:
-	gcc naive.c -O3 -o ./a.exe -lm 
+	gcc naive.c -O3 -march=native -o ./a.exe -lm 
 	./a.exe
 
 # naive_col_major:
@@ -8,11 +8,11 @@ naive:
 # 	./a.exe
 
 optimized_1: 
-	gcc optimized_1.c -O3 -o ./a.exe -lm 
+	gcc optimized_1.c -O3 -march=native -o ./a.exe -lm 
 	./a.exe
 
 optimized_col_major: 
-	gcc optimized_col_major.c -O3 -o ./a.exe -lm 
+	gcc optimized_col_major.c -O3 -march=native -o ./a.exe -lm 
 	./a.exe
 	
 naive_gpu:

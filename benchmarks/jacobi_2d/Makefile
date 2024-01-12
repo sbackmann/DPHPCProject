@@ -1,25 +1,25 @@
 
 # base cpu
 base:
-	gcc -O3 -march=native -flto -o j2d base.c -lm
+	gcc -O3 -march=native -o j2d base.c -lm
 	./j2d
 	rm ./j2d
 
 # naive cpu
 naive:
-	gcc -Ofast -march=native -flto -o j2d naive.c -lm
+	gcc -O3 -march=native -o j2d naive.c -lm
 	./j2d
 	rm ./j2d
 
 # optimised cpu, flat array
 opt:
-	gcc -Ofast -march=native -flto -o j2d opt.c -lm
+	gcc -O3 -march=native -o j2d opt.c -lm
 	./j2d
 	rm ./j2d
 
 # optimised cpu, unflattened 2d array
 unflat:
-	gcc -Ofast -march=native -flto -o j2d opt_2darr.c -lm
+	gcc -O3 -march=native -o j2d opt_2darr.c -lm
 	./j2d
 	rm ./j2d
 

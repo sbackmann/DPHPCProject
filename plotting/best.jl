@@ -104,17 +104,17 @@ function combine_plots(plots, arch, bms, preset)
         legend_columns=4, legend_position=:topleft,
         legendfontsize = 11,
     )
-    for (l, c) in [" C" => gray, " \"python\"    " => blue, " julia" => green, " library" => red]
+    for (l, c) in [" C" => gray, " NPBench    " => blue, " Julia" => green, " Julia library" => red]
         bar!(legend, [], [], label=l, color=c)
     end
     the_plot = plot(
         legend, plots..., layout=@layout([a{0.01h} _ _ _; ° ° ° °; ° ° ° °]),
         # cpu_plots..., layout=(2, 4),
-        plot_title="Performance Comparison of Best Versions $arch ($preset)",
+        plot_title="Performance Comparison of Best Versions $arch\n(higher is better)",
         title=["" bms],
         size=(1200, 650),
         bottom_margin=30*Plots.px,
-        top_margin=10*Plots.px,
+        top_margin=23*Plots.px,
         right_margin=10*Plots.px,
         left_margin=40*Plots.px,
     )
@@ -144,6 +144,6 @@ function make_plot(preset)
     display(gpu_plot)
 
     cd(@__DIR__)
-    savefig(cpu_plot, "plots/perfcomp_cpu_$(preset).png")
-    savefig(gpu_plot, "plots/perfcomp_gpu_$(preset).png")
+    savefig(cpu_plot, "plots/perfcomp_cpu_$(preset).pdf")
+    savefig(gpu_plot, "plots/perfcomp_gpu_$(preset).pdf")
 end

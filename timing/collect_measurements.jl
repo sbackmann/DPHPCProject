@@ -101,6 +101,7 @@ function run(benchmark, version, languages)
         run!(results, run_julia_bm, benchmark, version)
     end
     if :C ∈ languages && c_has_bm(benchmark, version)
+        free_gpu_mem()
         run!(results, run_c_bm, benchmark, version)
     end
     return results
